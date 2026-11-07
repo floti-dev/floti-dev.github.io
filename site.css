@@ -1,0 +1,199 @@
+/* floti.dev
+ *
+ * The colours are the app's: Daylight in a light scheme, Nocturne in a dark
+ * one, each role copied from §1 of the app's DESIGN.md under the same name.
+ * The rules are the app's too: one island on a sunken canvas with a hairline
+ * edge, the accent as text, marks and its soft tint only, no shadows, no text
+ * heavier than 500, mono for machine data. The fonts are the app's stack and
+ * are never downloaded: nothing on this site comes from another origin. */
+
+:root {
+  color-scheme: light dark;
+
+  /* Daylight */
+  --bg: #e6e8ee;
+  --surface: #ffffff;
+  --surface-raised: #f4f5f8;
+  --border: rgb(22 24 38 / 0.1);
+  --border-strong: rgb(22 24 38 / 0.18);
+  --fg: #1d1f2e;
+  --fg-muted: #555a69;
+  --fg-subtle: #6f7383;
+  --accent: #6f61c4;
+  --accent-soft: rgb(111 97 196 / 0.1);
+  --accent-soft-hover: rgb(111 97 196 / 0.2);
+  --accent-text: #5a4da8;
+
+  /* Shape: the app's defaults. */
+  --gap: 6px;
+  --radius-island: 3px;
+  --radius-well: 4px;
+
+  --font-sans: 'Inter var', 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system,
+    sans-serif;
+  --font-mono: 'Cascadia Mono', 'SF Mono', Menlo, Consolas, ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Nocturne */
+    --bg: #12131f;
+    --surface: #1a1c2b;
+    --surface-raised: #202233;
+    --border: rgb(233 233 237 / 0.08);
+    --border-strong: rgb(233 233 237 / 0.16);
+    --fg: #e9e9ed;
+    --fg-muted: #9397ab;
+    --fg-subtle: #75798c;
+    --accent: #9184d9;
+    --accent-soft: rgb(145 132 217 / 0.14);
+    --accent-soft-hover: rgb(145 132 217 / 0.26);
+    --accent-text: #d2cefd;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 16px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.island {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-island);
+}
+
+.section {
+  padding: 28px 32px;
+}
+
+.section + .section {
+  border-top: 1px solid var(--border);
+}
+
+.label {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: 8px 0 0;
+  font-size: 17px;
+  color: var(--fg-muted);
+}
+
+.points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.points p,
+.body {
+  margin: 2px 0 0;
+  color: var(--fg-muted);
+}
+
+.body + .body {
+  margin-top: 12px;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+/* The app's primary button: outlined in the accent, never filled. */
+.button {
+  display: inline-block;
+  padding: 6px 15px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-well);
+  color: var(--accent-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.button:hover {
+  background: var(--accent-soft);
+}
+
+a {
+  color: var(--accent-text);
+  text-underline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+@media (max-width: 480px) {
+  body {
+    justify-content: flex-start;
+    padding: 16px;
+  }
+
+  .section {
+    padding: 22px 20px;
+  }
+}
