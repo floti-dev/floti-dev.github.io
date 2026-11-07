@@ -13,18 +13,3 @@ holds the domain.
   starts there.
 - Every page works at phone width, in light and dark.
 - The release workflow copies the install scripts here.
-
-## DNS
-
-The domain is registered at Squarespace Domains, which holds these records and
-no others:
-
-| Host | Type | Data |
-|---|---|---|
-| `@` | A | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` |
-| `@` | AAAA | `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153` |
-| `www` | CNAME | `floti-dev.github.io` |
-| `@` | TXT | `v=spf1 -all` (the domain sends no mail) |
-| `_github-pages-challenge-floti-dev` | TXT | the floti-dev org's Pages verification |
-
-`www.floti.dev` redirects to `floti.dev`, and Pages enforces HTTPS.
