@@ -29,13 +29,13 @@
 # repository). When the code changes, change this to match.
 title: Install Floti
 description: One command installs Floti on a Mac, a Windows PC or a Linux computer, with no admin rights. What it installs, where it goes, and how to update or remove it.
-lede: One command installs Floti on a Mac, a Windows PC or a Linux computer. It needs no admin rights, and updating it is one command too.
-notice: Floti is not released yet. The commands below go live with the first stable release, which puts the install scripts on floti.dev. Until then they have nothing to download.
+lede: One command installs Floti on a Mac, a Windows PC or a Linux computer. It doesn't need admin rights, and updating it takes one command too.
+notice: Floti isn't released yet. The commands below go live with the first stable release, which puts the install scripts on floti.dev. Until then, they won't find anything to download.
 ---
 
 ## What you need
 
-- **Claude Code, installed and signed in,** on each computer your agents run on. Floti starts it the way you would. Other agents are coming.
+- **Claude Code, installed and signed in,** on each computer your agents run on. Floti starts it the way you would. Support for other agents is coming.
 - **A computer Floti runs on:** a Mac with Apple Silicon, a Windows PC or a Linux computer, on x64 or Arm. WSL counts as Linux.
 - **For a computer you use remotely, SSH access to it.** `ssh` followed by its name should log you in from a terminal without asking for a password, because Floti uses your own SSH and types nothing into it.
 
@@ -120,7 +120,7 @@ floti update
 
 It replaces `floti` with the newest stable release, and the host restarts on the new one without ending your sessions. If the app is installed and older, it is updated too, once you quit it. Every file is checked against Floti's signing key, which is built into `floti`, and against its SHA-256 before anything is replaced. If a check fails, nothing changes.
 
-You rarely need to run it. The host checks for a new `floti` once a day and updates it by itself; turn that off in the app under Settings > Updates. The app shows when a new release is out, and its Update button does what `floti update` does.
+You probably won't need to run it often. The host checks for a new `floti` once a day and updates it by itself; turn that off in the app under Settings > Updates. The app shows when a new release is out, and its Update button does what `floti update` does.
 
 ## Uninstall
 
@@ -217,4 +217,4 @@ From Floti's packaging notes:
 
 > The host's update check, at most once a day to floti.dev and to the GitHub release it names, is the only request Floti makes on its own initiative; the app itself contacts nothing. Everything else on the network happens because you asked for it: Check now and Update ask the host to check or to update, the browser pane fetches the page you navigate to, a plugin you added reaches the hosts its manifest names, and a host you added on another computer is reached through your own ssh, or the command you gave.
 
-There is no telemetry and no crash reporting. Floti listens only on your own computer.
+There's no telemetry and no crash reporting. The host only accepts connections from the computer it runs on; your other computers reach it through SSH.

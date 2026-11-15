@@ -29,8 +29,8 @@ hero:
   headline: Your fleet of coding agents.
   lede: >-
     Floti runs your coding agents on every computer you have, from one window.
-    Each project gets the setup it needs, agents start agents, and nothing stops
-    when the window closes.
+    It gives each project the setup it needs, lets your agents start helpers of
+    their own, and keeps your sessions running after you close the window.
 
 # The install command box, in the hero, in the install section and at the top
 # of the install guide.
@@ -59,47 +59,50 @@ sections:
     label: Composition
     headline: Every codebase you need, in one session.
     lede: >-
-      Put the projects you work on into a workspace and Floti composes them into
-      one session: each repository linked in with its own instructions and
-      skills, and your profile's shared instructions, skills and tools on top.
-      One agent works across all of them. Its own settings are never touched.
+      Put the projects you work on into a workspace, and Floti puts them together
+      into one session. Each repository brings its own instructions and skills,
+      and your profile adds the shared ones on top, so one agent can work across
+      all of them. Floti does this at launch and never edits your agent's own
+      settings.
 
   # The fleet: sessions that start helpers, and every machine in one window.
   fleet:
     label: The fleet
     headline: Agents that run agents. Every machine in one window.
     lede: >-
-      A session can start helpers, hand them work and hear back when they finish.
-      Every machine you reach over your own SSH shows in the same window, with
-      its sessions and their helpers. There is no account and no service in
-      between.
+      A session can start helpers, hand them work and hear back when they're
+      done, and you can watch each helper in its own terminal. Your other
+      machines show up in the same window too, with their sessions and helpers,
+      through the SSH you already use (so there's no account to sign up for and
+      no service in the middle).
 
   # Plugins.
   plugins:
     label: Plugins
     headline: Build your own tools into it.
     lede: >-
-      A plugin is a folder you write: a page in the sidebar, an item on the status
-      bar, tools your agents can call. Track your work, keep your notes, wire in
-      your own services.
+      A plugin is a folder you write. It can add a page to the sidebar, an item to
+      the status bar and tools your agents can call. I use mine to track my work
+      and keep notes, and you can wire in your own services the same way.
 
   # Built-in tools: the browser.
   browser:
     label: Built-in tools
     headline: A browser your agents can drive.
     lede: >-
-      Agents open pages, click, read and take screenshots in a browser pane beside
-      their terminal, in tabs you can watch or share. Floti's own tools come with
-      every launch and go when it ends.
+      Your agents can open pages, click around, read them and take screenshots in
+      a browser pane next to their terminal, in tabs you can watch (or share with
+      them). Floti hands these tools to each session when it starts and takes
+      them back when it ends.
 
   # Persistence: sessions outlive the window.
   persistence:
     label: Persistence
     headline: Sessions outlive the window.
     lede: >-
-      A small host on each machine holds every session. Close Floti, let it crash
-      or update it, and your agents keep working. Open it again and they are where
-      you left them.
+      A small host on each machine holds your sessions, so they keep running
+      whether you close Floti, it crashes or it updates itself. When you open it
+      again, everything is where you left it.
 
   # Install: the last section, with the install command again. The only place
   # the page names an agent.
@@ -107,8 +110,8 @@ sections:
     label: Install
     headline: Launch your fleet.
     lede: >-
-      One command installs Floti and keeps it up to date. Works with Claude Code
-      today, with more agents on the way.
+      One command installs Floti, and it keeps itself up to date after that. It
+      works with Claude Code today, and more agents are on the way!
     guide_link: Install guide
     github_link: Floti on GitHub
 
@@ -144,8 +147,8 @@ demos:
       update: Update it
       open: Open Floti
     host: Host on this PC
-    closed: Floti is closed. Its sessions are not.
-    crashed: Floti crashed. Nothing it started did.
+    closed: Floti is closed, and its sessions are still running.
+    crashed: Floti crashed, but everything it started is still running.
     updating: Updating Floti
     updated: Floti updated
     away: while you were away
