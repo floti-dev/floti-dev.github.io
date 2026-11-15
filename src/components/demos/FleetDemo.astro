@@ -1,18 +1,20 @@
 ---
-/* Agents that run agents, on every machine, inside one Floti window. The
- * sidebar lists three machines (this PC, build-box and the laptop), each with
- * its round-trip time. One lead session on this PC starts three helpers from
- * its terminal: scout here, tester on build-box and docs on the laptop. Each
+/* Agents that run agents, and every machine in one Floti window. The sidebar
+ * lists three machines (this PC, build-box and the laptop), each with its
+ * round-trip time. One lead session on this PC starts three helpers from its
+ * terminal, on this PC: a helper always runs on its parent's machine. Each
  * opens as a pane grown out of the lead, tied to it by a tether in the
- * highlight colour, its header naming its machine, and its row appears under
- * that machine in the sidebar. Tester starts a helper of its own on build-box,
- * so the family is two deep. Tester stops to ask a question the visitor can
- * answer. Reports travel back along the tethers, finished panes fold into
- * stopped chips, and the lead merges the fix.
+ * highlight colour, and its row appears under the lead in the sidebar. Tester
+ * starts a helper of its own, so the family is two deep. Tester stops to ask
+ * a question the visitor can answer. Reports travel back along the tethers,
+ * finished panes fold into stopped chips, and the lead merges the fix.
+ * Meanwhile the other machines' sessions go on in the same sidebar: build-box's
+ * nightly build starts a helper of its own there, which finishes, and the
+ * laptop's meal planner ends its turn.
  *
- * At rest (the final frame): the lead's terminal with all three reports, the
- * helpers folded into chips under faded tethers, each helper in the sidebar
- * under its machine.
+ * At rest (the final frame): the lead's terminal with all three reports and
+ * the merge, the helpers folded into chips under faded tethers, and every
+ * machine's sessions in the sidebar.
  */
 import Demo from '../Demo.astro';
 import FlotiWindow from '../FlotiWindow.astro';
@@ -35,8 +37,6 @@ type Line = { k?: string; html: string };
 interface Helper {
   key: string;
   name: string;
-  /** The machine it runs on, and the round trip to it, when not this PC. */
-  host?: { name: string; ms: string };
   depth: 1 | 2;
   end: 'done' | 'turn_ended';
   timer: string;
@@ -62,7 +62,6 @@ const helpers: Helper[] = [
   {
     key: 'tester',
     name: 'tester',
-    host: { name: 'build-box', ms: '24 ms' },
     depth: 1,
     end: 'done',
     timer: '3:05',
@@ -81,7 +80,6 @@ const helpers: Helper[] = [
   {
     key: 'fixture',
     name: 'fixture-gen',
-    host: { name: 'build-box', ms: '24 ms' },
     depth: 2,
     end: 'done',
     timer: '0:48',
@@ -94,7 +92,6 @@ const helpers: Helper[] = [
   {
     key: 'docs',
     name: 'docs',
-    host: { name: 'laptop', ms: '41 ms' },
     depth: 1,
     end: 'turn_ended',
     timer: '1:40',
@@ -110,12 +107,14 @@ const helpers: Helper[] = [
 const byKey = Object.fromEntries(helpers.map((h) => [h.key, h]));
 
 /* The sidebar: each machine with its round trip, its projects and sessions.
- * A helper's row (kind 'helper') grows in when the helper starts; tester's
- * row becomes a parent when fixture-gen starts under it. */
+ * A helper's row (kind 'helper') grows in when the helper starts. The other
+ * machines' sessions (kind 'live') change on their own while the demo plays;
+ * the drawing shows their final state. */
 type Row =
   | { kind: 'repo'; name: string; branch: string }
-  | { kind: 'session'; name: string; word: string; idle?: boolean; cls?: string }
-  | { kind: 'helper'; key: string; cls: string };
+  | { kind: 'session'; name: string; word: string; cls?: string }
+  | { kind: 'helper'; key: string; cls: string }
+  | { kind: 'live'; key: string; name: string; word: string; cls?: string };
 const machines: Array<{ name: string; ms: string; remote: boolean; rows: Row[] }> = [
   {
     name: 'This PC',
@@ -124,9 +123,13 @@ const machines: Array<{ name: string; ms: string; remote: boolean; rows: Row[] }
     rows: [
       { kind: 'repo', name: 'harbor-api', branch: 'main' },
       { kind: 'session', name: 'fix upload retry', word: '8m', cls: 'sel parent' },
-      { kind: 'helper', key: 'scout', cls: 'child last' },
-      { kind: 'repo', name: 'tidewater-web', branch: 'feature/checkout' },
-      { kind: 'session', name: 'checkout form', word: 'idle', idle: true },
+      ...helpers.map(
+        (h, i): Row => ({
+          kind: 'helper',
+          key: h.key,
+          cls: `${h.depth === 2 ? 'grand through' : 'child'}${i === helpers.length - 1 ? ' last' : ''}`,
+        }),
+      ),
     ],
   },
   {
@@ -135,9 +138,8 @@ const machines: Array<{ name: string; ms: string; remote: boolean; rows: Row[] }
     remote: true,
     rows: [
       { kind: 'repo', name: 'harbor-api', branch: 'main' },
-      { kind: 'helper', key: 'tester', cls: 'parent' },
-      { kind: 'helper', key: 'fixture', cls: 'child last' },
-      { kind: 'session', name: 'nightly build', word: 'idle', idle: true },
+      { kind: 'session', name: 'nightly build', word: '12m', cls: 'parent' },
+      { kind: 'live', key: 'perf', name: 'perf-check', word: text.done, cls: 'child last' },
     ],
   },
   {
@@ -145,23 +147,33 @@ const machines: Array<{ name: string; ms: string; remote: boolean; rows: Row[] }
     ms: '41 ms',
     remote: true,
     rows: [
-      { kind: 'repo', name: 'harbor-api', branch: 'main' },
-      { kind: 'helper', key: 'docs', cls: '' },
+      { kind: 'repo', name: 'recipes', branch: 'main' },
+      { kind: 'live', key: 'meal', name: 'meal planner', word: text.turn_ended },
     ],
   },
 ];
 
 const lead: Line[] = [
+  // the session's earlier turn, already on screen
+  { html: '<span class="t-dim">› Why do some uploads never finish?</span>' },
+  { html: '<span class="t-dim">  Reading src/upload/client.ts</span>' },
+  { html: '<span class="t-dim">  Reading src/upload/retry.ts</span>' },
+  { html: '<span class="t-dim">  A 503 from the storage proxy ends the upload;</span>' },
+  { html: '<span class="t-dim">  nothing retries it and the error is dropped.</span>' },
   { k: 'lead-prompt', html: '<span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.' },
   { k: 'lead-think', html: '  The client gives up after the first 503.' },
   { k: 'lead-start-scout', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">scout</span>' },
-  { k: 'lead-start-tester', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">tester</span> --host build-box' },
-  { k: 'lead-start-docs', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">docs</span> --host laptop' },
+  { k: 'lead-start-tester', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">tester</span>' },
+  { k: 'lead-start-docs', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">docs</span>' },
   { k: 'lead-work', html: '  Adding backoff: src/upload/retry.ts <span class="t-ok">+18</span> <span class="t-r">−4</span>' },
   { k: 'lead-rep-scout', html: '<span class="t-ok">←</span> scout · done · 4 callers, one ignores the result' },
   { k: 'lead-rep-docs', html: '<span class="t-ok">←</span> docs · turn ended · NOTES.md updated' },
   { k: 'lead-rep-tester', html: '<span class="t-ok">←</span> tester · done · 12 passed, timeout now 10 s' },
   { k: 'lead-final', html: '  All three reported. Merging the fix.' },
+  { k: 'lead-close', html: '  Edit src/sync/push.ts: check the result <span class="t-ok">+3</span> <span class="t-r">−1</span>' },
+  { k: 'lead-close', html: '  <span class="t-ok">✓ 142 passed</span>' },
+  { k: 'lead-close', html: '  Committed: retry uploads on a 503' },
+  { k: 'lead-close', html: '  Pushed to fix/upload-retry.' },
 ];
 ---
 
@@ -193,9 +205,17 @@ const lead: Line[] = [
                   </div>
                 ) : r.kind === 'session' ? (
                   <div class:list={['fw-row session', r.cls]}>
-                    <span class:list={['dot', { idle: r.idle }]} />
+                    <span class="dot" />
                     <span class="name">{r.name}</span>
-                    <span class:list={['word', { acc: !r.idle }]}>{r.word}</span>
+                    <span class="word acc">{r.word}</span>
+                  </div>
+                ) : r.kind === 'live' ? (
+                  <div class:list={['fw-row session', r.cls]} data-k={`row-${r.key}`}>
+                    <span class="dot idle" data-k={`rowdot-${r.key}`} />
+                    <span class="name">{r.name}</span>
+                    <span class="word" data-k={`word-${r.key}`}>
+                      {r.word}
+                    </span>
                   </div>
                 ) : (
                   <div class:list={['fw-row session grow', r.cls]} data-k={`row-${r.key}`}>
@@ -240,12 +260,6 @@ const lead: Line[] = [
                   <Logo kind="mark" />
                 </span>
                 <span class="hp-name">{h.name}</span>
-                {h.host && (
-                  <span class="hp-host">
-                    {h.host.name}
-                    <span class="hp-ms"> · {h.host.ms}</span>
-                  </span>
-                )}
                 <span class:list={['chip', h.end === 'done' ? 'end' : 'end']} data-k={`chip-${h.key}`}>
                   {text.stopped} · {text[h.end]}
                 </span>
@@ -278,7 +292,7 @@ const lead: Line[] = [
     <Fragment slot="status">
       <span>Floti 3.1.0</span>
       <span class="bar"></span>
-      <span class="grp"><span class="dot"></span><span data-k="st-work">1 working</span></span>
+      <span class="grp"><span class="dot"></span><span data-k="st-work">2 working</span></span>
       <span class="grp need st-need" data-k="st-need"><span class="dot need"></span>{words.needs_you_count}</span>
       <span class="bar"></span>
       <span class="grp"><span class="mono">build-box</span> 24 ms</span>
@@ -421,14 +435,6 @@ const lead: Line[] = [
   }
   .hp-name {
     font-weight: 500;
-  }
-  .hp-host {
-    font: 400 11px/1 var(--mono);
-    color: var(--fl-fg-subtle);
-  }
-  /* folded, a chip names its machine but not the round trip */
-  .hp.folded .hp-ms {
-    display: none;
   }
   .chip {
     font-size: 11px;

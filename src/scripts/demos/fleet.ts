@@ -1,7 +1,7 @@
-/* Agents that run agents, on every machine: the lead starts helpers here, on
- * build-box and on the laptop, each appearing under its machine in the
- * sidebar; tester starts one of its own, the visitor answers tester, reports
- * come home along the tethers. */
+/* Agents that run agents, and every machine in one window: the lead starts
+ * helpers on its own machine, tester starts one of its own, the visitor
+ * answers tester, reports come home along the tethers; meanwhile the other
+ * machines' sessions change in the sidebar on their own. */
 import { gsap } from 'gsap';
 import { flip, k, ks, stageOf, textOf, type Builder, type Timeline } from './kit';
 
@@ -36,6 +36,9 @@ interface Helper {
 
 const GROW = 0.45;
 const AUTO_ANSWER = 4.5;
+/** Sessions working when the demo starts: the lead, build-box's nightly build
+ * and the laptop's meal planner. */
+const WORKING_AT_START = 3;
 
 /** A line that takes no room until it arrives, so a terminal's newest line
  * sits at its foot and older ones scroll off the top. */
@@ -157,6 +160,38 @@ export const fleet: Builder = (root, ctx) => {
     h.rowDot.className = `dot${state === 'need' ? ' need' : state === 'working' ? '' : ' idle'}`;
   };
 
+  // ---- the other machines' sessions, which change on their own
+
+  interface Live {
+    row: HTMLElement;
+    dot: HTMLElement;
+    word: HTMLElement;
+    cls: string;
+  }
+  const live = (key: string): Live => {
+    const row = k(root, `row-${key}`);
+    return { row, dot: k(root, `rowdot-${key}`), word: k(root, `word-${key}`), cls: row.className };
+  };
+  const perf = live('perf');
+  const meal = live('meal');
+  /** A working session shows its time in the accent; a stopped one its state. */
+  const setLive = (l: Live, state: 'working' | 'stopped', word: string) => {
+    l.word.textContent = word;
+    l.word.className = state === 'working' && word !== text.working ? 'word acc' : 'word';
+    l.dot.className = state === 'working' ? 'dot' : 'dot idle';
+  };
+  /** A session's row draws its family line only once its first helper starts. */
+  const becomesParent = (row: Element | null, at: number) => {
+    if (!(row instanceof HTMLElement)) return;
+    const end = row.className;
+    flip(tl, row, end.replace(/\s*\bparent\b/, ''), at, end);
+  };
+  /** The row lights for a moment, so a change on another machine is seen. */
+  const glance = (l: Live, at: number) => {
+    flip(tl, l.row, l.cls, at, `${l.cls} hot`);
+    tl.set(l.row, { attr: { class: l.cls } }, at + 1.1);
+  };
+
   // ---- waiting for the visitor to answer tester
 
   let auto: gsap.core.Tween | null = null;
@@ -187,7 +222,9 @@ export const fleet: Builder = (root, ctx) => {
   const reset = () => {
     auto?.kill();
     delete root.dataset.waiting;
-    setWorking(1);
+    setWorking(WORKING_AT_START);
+    setLive(perf, 'working', text.working);
+    setLive(meal, 'working', '3m');
     for (const h of helpers) {
       setState(h, 'working');
       h.timer.textContent = '0:00';
@@ -269,6 +306,7 @@ export const fleet: Builder = (root, ctx) => {
   let at = type(tl, k(root, 'lead-start-scout'), 2.4) + 0.1;
   if (beside) tl.fromTo(lead, { width: famW }, { width: leadW, duration: 0.55, ease: 'power3.inOut' }, at - 0.15);
   spawn(by.scout, at + 0.15);
+  becomesParent(by.scout.row.previousElementSibling, at + 0.15);
   run(by.scout, at + 0.15, 6.6);
   at = type(tl, k(root, 'lead-start-tester'), 3.7) + 0.1;
   spawn(by.tester, at);
@@ -283,12 +321,28 @@ export const fleet: Builder = (root, ctx) => {
   stream(tl, ks(root, 'ln-docs'), 6.5, 0.95);
   stream(tl, [k(root, 'lead-work')], 8.6);
 
-  // tester starts a helper of its own on build-box: the family is two deep
+  // tester starts a helper of its own: the family is two deep
   at = type(tl, k(root, 'tester-start'), 7.3) + 0.1;
-  flip(tl, by.tester.row, 'fw-row session grow', at, 'fw-row session grow parent');
   spawn(by.fixture, at);
   run(by.fixture, at, 9.9);
   stream(tl, ks(root, 'ln-fixture'), at + 0.4, 0.6);
+
+  // meanwhile, on the other machines: build-box's nightly build starts a
+  // helper there, the laptop's meal planner ends its turn, the helper finishes
+  tl.fromTo(perf.row, { height: 0, autoAlpha: 0 }, { height: 26, autoAlpha: 1, duration: 0.35, ease: 'power2.out' }, 6.0);
+  glance(perf, 6.0);
+  becomesParent(perf.row.previousElementSibling, 6.0);
+  tl.call(() => setWorking(working + 1), [], 6.0);
+  glance(meal, 9.0);
+  tl.call(() => {
+    setLive(meal, 'stopped', text.turn_ended);
+    setWorking(working - 1);
+  }, [], 9.0);
+  glance(perf, 11.0);
+  tl.call(() => {
+    setLive(perf, 'stopped', text.done);
+    setWorking(working - 1);
+  }, [], 11.0);
 
   // reports come home, and finished panes fold away
   finish(by.scout, 6.6, k(root, 'lead-rep-scout'));
@@ -313,10 +367,11 @@ export const fleet: Builder = (root, ctx) => {
   stream(tl, [lines[4]], 13.2);
   finish(by.tester, 13.6, k(root, 'lead-rep-tester'));
 
-  // the lead uses what came back
+  // the lead uses what came back, and lands the fix
   stream(tl, [k(root, 'lead-final')], 15.4);
   tl.fromTo(col, { paddingTop: 0 }, { paddingTop: settle, duration: 0.9, ease: 'power2.inOut' }, 15.5);
-  tl.set({}, {}, 16.6);
+  stream(tl, ks(root, 'lead-close'), 16.1, 0.55);
+  tl.set({}, {}, 17.6);
 
   if (ctx.reduced) {
     // the final frame stays until the visitor presses Play

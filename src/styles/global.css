@@ -292,6 +292,10 @@ h1 {
   font-size: clamp(28px, 4.4vw, 48px);
   line-height: 1.08;
 }
+/* each sentence of a headline starts its own line */
+.h2 .hl {
+  display: block;
+}
 .lede {
   margin: 0;
   max-width: 60ch;
@@ -500,7 +504,7 @@ html:not(.js) .copy {
 /* each demo's drawing size */
 .st-hero { --w: 1040; --h: 600; }
 .st-compose { --w: 960; --h: 470; }
-.st-fleet { --w: 1100; --h: 640; }
+.st-fleet { --w: 1100; --h: 580; }
 .st-plugins { --w: 700; --h: 560; }
 .st-browser { --w: 1040; --h: 560; }
 .st-persist { --w: 1040; --h: 560; }
@@ -588,9 +592,12 @@ html:not(.js) .demo-ctl {
 /* center: the showpiece, its text centred over the demo */
 .v-center .feature-text {
   margin-inline: auto;
-  max-width: 760px;
+  max-width: 1000px;
   justify-items: center;
   text-align: center;
+}
+.v-center .lede {
+  max-width: 760px;
 }
 .v-center .feature-text .h2 {
   font-size: clamp(32px, 4.2vw, 56px);

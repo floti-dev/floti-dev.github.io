@@ -21,13 +21,24 @@ interface Props {
 }
 
 const { id, text, lead = false, layout = 'stack', demo = 'right' } = Astro.props;
+// a headline of two sentences sets each on its own line (global.css .hl)
+const sentences = text.headline.split(/(?<=[.!?])\s+/);
 ---
 
 <section class:list={['feature', `v-${layout}`, { [`demo-${demo}`]: layout === 'split' }]} aria-labelledby={id}>
   <div class="wrap feature-in">
     <div class="feature-text">
       <p class:list={['eyebrow', { lead }]}>{text.label}</p>
-      <h2 class="h2" id={id}>{text.headline}</h2>
+      <h2 class="h2" id={id}>
+        {
+          sentences.map((sentence, i) => (
+            <Fragment>
+              {i > 0 && ' '}
+              <span class="hl">{sentence}</span>
+            </Fragment>
+          ))
+        }
+      </h2>
       <p class="lede">{text.lede}</p>
     </div>
     <div class="feature-demo">
