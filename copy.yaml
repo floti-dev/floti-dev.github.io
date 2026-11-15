@@ -72,8 +72,8 @@ sections:
     label: Plugins
     headline: Build your own tools into it.
     lede: >-
-      A plugin is a folder you write. It can add a page, a status bar item or
-      tools your agents can call.
+      Extend Floti with your own views, features and tools your agents can
+      call.
 
   # Built-in tools: the browser.
   browser:
