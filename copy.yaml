@@ -50,22 +50,15 @@ sections:
       skills, and your profile's shared instructions, skills and tools on top.
       One agent works across all of them. Its own settings are never touched.
 
-  # The fleet: sessions that start helpers.
+  # The fleet: sessions that start helpers, on any machine, in one window.
   fleet:
     label: The fleet
-    headline: Agents that run agents.
+    headline: Agents that run agents, on every machine.
     lede: >-
       A session can start helpers, hand them work and hear back when they finish.
-      Every helper runs in a terminal you can watch, and stops when its work is
-      done.
-
-  # The fleet: every machine in one window.
-  machines:
-    label: The fleet
-    headline: One window. Every machine.
-    lede: >-
-      Your desktop, a server and a laptop in one sidebar, over the SSH you already
-      use. There is no account and no service in between.
+      Each helper runs in a terminal you can watch, on this computer or any
+      machine you reach over your own SSH, all in one window. There is no account
+      and no service in between.
 
   # Plugins.
   plugins:
@@ -154,19 +147,17 @@ demos:
       the agent adds a field to the API and to the checkout form that uses it: one
       change across two repositories.
     fleet: >-
-      One lead session, fix upload retry, starts three helpers from its terminal:
-      scout, tester on the server build-box, and docs. Each opens as a pane tied
-      to the lead and works in parallel, and tester starts a helper of its own,
-      fixture-gen. Tester stops to ask whether it may raise a test timeout; you
-      can answer it, or it is answered for you after a few seconds. As each
-      helper finishes, its report travels back to the lead and its pane folds
-      into a small stopped chip. With all three reported, the lead merges the
-      fix.
-    machines: >-
-      Three machines in one sidebar: this PC, a server called build-box and a
-      laptop, each listing its sessions and how long a keystroke takes to come
-      back, 24 and 41 milliseconds for the two remote ones. The tester helper
-      started by a session on this PC is running on build-box and needs you.
+      One Floti window holds three machines: this PC, a server called build-box
+      24 milliseconds away and a laptop 41 milliseconds away, each with its
+      sessions in the sidebar. A lead session on this PC, fix upload retry,
+      starts three helpers from its terminal: scout on this PC, tester on
+      build-box and docs on the laptop. Each opens as a pane tied to the lead and
+      appears in the sidebar under its machine, and tester starts a helper of its
+      own, fixture-gen, on build-box too. Tester stops to ask whether it may
+      raise a test timeout; you can answer it, or it is answered for you after a
+      few seconds. As each helper finishes, its report travels back to the lead
+      and its pane folds into a small stopped chip. With all three reported, the
+      lead merges the fix.
     plugins: >-
       A task board plugin opens as a page in the sidebar. The session lists the
       open tasks through the plugin's tools, takes HB-14, Retry uploads on a 503,

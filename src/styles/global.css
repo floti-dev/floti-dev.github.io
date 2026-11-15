@@ -501,7 +501,6 @@ html:not(.js) .copy {
 .st-hero { --w: 1040; --h: 600; }
 .st-compose { --w: 960; --h: 470; }
 .st-fleet { --w: 1100; --h: 640; }
-.st-machines { --w: 700; --h: 560; }
 .st-plugins { --w: 700; --h: 560; }
 .st-browser { --w: 1040; --h: 560; }
 .st-persist { --w: 1040; --h: 560; }
@@ -572,7 +571,7 @@ html:not(.js) .demo-ctl {
   margin-inline: min(0px, (100% - var(--wide)) / 2);
 }
 
-/* the fleet's band: the deeper ground, edge to edge, one chapter */
+/* the fleet's band: the deeper ground, edge to edge, the page's showpiece */
 .band {
   position: relative;
   z-index: 1;
@@ -584,9 +583,6 @@ html:not(.js) .demo-ctl {
 }
 .band > .feature:first-child {
   padding-top: 0;
-}
-.band > .feature + .feature {
-  padding-top: clamp(96px, 10vw, 150px);
 }
 
 /* center: the showpiece, its text centred over the demo */

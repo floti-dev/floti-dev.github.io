@@ -1,13 +1,18 @@
 ---
-/* Agents that run agents, inside the Floti window. One lead session starts
- * three helpers from its terminal; each opens as a pane grown out of the lead
- * and tied to it by a tether in the highlight colour. Tester starts a helper
- * of its own, so the family is two deep. Tester stops to ask a question the
- * visitor can answer. Reports travel back along the tethers, finished panes
- * fold into stopped chips, and the lead merges the fix.
+/* Agents that run agents, on every machine, inside one Floti window. The
+ * sidebar lists three machines (this PC, build-box and the laptop), each with
+ * its round-trip time. One lead session on this PC starts three helpers from
+ * its terminal: scout here, tester on build-box and docs on the laptop. Each
+ * opens as a pane grown out of the lead, tied to it by a tether in the
+ * highlight colour, its header naming its machine, and its row appears under
+ * that machine in the sidebar. Tester starts a helper of its own on build-box,
+ * so the family is two deep. Tester stops to ask a question the visitor can
+ * answer. Reports travel back along the tethers, finished panes fold into
+ * stopped chips, and the lead merges the fix.
  *
  * At rest (the final frame): the lead's terminal with all three reports, the
- * helpers folded into chips under faded tethers, the family in the sidebar.
+ * helpers folded into chips under faded tethers, each helper in the sidebar
+ * under its machine.
  */
 import Demo from '../Demo.astro';
 import FlotiWindow from '../FlotiWindow.astro';
@@ -30,7 +35,8 @@ type Line = { k?: string; html: string };
 interface Helper {
   key: string;
   name: string;
-  host?: string;
+  /** The machine it runs on, and the round trip to it, when not this PC. */
+  host?: { name: string; ms: string };
   depth: 1 | 2;
   end: 'done' | 'turn_ended';
   timer: string;
@@ -56,7 +62,7 @@ const helpers: Helper[] = [
   {
     key: 'tester',
     name: 'tester',
-    host: 'build-box',
+    host: { name: 'build-box', ms: '24 ms' },
     depth: 1,
     end: 'done',
     timer: '3:05',
@@ -75,7 +81,7 @@ const helpers: Helper[] = [
   {
     key: 'fixture',
     name: 'fixture-gen',
-    host: 'build-box',
+    host: { name: 'build-box', ms: '24 ms' },
     depth: 2,
     end: 'done',
     timer: '0:48',
@@ -88,6 +94,7 @@ const helpers: Helper[] = [
   {
     key: 'docs',
     name: 'docs',
+    host: { name: 'laptop', ms: '41 ms' },
     depth: 1,
     end: 'turn_ended',
     timer: '1:40',
@@ -100,12 +107,56 @@ const helpers: Helper[] = [
   },
 ];
 
+const byKey = Object.fromEntries(helpers.map((h) => [h.key, h]));
+
+/* The sidebar: each machine with its round trip, its projects and sessions.
+ * A helper's row (kind 'helper') grows in when the helper starts; tester's
+ * row becomes a parent when fixture-gen starts under it. */
+type Row =
+  | { kind: 'repo'; name: string; branch: string }
+  | { kind: 'session'; name: string; word: string; idle?: boolean; cls?: string }
+  | { kind: 'helper'; key: string; cls: string };
+const machines: Array<{ name: string; ms: string; remote: boolean; rows: Row[] }> = [
+  {
+    name: 'This PC',
+    ms: '1 ms',
+    remote: false,
+    rows: [
+      { kind: 'repo', name: 'harbor-api', branch: 'main' },
+      { kind: 'session', name: 'fix upload retry', word: '8m', cls: 'sel parent' },
+      { kind: 'helper', key: 'scout', cls: 'child last' },
+      { kind: 'repo', name: 'tidewater-web', branch: 'feature/checkout' },
+      { kind: 'session', name: 'checkout form', word: 'idle', idle: true },
+    ],
+  },
+  {
+    name: 'build-box',
+    ms: '24 ms',
+    remote: true,
+    rows: [
+      { kind: 'repo', name: 'harbor-api', branch: 'main' },
+      { kind: 'helper', key: 'tester', cls: 'parent' },
+      { kind: 'helper', key: 'fixture', cls: 'child last' },
+      { kind: 'session', name: 'nightly build', word: 'idle', idle: true },
+    ],
+  },
+  {
+    name: 'laptop',
+    ms: '41 ms',
+    remote: true,
+    rows: [
+      { kind: 'repo', name: 'harbor-api', branch: 'main' },
+      { kind: 'helper', key: 'docs', cls: '' },
+    ],
+  },
+];
+
 const lead: Line[] = [
   { k: 'lead-prompt', html: '<span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.' },
   { k: 'lead-think', html: '  The client gives up after the first 503.' },
   { k: 'lead-start-scout', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">scout</span>' },
   { k: 'lead-start-tester', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">tester</span> --host build-box' },
-  { k: 'lead-start-docs', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">docs</span>' },
+  { k: 'lead-start-docs', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">docs</span> --host laptop' },
   { k: 'lead-work', html: '  Adding backoff: src/upload/retry.ts <span class="t-ok">+18</span> <span class="t-r">−4</span>' },
   { k: 'lead-rep-scout', html: '<span class="t-ok">←</span> scout · done · 4 callers, one ignores the result' },
   { k: 'lead-rep-docs', html: '<span class="t-ok">←</span> docs · turn ended · NOTES.md updated' },
@@ -124,29 +175,43 @@ const lead: Line[] = [
       </div>
       <div class="fw-filter">Filter projects and sessions</div>
       <div class="fw-tree">
-        <div class="fw-label"><Icon name="caret" class="caret" />Work <span class="n">3</span></div>
-        <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">harbor-api</span><span class="branch">main</span></div>
-        <div class="fw-row session sel parent"><span class="dot"></span><span class="name">fix upload retry</span><span class="word acc">8m</span></div>
         {
-          helpers.map((h, i) => (
-            <div
-              class:list={[
-                'fw-row session grow',
-                h.depth === 2 ? 'grand through' : 'child',
-                { last: i === helpers.length - 1 },
-              ]}
-              data-k={`row-${h.key}`}
-            >
-              <span class="dot idle" data-k={`rowdot-${h.key}`} />
-              <span class="name">{h.name}</span>
-              <span class="word" data-k={`word-${h.key}`}>{text[h.end]}</span>
-            </div>
+          machines.map((m, i) => (
+            <Fragment>
+              {i > 0 && <div class="fw-rule" />}
+              <div class="hrow">
+                <span class="dot ring" />
+                <span class:list={['hn', { mono: m.remote }]}>{m.name}</span>
+                <span class="lat mono">{m.ms}</span>
+              </div>
+              {m.rows.map((r) =>
+                r.kind === 'repo' ? (
+                  <div class="fw-row">
+                    <Icon name="repo" class="ico" />
+                    <span class="name">{r.name}</span>
+                    <span class="branch">{r.branch}</span>
+                  </div>
+                ) : r.kind === 'session' ? (
+                  <div class:list={['fw-row session', r.cls]}>
+                    <span class:list={['dot', { idle: r.idle }]} />
+                    <span class="name">{r.name}</span>
+                    <span class:list={['word', { acc: !r.idle }]}>{r.word}</span>
+                  </div>
+                ) : (
+                  <div class:list={['fw-row session grow', r.cls]} data-k={`row-${r.key}`}>
+                    <span class="dot idle" data-k={`rowdot-${r.key}`} />
+                    <span class="name">{byKey[r.key].name}</span>
+                    <span class="word" data-k={`word-${r.key}`}>
+                      {text[byKey[r.key].end]}
+                    </span>
+                  </div>
+                ),
+              )}
+            </Fragment>
           ))
         }
-        <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">tidewater-web</span><span class="branch">feature/checkout</span></div>
-        <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">lantern-docs</span><span class="branch">main</span></div>
       </div>
-      <div class="fw-side-foot"><span class="dot"></span>5 sessions in this family</div>
+      <div class="fw-side-foot"><span class="dot"></span>5 sessions in this family · 3 machines</div>
     </Fragment>
 
     <div class="fam" data-k="fam">
@@ -175,7 +240,12 @@ const lead: Line[] = [
                   <Logo kind="mark" />
                 </span>
                 <span class="hp-name">{h.name}</span>
-                {h.host && <span class="hp-host">{h.host}</span>}
+                {h.host && (
+                  <span class="hp-host">
+                    {h.host.name}
+                    <span class="hp-ms"> · {h.host.ms}</span>
+                  </span>
+                )}
                 <span class:list={['chip', h.end === 'done' ? 'end' : 'end']} data-k={`chip-${h.key}`}>
                   {text.stopped} · {text[h.end]}
                 </span>
@@ -210,8 +280,9 @@ const lead: Line[] = [
       <span class="bar"></span>
       <span class="grp"><span class="dot"></span><span data-k="st-work">1 working</span></span>
       <span class="grp need st-need" data-k="st-need"><span class="dot need"></span>{words.needs_you_count}</span>
-      <span class="bar wide"></span>
-      <span class="wide">This PC · build-box</span>
+      <span class="bar"></span>
+      <span class="grp"><span class="mono">build-box</span> 24 ms</span>
+      <span class="grp"><span class="mono">laptop</span> 41 ms</span>
     </Fragment>
   </FlotiWindow>
 
@@ -219,6 +290,28 @@ const lead: Line[] = [
 </Demo>
 
 <style>
+  /* a machine in the sidebar: its name and the time a keystroke takes to
+   * come back */
+  .hrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 26px;
+    padding: 0 12px;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .hn.mono {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .lat {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--fl-fg-subtle);
+  }
+
   /* the family: the lead, the helpers' column, and the tethers between */
   .fam {
     position: relative;
@@ -231,7 +324,7 @@ const lead: Line[] = [
   }
   .lead {
     flex: none;
-    width: 400px;
+    width: 364px;
     z-index: 1;
   }
   .col {
@@ -332,6 +425,10 @@ const lead: Line[] = [
   .hp-host {
     font: 400 11px/1 var(--mono);
     color: var(--fl-fg-subtle);
+  }
+  /* folded, a chip names its machine but not the round trip */
+  .hp.folded .hp-ms {
+    display: none;
   }
   .chip {
     font-size: 11px;

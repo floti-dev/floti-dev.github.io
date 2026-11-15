@@ -154,7 +154,7 @@ const atRest = sessions.map((s) => ({
         </div>
         <Fragment slot="status">
           <span data-k="version">Floti 3.1.0</span>
-          <span class="chip gone" data-k="updated">{words.updated}</span>
+          <span class="chip gone upd" data-k="updated">{words.updated}</span>
           <span class="bar"></span>
           <span class="grp"><span class="dot"></span>4 working</span>
           <span class="bar wide"></span>
@@ -209,6 +209,10 @@ const atRest = sessions.map((s) => ({
 </Demo>
 
 <style>
+  /* the status bar's "updated" chip takes no room until an update shows it */
+  .upd {
+    display: none;
+  }
   .persist {
     position: relative;
     width: 100%;

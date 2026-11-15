@@ -1,5 +1,7 @@
-/* Agents that run agents: the lead starts helpers, tester starts one of its
- * own, the visitor answers tester, reports come home along the tethers. */
+/* Agents that run agents, on every machine: the lead starts helpers here, on
+ * build-box and on the laptop, each appearing under its machine in the
+ * sidebar; tester starts one of its own, the visitor answers tester, reports
+ * come home along the tethers. */
 import { gsap } from 'gsap';
 import { flip, k, ks, stageOf, textOf, type Builder, type Timeline } from './kit';
 
@@ -281,8 +283,9 @@ export const fleet: Builder = (root, ctx) => {
   stream(tl, ks(root, 'ln-docs'), 6.5, 0.95);
   stream(tl, [k(root, 'lead-work')], 8.6);
 
-  // tester starts a helper of its own: the family is two deep
+  // tester starts a helper of its own on build-box: the family is two deep
   at = type(tl, k(root, 'tester-start'), 7.3) + 0.1;
+  flip(tl, by.tester.row, 'fw-row session grow', at, 'fw-row session grow parent');
   spawn(by.fixture, at);
   run(by.fixture, at, 9.9);
   stream(tl, ks(root, 'ln-fixture'), at + 0.4, 0.6);

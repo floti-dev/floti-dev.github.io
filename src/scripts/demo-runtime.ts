@@ -15,12 +15,11 @@ import type { Builder, DemoContext, Timeline } from './demos/kit';
 import { hero } from './demos/hero';
 import { compose } from './demos/compose';
 import { fleet } from './demos/fleet';
-import { machines } from './demos/machines';
 import { plugins } from './demos/plugins';
 import { browser } from './demos/browser';
 import { persist } from './demos/persist';
 
-const BUILDERS: Record<string, Builder> = { hero, compose, fleet, machines, plugins, browser, persist };
+const BUILDERS: Record<string, Builder> = { hero, compose, fleet, plugins, browser, persist };
 
 type Mode = 'play' | 'pause' | 'replay';
 

@@ -259,7 +259,7 @@ export const persist: Builder = (root, ctx) => {
       await close(text.updating);
       say.textContent = text.updated;
       versionEl.textContent = `Floti ${version}`;
-      gsap.set(updated, { autoAlpha: 1 });
+      gsap.set(updated, { display: 'inline-block', autoAlpha: 1 });
       await open();
       return;
     }
@@ -278,8 +278,8 @@ export const persist: Builder = (root, ctx) => {
     say.textContent = text.updated;
     await gsap.delayedCall(0.7, () => {}).then();
     await open();
-    gsap.fromTo(updated, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
-    gsap.to(updated, { autoAlpha: 0, duration: 0.4, delay: 4 });
+    gsap.fromTo(updated, { display: 'inline-block', autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
+    gsap.to(updated, { autoAlpha: 0, duration: 0.4, delay: 4, onComplete: () => void gsap.set(updated, { display: 'none' }) });
   };
 
   const act = (name: string) => {
@@ -300,7 +300,7 @@ export const persist: Builder = (root, ctx) => {
     away = 0;
     minor = 1;
     versionEl.textContent = 'Floti 3.1.0';
-    gsap.set(updated, { autoAlpha: 0 });
+    gsap.set(updated, { autoAlpha: 0, display: 'none' });
     gsap.set(update, { autoAlpha: 0 });
     gsap.set(host, { autoAlpha: 0 });
     gsap.set(win, { x: 0, y: 0, scale: 1, autoAlpha: 1 });

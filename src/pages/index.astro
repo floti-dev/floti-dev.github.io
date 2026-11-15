@@ -10,7 +10,6 @@ import Feature from '../components/Feature.astro';
 import HeroDemo from '../components/demos/HeroDemo.astro';
 import ComposeDemo from '../components/demos/ComposeDemo.astro';
 import FleetDemo from '../components/demos/FleetDemo.astro';
-import MachinesDemo from '../components/demos/MachinesDemo.astro';
 import PluginsDemo from '../components/demos/PluginsDemo.astro';
 import BrowserDemo from '../components/demos/BrowserDemo.astro';
 import PersistDemo from '../components/demos/PersistDemo.astro';
@@ -58,10 +57,9 @@ const { nav, hero, sections, footer } = copy;
 
     <Feature id="composition" text={sections.composition} lead><ComposeDemo /></Feature>
 
-    <!-- the fleet: one band in the deeper ground, the showpiece then a split -->
+    <!-- the fleet: the showpiece, in a band of the deeper ground -->
     <div class="band">
       <Feature id="fleet" text={sections.fleet} lead layout="center"><FleetDemo /></Feature>
-      <Feature id="machines" text={sections.machines} lead layout="split" demo="left"><MachinesDemo /></Feature>
     </div>
 
     <Feature id="plugins" text={sections.plugins} layout="split" demo="right"><PluginsDemo /></Feature>

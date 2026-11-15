@@ -26,7 +26,6 @@ const SHAPE = {
   sections: {
     composition: { label: TEXT, headline: TEXT, lede: TEXT },
     fleet: { label: TEXT, headline: TEXT, lede: TEXT },
-    machines: { label: TEXT, headline: TEXT, lede: TEXT },
     plugins: { label: TEXT, headline: TEXT, lede: TEXT },
     browser: { label: TEXT, headline: TEXT, lede: TEXT },
     persistence: { label: TEXT, headline: TEXT, lede: TEXT },
@@ -55,7 +54,6 @@ const SHAPE = {
       hero: TEXT,
       composition: TEXT,
       fleet: TEXT,
-      machines: TEXT,
       plugins: TEXT,
       browser: TEXT,
       persistence: TEXT,
