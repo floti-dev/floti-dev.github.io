@@ -1,70 +1,211 @@
 ---
-/* Sessions outlive the window. The window closes; the fleet below keeps
- * sailing, held by the host on this PC, its sessions still counting turns.
- * The window opens again on the same tabs, with what happened meanwhile.
- * At rest: the window open again, the counters at their later values. */
+/* Sessions outlive the window, as something to do rather than watch. Four
+ * sessions work in a Floti window; buttons under it close Floti, crash it or
+ * update it. Each time the window goes, the host on this PC keeps the
+ * sessions going: a strip of ships, still counting turns, with a clock for the
+ * time passing. Floti opens again on the same tabs, each terminal marking what
+ * happened while you were away.
+ *
+ * At rest (the final frame): the window open again after a close, each
+ * terminal with its "while you were away" marker. The sessions' lines are
+ * inner content and live here; their script streams them in turn. */
 import Demo from '../Demo.astro';
-import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
 import Logo from '../Logo.astro';
+import { copy } from '../../copy';
 
-const ships = [
-  { name: 'fix upload retry', from: 14, to: 19, lead: true },
-  { name: 'scout', from: 6, to: 9, lead: false },
-  { name: 'nightly build', from: 31, to: 38, lead: false },
-  { name: 'meal planner', from: 3, to: 5, lead: false },
+const words = copy.demos.persistence;
+const text = {
+  host: words.host,
+  closed: words.closed,
+  crashed: words.crashed,
+  updating: words.updating,
+  updated: words.updated,
+  away: words.away,
+};
+
+type Line = [cls: string, text: string];
+interface Session {
+  key: string;
+  name: string;
+  project: string;
+  turn: number;
+  pool: Line[];
+}
+
+/** Lines a session streams, in order, round and round. */
+const sessions: Session[] = [
+  {
+    key: 'fix',
+    name: 'fix upload retry',
+    project: 'harbor-api',
+    turn: 14,
+    pool: [
+      ['', '› Uploads fail on a 503. Fix it.'],
+      ['dim', '  Reading src/upload/retry.ts'],
+      ['ok', '  Edit src/upload/retry.ts  +18 −4'],
+      ['', '  Retrying with backoff and jitter.'],
+      ['dim', '  npm test -- upload'],
+      ['ok', '  ✓ 12 passed'],
+      ['', '  Checking the callers of upload().'],
+      ['ok', '  Edit src/sync/push.ts  +6 −1'],
+    ],
+  },
+  {
+    key: 'nightly',
+    name: 'nightly build',
+    project: 'harbor-api',
+    turn: 31,
+    pool: [
+      ['dim', '  build 1/4  compile'],
+      ['ok', '  ✓ compiled in 41 s'],
+      ['dim', '  build 2/4  unit tests'],
+      ['ok', '  ✓ 1,204 passed'],
+      ['dim', '  build 3/4  integration'],
+      ['ok', '  ✓ 88 passed'],
+      ['dim', '  build 4/4  package'],
+      ['ok', '  ✓ harbor-api-2.4.1.tgz'],
+    ],
+  },
+  {
+    key: 'checkout',
+    name: 'checkout form',
+    project: 'tidewater-web',
+    turn: 8,
+    pool: [
+      ['', '› Make the card field required.'],
+      ['dim', '  Reading src/checkout/Form.tsx'],
+      ['ok', '  Edit src/checkout/Form.tsx  +9 −3'],
+      ['', '  The error now shows under the field.'],
+      ['dim', '  npm run test:e2e -- checkout'],
+      ['ok', '  ✓ 7 passed'],
+      ['', '  Updating the story for Form.'],
+      ['ok', '  Edit Form.stories.tsx  +12'],
+    ],
+  },
+  {
+    key: 'meal',
+    name: 'meal planner',
+    project: 'recipes',
+    turn: 3,
+    pool: [
+      ['', '› Plan next week from the pantry.'],
+      ['dim', '  Reading pantry.yaml'],
+      ['', '  12 items, 3 near their date.'],
+      ['ok', '  Wrote plans/week-47.md'],
+      ['', '  Shopping list: 9 items.'],
+      ['ok', '  Wrote lists/week-47.md'],
+      ['dim', '  Reading recipes/'],
+      ['', '  Swapped Thursday for the lentil soup.'],
+    ],
+  },
 ];
+
+// The final frame: the first four lines, then what came in while away.
+const SHOWN = 4;
+const AWAY = 2;
+const atRest = sessions.map((s) => ({
+  ...s,
+  before: s.pool.slice(0, SHOWN),
+  after: s.pool.slice(SHOWN, SHOWN + AWAY),
+  turnAtRest: s.turn + 9,
+}));
 ---
 
-<Demo name="persist" caption={copy.demos.descriptions.persistence}>
-  <div class="persist">
+<Demo name="persist" interactive caption={copy.demos.descriptions.persistence} text={text}>
+  <div class="persist" data-k="persist" data-sessions={JSON.stringify(sessions)}>
     <div class="win" data-k="win">
       <FlotiWindow side={false}>
-        <div class="fw-island fw-pane">
-          <div class="fw-strip">
-            <span class="fw-tab on"><span class="dot"></span><span class="label">fix upload retry</span></span>
-            <span class="fw-tab"><span class="dot"></span><span class="label">nightly build</span></span>
-            <span class="fw-tab"><span class="dot"></span><span class="label">meal planner</span></span>
-            <span class="fw-strip-plus"><Icon name="plus" /></span>
-          </div>
-          <div class="fw-crumb">harbor-api <span class="mono">main</span></div>
-          <div class="fw-body">
-            <div class="fw-term"><span class="ln"><span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.</span><span class="ln">  <span class="t-ok">Edit</span> src/upload/retry.ts  <span class="t-ok">+18</span> <span class="t-r">−4</span></span><span class="ln t-dim">  Waiting on scout.</span><span class="ln" data-k="away">  scout reported: 4 callers, one ignores the result.</span><span class="ln" data-k="away">  <span class="t-ok">Edit</span> src/sync/push.ts  <span class="t-ok">+6</span> <span class="t-r">−1</span></span><span class="ln" data-k="away">  npm test -- upload   <span class="t-ok">✓ 12 passed</span></span></div>
-          </div>
+        <div class="grid">
+          {
+            atRest.map((s) => (
+              <div class="fw-island fw-pane sess" data-k={`sess-${s.key}`}>
+                <div class="fw-strip">
+                  <span class="fw-tab on">
+                    <span class="dot" />
+                    <span class="label">{s.name}</span>
+                  </span>
+                  <span class="turn" data-k={`turn-${s.key}`}>
+                    turn {s.turnAtRest}
+                  </span>
+                </div>
+                <div class="fw-body">
+                  <div class="fw-term stream" data-k={`term-${s.key}`}>
+                    {s.before.map(([cls, line]) => (
+                      <span class:list={['ln', cls && `t-${cls}`]}>{line}</span>
+                    ))}
+                    <span class="ln away">
+                      <span>{words.away}</span>
+                      <span class="when">+2h 14m</span>
+                    </span>
+                    {s.after.map(([cls, line]) => (
+                      <span class:list={['ln fresh', cls && `t-${cls}`]}>{line}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+        <div class="update gone" data-k="update">
+          <span data-k="update-text">{words.updating} 3.2.0</span>
+          <span class="bar-track"><span class="bar-fill" data-k="update-bar"></span></span>
         </div>
         <Fragment slot="status">
-          <span>Floti 3.1.0</span>
+          <span data-k="version">Floti 3.1.0</span>
+          <span class="chip gone" data-k="updated">{words.updated}</span>
           <span class="bar"></span>
           <span class="grp"><span class="dot"></span>4 working</span>
-          <span class="bar"></span>
-          <span>This PC · quit keeps sessions</span>
+          <span class="bar wide"></span>
+          <span class="wide">This PC · quit keeps sessions</span>
         </Fragment>
       </FlotiWindow>
     </div>
-    <div class="closed gone" data-k="closed">
-      <span class="dot ring"></span>
-      <span>Floti is closed. The host on this PC keeps 4 sessions running.</span>
-    </div>
 
-    <div class="sea">
-      <svg class="waves" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
-        <path data-k="wave" d="M0 20 Q 37.5 8 75 20 T 150 20 T 225 20 T 300 20 T 375 20 T 450 20 T 525 20 T 600 20 T 675 20 T 750 20 T 825 20 T 900 20 T 975 20 T 1050 20 T 1125 20 T 1200 20" />
-      </svg>
-      <div class="host"><span class="dot ring"></span><span class="mono">floti host</span><span class="sub">this PC</span></div>
+    <div class="host gone" data-k="host">
+      <div class="host-head">
+        <span class="dot ring"></span>
+        <span class="host-name">{words.host}</span>
+        <span class="host-say" data-k="host-say">{words.closed}</span>
+        <span class="clock" data-k="clock">+2h 14m</span>
+      </div>
       {
-        ships.map((s) => (
-          <div class:list={['boat', { lead: s.lead }]} data-k="boat">
-            <div class="hull" data-k="hull"><Logo kind="mark" /></div>
-            <div class="bn">{s.name}</div>
-            <div class="turn mono">
-              turn <span data-k="turn" data-from={s.from} data-to={s.to}>{s.to}</span>
+        atRest.map((s) => (
+          <div class="lane">
+            <div class="lane-info">
+              <span class="lane-name">{s.name}</span>
+              <span class="lane-turn" data-k={`hturn-${s.key}`}>
+                turn {s.turnAtRest}
+              </span>
+            </div>
+            <div class="track">
+              <span class="ship" data-k={`ship-${s.key}`}>
+                <Logo kind="mark" />
+              </span>
+            </div>
+            <div class="lane-line" data-k={`hline-${s.key}`}>
+              {s.after[AWAY - 1][1].trim()}
             </div>
           </div>
         ))
       }
     </div>
+
+    <div class="dock">
+      <span class="app" data-k="app">
+        <Logo kind="mark" />
+      </span>
+      <span class="app-name">Floti<span class="run" data-k="run"></span></span>
+    </div>
   </div>
+
+  <Fragment slot="controls">
+    <button type="button" class="act when-open" data-act="close"><Icon name="close" />{words.buttons.close}</button>
+    <button type="button" class="act when-open" data-act="crash">{words.buttons.crash}</button>
+    <button type="button" class="act when-open" data-act="update"><Icon name="refresh" />{words.buttons.update}</button>
+    <button type="button" class="act when-closed" data-act="open"><Icon name="arrowright" />{words.buttons.open}</button>
+  </Fragment>
 </Demo>
 
 <style>
@@ -72,110 +213,280 @@ const ships = [
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
     font: 400 13px/1.5 var(--body);
     color: var(--fl-fg);
   }
-  .win {
-    position: absolute;
-    left: 120px;
-    right: 120px;
-    top: 0;
-    height: 300px;
-    transform-origin: 50% 60%;
-  }
-  .closed {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 130px;
-    width: max-content;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    white-space: nowrap;
-    font-size: 14px;
-    color: var(--fl-fg-muted);
-    border: 1px dashed var(--fl-border-strong);
-    border-radius: 999px;
-  }
-  .sea {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 150px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 44px;
-    padding-bottom: 6px;
-  }
-  .waves {
-    position: absolute;
-    left: -120px;
-    right: -120px;
-    bottom: 58px;
-    width: calc(100% + 240px);
-    height: 22px;
-  }
-  .waves path {
-    fill: none;
-    stroke: var(--fl-border-strong);
-    stroke-width: 1.5;
-  }
+  .win,
   .host {
     position: absolute;
-    left: 8px;
-    top: 4px;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 440px;
+  }
+  .win {
+    transform-origin: 50% 50%;
+  }
+
+  /* four sessions, two by two */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    min-height: 0;
+  }
+  .turn {
+    margin-left: auto;
+    align-self: center;
+    padding-right: 10px;
+    font: 400 10.5px/1 var(--mono);
+    color: var(--fl-fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .stream {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    font-size: 11px;
+  }
+  .stream :global(.ln) {
+    flex: none;
+  }
+  .stream :global(.ln.away) {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
+    margin: 3px 0;
+    font-family: var(--body);
+    font-size: 10.5px;
+    color: var(--fl-accent-text);
+  }
+  .stream :global(.ln.away::after) {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--fl-accent), transparent);
+  }
+  .stream :global(.ln.away .when) {
+    font-family: var(--mono);
+    color: var(--term-dim);
+  }
+  .stream :global(.ln.fresh) {
+    background: var(--fl-accent-soft);
+    animation: fresh 3.2s ease-out 0.4s forwards;
+  }
+  @keyframes fresh {
+    to {
+      background: transparent;
+    }
+  }
+
+  /* updating */
+  .update {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    display: grid;
+    gap: 10px;
+    width: 300px;
+    padding: 16px 18px;
+    background: var(--fl-surface-raised);
+    border: 1px solid var(--fl-border-strong);
+    border-radius: 9px;
+    box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.6);
+    font-size: 13px;
+  }
+  .bar-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--fl-surface-sunken);
+    overflow: hidden;
+  }
+  .bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--fl-accent);
+    transform-origin: 0 50%;
+  }
+  .chip {
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    color: var(--fl-accent-text);
+    background: var(--fl-accent-soft);
+  }
+
+  /* the host, while the window is gone */
+  .host {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+    background: var(--fl-bg);
+    border: 1px dashed var(--fl-border-strong);
+    border-radius: 8px;
+  }
+  .host-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .host-name {
+    font-weight: 500;
+  }
+  .host-say {
     color: var(--fl-fg-muted);
   }
-  .host .mono {
-    font-family: var(--mono);
-    color: var(--fl-fg);
+  .clock {
+    margin-left: auto;
+    font: 400 15px/1 var(--mono);
+    color: var(--hi);
+    font-variant-numeric: tabular-nums;
   }
-  .host .sub {
-    color: var(--fl-fg-subtle);
-  }
-  .boat {
-    position: relative;
+  .lane {
+    flex: 1;
     display: grid;
-    justify-items: center;
-    gap: 2px;
-    width: 150px;
+    grid-template-columns: 170px 1fr 300px;
+    align-items: center;
+    gap: 18px;
+    border-top: 1px solid var(--fl-border);
   }
-  .hull {
-    height: 74px;
-    margin-bottom: 6px;
-    transform-origin: 50% 90%;
+  .lane-info {
+    display: grid;
+    gap: 1px;
   }
-  .hull :global(svg) {
-    height: 74px;
-  }
-  .boat:not(.lead) .hull :global(.ship) {
-    fill: var(--light);
-  }
-  .boat:not(.lead) .hull :global(.hi) {
-    fill: var(--deep);
-  }
-  .boat.lead .hull :global(.ship) {
-    fill: var(--light);
-  }
-  .bn {
-    font-size: 12.5px;
+  .lane-name {
     font-weight: 500;
-    white-space: nowrap;
   }
-  .turn {
-    font-family: var(--mono);
-    font-size: 11px;
+  .lane-turn {
+    font: 400 11px/1.3 var(--mono);
     color: var(--fl-fg-subtle);
     font-variant-numeric: tabular-nums;
+  }
+  .track {
+    position: relative;
+    height: 46px;
+  }
+  .track::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6px;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--fl-border-strong) 0 8px, transparent 8px 14px);
+  }
+  .ship {
+    position: absolute;
+    left: 0;
+    bottom: 4px;
+    width: 32px;
+    height: 40px;
+    z-index: 1;
+  }
+  .ship :global(svg) {
+    height: 40px;
+  }
+  .ship :global(.ship) {
+    fill: var(--light);
+  }
+  .ship :global(.hi) {
+    fill: var(--fl-bg);
+  }
+  .lane-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 400 11px/1.4 var(--mono);
+    color: var(--fl-fg-muted);
+  }
+
+  /* the app icon the window shrinks into */
+  .dock {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+  }
+  .app {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: end start;
+    overflow: hidden;
+    padding: 7px 10px 0 0;
+    border-radius: 13px;
+    background: var(--word);
+  }
+  .app :global(svg) {
+    height: 46px;
+  }
+  .app :global(.ship) {
+    fill: var(--ship);
+  }
+  .app-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--fl-fg-muted);
+  }
+  .run {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--fl-fg-muted);
+  }
+  .persist[data-mode='closed'] .run {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--fl-fg-subtle);
+  }
+
+  /* the buttons under the demo */
+  .act {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 500 13px/1 var(--body);
+    color: var(--text);
+    background: var(--raised);
+    border: 1px solid var(--edge-strong);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 34px;
+    cursor: pointer;
+  }
+  .act:hover {
+    border-color: var(--lead);
+  }
+  .act:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .act :global(svg) {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+  }
+  .when-closed,
+  :global([data-state='closed']) .when-open {
+    display: none;
+  }
+  :global([data-state='closed']) .when-closed {
+    display: inline-flex;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stream :global(.ln.fresh) {
+      animation: none;
+    }
   }
 </style>

@@ -1,55 +1,334 @@
-/* Sessions outlive the window: it closes, the fleet sails on, it reopens. */
+/* Sessions outlive the window: a live Floti window the visitor can close,
+ * crash or update while the host keeps every session working.
+ *
+ * The window's sessions stream lines on a heartbeat that lives on the
+ * demo's timeline, so the runtime pauses them off screen. On first view the
+ * timeline closes Floti and opens it again by itself; once the visitor
+ * presses a button, the buttons drive it. Under reduced motion the timeline
+ * never runs and each button lands on its result at once. */
 import { gsap } from 'gsap';
-import { k, ks, lines, type Builder } from './kit';
+import { centre, k, stageOf, textOf, type Builder } from './kit';
 
-export const persist: Builder = (root) => {
-  const tl = gsap.timeline({ paused: true });
+type Line = [cls: string, text: string];
+interface SessionData {
+  key: string;
+  name: string;
+  turn: number;
+  pool: Line[];
+}
+interface Session extends SessionData {
+  next: number;
+  lines: number;
+  count: number;
+  wait: number;
+  every: number;
+  x: number;
+  term: HTMLElement;
+  turnEl: HTMLElement;
+  hostTurn: HTMLElement;
+  hostLine: HTMLElement;
+  ship: HTMLElement;
+}
+
+const TICK = 0.25; // seconds between heartbeats
+const MINUTES_PER_SECOND = 28; // how fast time passes while Floti is closed
+const SHOWN = 4; // lines each terminal starts with
+const KEEP = 16; // lines a terminal keeps
+const AWAY_INSTANT = 134; // minutes that pass at once under reduced motion
+
+function since(minutes: number): string {
+  const m = Math.round(minutes);
+  return `+${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`;
+}
+
+export const persist: Builder = (root, ctx) => {
+  const text = textOf(root);
+  const stage = stageOf(root);
+  const box = k(root, 'persist');
   const win = k(root, 'win');
-  const closed = k(root, 'closed');
-  const hulls = ks(root, 'hull');
-  const turns = ks(root, 'turn');
-  const total = 9.5;
+  const host = k(root, 'host');
+  const say = k(root, 'host-say');
+  const clock = k(root, 'clock');
+  const update = k(root, 'update');
+  const updateText = k(root, 'update-text');
+  const updateBar = k(root, 'update-bar');
+  const versionEl = k(root, 'version');
+  const updated = k(root, 'updated');
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-act]'));
+  const instant = ctx.reduced;
 
-  // the fleet rides the swell for the whole demo
-  tl.fromTo(k(root, 'wave'), { x: 0 }, { x: -150, duration: total, ease: 'none' }, 0);
-  hulls.forEach((hull, i) => {
-    const swing = 0.7 + i * 0.09;
-    // an odd number of repeats brings each hull back to level at the end
-    const repeat = Math.floor(total / swing) | 1;
-    tl.fromTo(hull, { y: 0, rotation: 0 }, { y: -4, rotation: 2, duration: swing, ease: 'sine.inOut', yoyo: true, repeat }, i * 0.2);
-  });
+  const data = JSON.parse(box.dataset.sessions ?? '[]') as SessionData[];
+  const sessions: Session[] = data.map((d, i) => ({
+    ...d,
+    next: SHOWN,
+    lines: 0,
+    count: d.turn,
+    wait: 0,
+    every: 1.1 + i * 0.35,
+    x: i * 0.13,
+    term: k(root, `term-${d.key}`),
+    turnEl: k(root, `turn-${d.key}`),
+    hostTurn: k(root, `hturn-${d.key}`),
+    hostLine: k(root, `hline-${d.key}`),
+    ship: k(root, `ship-${d.key}`),
+  }));
 
-  // the window opens on three tabs, then closes
-  tl.to(win, { scale: 0.92, y: 18, autoAlpha: 0, duration: 0.55, ease: 'power2.in' }, 1.2);
-  tl.fromTo(closed, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 1.9);
+  // the window shrinks into the app icon and grows back out of it
+  const winAt = centre(win, stage);
+  const appAt = centre(k(root, 'app'), stage);
+  const shrunk = { x: appAt.x - winAt.x, y: appAt.y - winAt.y, scale: 0.05, autoAlpha: 0 };
 
-  // the host keeps every session working: turns keep counting
-  turns.forEach((el) => {
-    const from = Number(el.dataset.from);
-    const to = Number(el.dataset.to);
-    const count = { n: from };
-    const write = (n: number) => {
-      el.textContent = String(Math.round(n));
-    };
-    // the start frame, now and on every replay
-    write(from);
-    tl.call(write, [from], 0);
-    tl.fromTo(
-      count,
-      { n: from },
-      {
-        n: to,
-        duration: 3.6,
-        ease: `steps(${to - from})`,
-        onUpdate: () => write(count.n),
-      },
-      2.1,
-    );
-  });
+  let mode: 'open' | 'closed' = 'open';
+  let busy = false;
+  let away = 0;
+  let minor = 1;
+  let driven = false;
 
-  // it opens again, on the same tabs, with the work done meanwhile
-  tl.to(closed, { autoAlpha: 0, duration: 0.25 }, 6.0);
-  tl.to(win, { scale: 1, y: 0, autoAlpha: 1, duration: 0.55, ease: 'power3.out' }, 6.3);
-  lines(tl, ks(root, 'away'), 7.0, 0.35);
+  // ---- drawing
+
+  const setMode = (next: 'open' | 'closed') => {
+    mode = next;
+    root.dataset.state = next;
+    box.dataset.mode = next;
+  };
+  const setBusy = (on: boolean) => {
+    busy = on;
+    buttons.forEach((b) => (b.disabled = on));
+  };
+  const lineEl = ([cls, line]: Line) => {
+    const el = document.createElement('span');
+    el.className = cls ? `ln t-${cls}` : 'ln';
+    el.textContent = line;
+    return el;
+  };
+  const setTurn = (s: Session, n: number) => {
+    s.count = n;
+    s.turnEl.textContent = `turn ${n}`;
+    s.hostTurn.textContent = `turn ${n}`;
+  };
+  const placeShip = (s: Session) => {
+    s.ship.style.left = `calc(${(s.x * 100).toFixed(2)}% - ${Math.round(s.x * 32)}px)`;
+  };
+
+  /** A session writes its next line; its turn count rises with its work. */
+  const emit = (s: Session) => {
+    const line = s.pool[s.next % s.pool.length];
+    s.next += 1;
+    s.lines += 1;
+    s.term.append(lineEl(line));
+    while (s.term.childElementCount > KEEP) s.term.firstElementChild?.remove();
+    s.hostLine.textContent = line[1].trim();
+    if (mode === 'closed' || s.lines % 2 === 0) setTurn(s, s.count + 1);
+  };
+
+  const clearMarks = () => {
+    for (const s of sessions) {
+      s.term.querySelectorAll('.away').forEach((el) => el.remove());
+      s.term.querySelectorAll('.fresh').forEach((el) => el.classList.remove('fresh'));
+    }
+  };
+
+  /** Floti goes: each terminal is marked where it left off. */
+  const markAway = () => {
+    clearMarks();
+    for (const s of sessions) {
+      const mark = document.createElement('span');
+      mark.className = 'ln away';
+      const label = document.createElement('span');
+      label.textContent = text.away;
+      const when = document.createElement('span');
+      when.className = 'when';
+      mark.append(label, when);
+      s.term.append(mark);
+    }
+  };
+
+  /** Floti is back: what came in meanwhile is lit for a moment. */
+  const showAway = () => {
+    for (const s of sessions) {
+      const mark = s.term.querySelector('.away');
+      if (!mark) continue;
+      mark.querySelector('.when')!.textContent = since(away);
+      let el = mark.nextElementSibling;
+      while (el) {
+        el.classList.add('fresh');
+        el = el.nextElementSibling;
+      }
+    }
+  };
+
+  const pass = (minutes: number) => {
+    away += minutes;
+    clock.textContent = since(away);
+  };
+
+  /** Time passing at once: each session gets on with a couple of lines. */
+  const passAtOnce = (minutes: number) => {
+    pass(minutes);
+    for (const s of sessions) {
+      for (let i = 0; i < 2; i += 1) emit(s);
+      setTurn(s, s.count + Math.round(minutes / 20));
+    }
+  };
+
+  // ---- the heartbeat
+
+  const tick = () => {
+    for (const s of sessions) {
+      s.wait += TICK;
+      if (s.wait >= s.every) {
+        s.wait = 0;
+        emit(s);
+      }
+      if (mode === 'closed') {
+        s.x = (s.x + 0.012) % 1;
+        placeShip(s);
+      }
+    }
+    if (mode === 'closed') pass(MINUTES_PER_SECOND * TICK);
+  };
+
+  // ---- what the buttons do
+
+  const showHost = (message: string, animate: boolean) => {
+    say.textContent = message;
+    away = 0;
+    clock.textContent = since(0);
+    if (animate) gsap.fromTo(host, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+    else gsap.set(host, { autoAlpha: 1, y: 0 });
+  };
+
+  const close = (message = text.closed): Promise<void> => {
+    setBusy(true);
+    markAway();
+    setMode('closed');
+    return new Promise((done) => {
+      if (instant) {
+        gsap.set(win, shrunk);
+        showHost(message, false);
+        passAtOnce(AWAY_INSTANT);
+        setBusy(false);
+        return done();
+      }
+      gsap.to(win, {
+        ...shrunk,
+        duration: 0.55,
+        ease: 'power3.in',
+        onComplete: () => {
+          showHost(message, true);
+          setBusy(false);
+          done();
+        },
+      });
+    });
+  };
+
+  const crash = () => {
+    // no animation: the window is simply gone
+    markAway();
+    setMode('closed');
+    gsap.set(win, { autoAlpha: 0 });
+    showHost(text.crashed, false);
+    if (instant) passAtOnce(AWAY_INSTANT);
+  };
+
+  const open = (): Promise<void> => {
+    setBusy(true);
+    return new Promise((done) => {
+      const finish = () => {
+        setMode('open');
+        showAway();
+        setBusy(false);
+        done();
+      };
+      if (instant) {
+        gsap.set(host, { autoAlpha: 0 });
+        gsap.set(win, { x: 0, y: 0, scale: 1, autoAlpha: 1 });
+        return finish();
+      }
+      gsap.to(host, { autoAlpha: 0, duration: 0.2 });
+      gsap.fromTo(win, shrunk, { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.55, ease: 'power3.out', delay: 0.15, onComplete: finish });
+    });
+  };
+
+  const upgrade = async () => {
+    minor += 1;
+    const version = `3.${minor}.0`;
+    updateText.textContent = `${text.updating} ${version}`;
+    if (instant) {
+      await close(text.updating);
+      say.textContent = text.updated;
+      versionEl.textContent = `Floti ${version}`;
+      gsap.set(updated, { autoAlpha: 1 });
+      await open();
+      return;
+    }
+    setBusy(true);
+    gsap.set(update, { xPercent: -50, yPercent: -50 });
+    await gsap
+      .timeline()
+      .fromTo(update, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.25 })
+      .fromTo(updateBar, { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: 'power1.inOut' })
+      .to(update, { autoAlpha: 0, duration: 0.2 }, '+=0.15')
+      .then();
+    await close(text.updating);
+    setBusy(true);
+    await gsap.delayedCall(1.4, () => {}).then();
+    versionEl.textContent = `Floti ${version}`;
+    say.textContent = text.updated;
+    await gsap.delayedCall(0.7, () => {}).then();
+    await open();
+    gsap.fromTo(updated, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
+    gsap.to(updated, { autoAlpha: 0, duration: 0.4, delay: 4 });
+  };
+
+  const act = (name: string) => {
+    if (busy) return;
+    driven = true;
+    if (name === 'close' && mode === 'open') void close();
+    else if (name === 'crash' && mode === 'open') crash();
+    else if (name === 'update' && mode === 'open') void upgrade();
+    else if (name === 'open' && mode === 'closed') void open();
+  };
+  buttons.forEach((b) => b.addEventListener('click', () => act(b.dataset.act ?? '')));
+
+  // ---- the start frame and the first sequence
+
+  const reset = () => {
+    gsap.killTweensOf([win, host, update, updateBar, updated]);
+    driven = false;
+    away = 0;
+    minor = 1;
+    versionEl.textContent = 'Floti 3.1.0';
+    gsap.set(updated, { autoAlpha: 0 });
+    gsap.set(update, { autoAlpha: 0 });
+    gsap.set(host, { autoAlpha: 0 });
+    gsap.set(win, { x: 0, y: 0, scale: 1, autoAlpha: 1 });
+    for (const s of sessions) {
+      s.term.replaceChildren(...s.pool.slice(0, SHOWN).map(lineEl));
+      s.next = SHOWN;
+      s.lines = 0;
+      s.wait = 0;
+      setTurn(s, s.turn);
+      placeShip(s);
+    }
+    setMode('open');
+    setBusy(false);
+  };
+
+  const tl = gsap.timeline({ paused: true });
+  const beat = { n: 0 };
+  tl.call(reset, [], 0);
+  tl.to(beat, { n: 1, duration: TICK, repeat: -1, ease: 'none', onRepeat: tick }, 0);
+  tl.call(() => {
+    if (!driven && mode === 'open' && !busy) void close();
+  }, [], 2.6);
+  tl.call(() => {
+    if (!driven && mode === 'closed' && !busy) void open();
+  }, [], 7.6);
+
+  setMode('open');
+  if (!instant) reset();
+  sessions.forEach(placeShip);
   return tl;
 };
