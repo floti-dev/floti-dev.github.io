@@ -1,0 +1,165 @@
+# The wording of the floti.dev home page.
+#
+# Change any text here and rebuild; nothing else needs touching. Every entry
+# is required: the build stops and names the entry if one is missing or empty.
+# Text inside a demo's drawing (terminal lines, file names) lives in the demo.
+
+# The browser tab's title, and the summary search engines and link previews show.
+page:
+  title: Floti
+  description: Floti runs your coding agents on every computer you have, from one window.
+
+# The bar along the top of the page.
+nav:
+  home: Floti, home # read out by screen readers for the logo link
+  install: Install
+  github: GitHub
+  palette: Palette # read out by screen readers for the Gold/Sky switch
+  gold: Gold
+  sky: Sky
+
+# The top of the page, above the looping Floti window.
+hero:
+  headline: Your fleet of coding agents.
+  lede: >-
+    Floti runs your coding agents on every computer you have, from one window.
+    Each project gets the setup it needs, agents start agents, and nothing stops
+    when the window closes.
+
+# The install command box, in the hero and in the install section.
+install_box:
+  system: Your system # read out by screen readers for the two tabs
+  unix: macOS and Linux
+  windows: Windows
+  copy: Copy
+  copied: Copied
+  selected: Selected # shown when the browser will not copy, and selects the command instead
+  copied_status: Install command copied.
+  selected_status: Install command selected. Copy it with your keyboard.
+
+# The sections down the page, in order. Each has a small label above its
+# headline, the headline itself, and the paragraph under it.
+sections:
+  # Composition: projects and profiles composed into one session.
+  composition:
+    label: Composition
+    headline: Every codebase you need, in one session.
+    lede: >-
+      Put the projects you work on into a workspace and Floti composes them into
+      one session: each repository linked in with its own instructions and
+      skills, and your profile's shared instructions, skills and tools on top.
+      One agent works across all of them. Its own settings are never touched.
+
+  # The fleet: sessions that start helpers.
+  fleet:
+    label: The fleet
+    headline: Agents that run agents.
+    lede: >-
+      A session can start helpers, hand them work and hear back when they finish.
+      Every helper runs in a terminal you can watch, and stops when its work is
+      done.
+
+  # The fleet: every machine in one window.
+  machines:
+    label: The fleet
+    headline: One window. Every machine.
+    lede: >-
+      Your desktop, a server and a laptop in one sidebar, over the SSH you already
+      use. There is no account and no service in between.
+
+  # Plugins.
+  plugins:
+    label: Plugins
+    headline: Build your own tools into it.
+    lede: >-
+      A plugin is a folder you write: a page in the sidebar, an item on the status
+      bar, tools your agents can call. Track your work, keep your notes, wire in
+      your own services.
+
+  # Built-in tools: the browser.
+  browser:
+    label: Built-in tools
+    headline: A browser your agents can drive.
+    lede: >-
+      Agents open pages, click, read and take screenshots in a browser pane beside
+      their terminal, in tabs you can watch or share. Floti's own tools come with
+      every launch and go when it ends.
+
+  # Persistence: sessions outlive the window.
+  persistence:
+    label: Persistence
+    headline: Sessions outlive the window.
+    lede: >-
+      A small host on each machine holds every session. Close Floti, let it crash
+      or update it, and your agents keep working. Open it again and they are where
+      you left them.
+
+  # Principles: the quiet row of four promises.
+  principles:
+    label: Principles
+    headline: Yours, on your machines.
+    items:
+      - Floti never reads or stores your agent's credentials.
+      - Your own SSH and your own login. No account, no service in between.
+      - It contacts nothing on its own except its update check.
+      - Your agent runs in its own terminal, untouched.
+
+  # Install: the last section, with the install command again. The only place
+  # the page names an agent.
+  install:
+    label: Install
+    headline: Launch your fleet.
+    lede: >-
+      One command installs Floti and keeps it up to date. Works with Claude Code
+      today, with more agents on the way.
+    guide_link: Install guide
+    github_link: Floti on GitHub
+
+# The demos: the button under each one, and what each drawing shows, read out
+# by screen readers in place of the drawing.
+demos:
+  buttons:
+    replay: Replay
+    pause: Pause
+    play: Play
+  descriptions:
+    hero: >-
+      The Floti window: a project opens from the sidebar, a session starts in it,
+      another tab turns to needs you, the session starts two helpers that appear
+      beside it as a family, and a note opens in Files.
+    composition: >-
+      A workspace takes three projects: harbor-api, tidewater-web and
+      lantern-docs. Each joins the session with its own instructions and skills,
+      and the backend profile adds shared instructions, skills and tools on top.
+      The session opens in a launch folder that links all three repositories, and
+      the agent adds a field to the API and to the checkout form that uses it: one
+      change across two repositories.
+    fleet: >-
+      A lead session called fix upload retry starts three helpers, scout, tester
+      and docs, each in its own terminal. Their reports come back to the lead:
+      scout is done, tester needs you, docs ended its turn.
+    machines: >-
+      Three machines in one sidebar: this PC, a server called build-box and a
+      laptop, each listing its sessions and how long a keystroke takes to come
+      back, 24 and 41 milliseconds for the two remote ones. The tester helper
+      started by a session on this PC is running on build-box and needs you.
+    plugins: >-
+      A task board plugin opens as a page in the sidebar. The session lists the
+      open tasks through the plugin's tools, takes HB-14, Retry uploads on a 503,
+      and the card moves from To do to In progress on its own.
+    browser: >-
+      A session opens its app's checkout page in a browser pane beside its
+      terminal, types a name, an email and a card number, presses Pay, and takes a
+      screenshot. The terminal lists each browser tool call, and the session
+      reports that payment fails because the server rejects a card number with
+      spaces.
+    persistence: >-
+      The Floti window closes while four sessions keep running on the host, each
+      still counting its turns. The window opens again on the same three tabs,
+      with the work done meanwhile in the terminal.
+
+# The line along the bottom of the page.
+footer:
+  line: Floti is Old Norse for a fleet, said FLOH-tee.
+  install: Install
+  github: GitHub

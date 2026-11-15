@@ -482,7 +482,7 @@ html:not(.js) .copy {
 
 /* each demo's drawing size */
 .st-hero { --w: 1040; --h: 600; }
-.st-compose { --w: 960; --h: 440; }
+.st-compose { --w: 960; --h: 470; }
 .st-fleet { --w: 960; --h: 440; }
 .st-machines { --w: 960; --h: 540; }
 .st-plugins { --w: 960; --h: 540; }

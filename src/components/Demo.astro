@@ -1,8 +1,11 @@
 ---
 /* A demo's frame. The stage is drawn at a fixed size (its st-<name> class in
- * demos.css gives --w and --h) and scaled to the column by the demo runtime.
+ * global.css gives --w and --h) and scaled to the column by the demo runtime.
  * The drawing is the demo's final frame, so it reads with no script and under
- * reduced motion; the caption says in words what the drawing shows. */
+ * reduced motion; the caption says in words what the drawing shows. The
+ * button's three labels come from copy.yaml and the runtime swaps them. */
+import { copy } from '../copy';
+
 interface Props {
   name: string;
   caption: string;
@@ -11,6 +14,7 @@ interface Props {
 }
 
 const { name, caption, loop = false, bare = false } = Astro.props;
+const labels = copy.demos.buttons;
 ---
 
 <figure class:list={['demo', { bare }]} data-demo={name} data-loop={loop ? 'true' : undefined}>
@@ -21,11 +25,18 @@ const { name, caption, loop = false, bare = false } = Astro.props;
   </div>
   <figcaption class="sr-only">{caption}</figcaption>
   <div class="demo-ctl">
-    <button class="replay" type="button" data-mode={loop ? 'pause' : 'replay'}>
+    <button
+      class="replay"
+      type="button"
+      data-mode={loop ? 'pause' : 'replay'}
+      data-label-replay={labels.replay}
+      data-label-pause={labels.pause}
+      data-label-play={labels.play}
+    >
       <svg class="i-replay" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.7-4" /><path d="M2.5 2v3.2h3.2" /></svg>
       <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8v10.4L13 8z" /></svg>
       <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3v10M10.5 3v10" /></svg>
-      <span class="replay-label">{loop ? 'Pause' : 'Replay'}</span>
+      <span class="replay-label">{loop ? labels.pause : labels.replay}</span>
     </button>
   </div>
 </figure>

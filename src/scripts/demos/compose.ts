@@ -1,60 +1,56 @@
-/* Composition: two profiles, two stacks, two sessions of one repository. */
+/* Composition: three projects and a profile become one session, and the
+ * agent makes one change across two of the repositories. */
 import { gsap } from 'gsap';
-import { centre, flip, hide, k, ks, lines, show, stageOf, type Builder, type Point, type Timeline } from './kit';
+import { centre, flip, hide, k, ks, lines, show, stageOf, typed, type Builder } from './kit';
 
-type Profile = 'backend' | 'review';
-
-function launch(tl: Timeline, root: HTMLElement, name: Profile, at: number, from: Point, to: Point): void {
-  const slabs = ks(root, `slab-${name}`);
-  const pill = k(root, `pill-${name}`);
-  tl.set(pill, { xPercent: -50 }, 0);
-  // the layers press together into one session …
-  tl.to(slabs, { scale: 0.97, duration: 0.18, yoyo: true, repeat: 1, stagger: 0.04, ease: 'power1.inOut' }, at);
-  show(tl, pill, at + 0.3, 0.3, { scale: 0.85, y: 6 });
-  // … which sails across to the window and becomes its tab
-  tl.to(pill, { x: to.x - from.x, y: to.y - from.y, scale: 0.6, autoAlpha: 0, duration: 0.7, ease: 'power2.in' }, at + 1.0);
-}
+const PROJECTS = ['harbor', 'tidewater', 'lantern'] as const;
 
 export const compose: Builder = (root) => {
+  const stage = stageOf(root);
   const tl = gsap.timeline({ paused: true });
-  const tabB = k(root, 'tab-backend');
-  const tabR = k(root, 'tab-review');
-  const tabBWidth = tabB.offsetWidth;
-  const tabRWidth = tabR.offsetWidth;
+  const tab = k(root, 'tab');
+  const pill = k(root, 'pill');
+  const pslabs = PROJECTS.map((p) => k(root, `pslab-${p}`));
+  const fslabs = ks(root, 'fslab');
+
   // measured on the final frame, before any tween moves a thing; the pill is
   // centred by xPercent, so its own centre sits half its width to the left
-  const stage = stageOf(root);
-  const travel = (name: Profile): [Point, Point] => {
-    const pill = k(root, `pill-${name}`);
-    const c = centre(pill, stage, -pill.offsetWidth / 2);
-    return [c, centre(k(root, `tab-${name}`), stage)];
-  };
-  const [bFrom, bTo] = travel('backend');
-  const [rFrom, rTo] = travel('review');
+  const tabWidth = tab.offsetWidth;
+  const from = centre(pill, stage, -pill.offsetWidth / 2);
+  const to = centre(tab, stage);
 
-  // start: the backend profile is picked, nothing composed, no session
-  flip(tl, k(root, 'prof-backend'), 'prof on', 5.9, 'prof');
-  flip(tl, k(root, 'prof-review'), 'prof', 5.9, 'prof on');
-  show(tl, k(root, 'stack-backend'), 0, 0.01);
-  hide(tl, k(root, 'term-empty'), 4.4, 0.2);
+  // the workspace picks its projects; each joins carrying its own config
+  PROJECTS.forEach((p, i) => {
+    const at = 0.5 + i * 0.95;
+    const pick = k(root, `pick-${p}`);
+    flip(tl, pick, 'pick idle', at, 'pick on flash');
+    tl.set(pick, { attr: { class: 'pick on' } }, at + 0.45);
+    show(tl, pslabs[i], at + 0.15, 0.45, { x: -60 });
+  });
 
-  // backend's five layers slide in and stack
-  show(tl, ks(root, 'slab-backend'), 0.5, 0.45, { x: -48 }, 0.42);
-  launch(tl, root, 'backend', 2.9, bFrom, bTo);
-  tl.fromTo(tabB, { width: 0, paddingLeft: 0, paddingRight: 0, autoAlpha: 0 }, { width: tabBWidth, paddingLeft: 12, paddingRight: 12, autoAlpha: 1, duration: 0.35 }, 4.3);
-  show(tl, k(root, 'term-backend'), 4.4, 0.2);
-  lines(tl, ks(root, 'tb'), 4.6, 0.22);
+  // the profile's shared layers go on top
+  flip(tl, k(root, 'prof'), 'prof', 3.4, 'prof on');
+  show(tl, k(root, 'join'), 3.5, 0.3);
+  show(tl, fslabs, 3.7, 0.4, { x: -40 }, 0.28);
 
-  // the review profile composes a different stack for the same repository
-  tl.to(ks(root, 'slab-backend'), { x: 40, autoAlpha: 0, duration: 0.35, stagger: 0.05, ease: 'power1.in' }, 6.0);
-  show(tl, k(root, 'stack-review'), 6.0, 0.01);
-  show(tl, ks(root, 'slab-review'), 6.5, 0.45, { x: -48 }, 0.42);
-  launch(tl, root, 'review', 8.3, rFrom, rTo);
-  tl.fromTo(tabR, { width: 0, paddingLeft: 0, paddingRight: 0, autoAlpha: 0 }, { width: tabRWidth, paddingLeft: 12, paddingRight: 12, autoAlpha: 1, duration: 0.35 }, 9.7);
-  flip(tl, tabR, 'tab', 9.7, 'tab on');
-  flip(tl, tabB, 'tab on', 9.7, 'tab');
-  tl.to(k(root, 'term-backend'), { autoAlpha: 0, duration: 0.2 }, 9.75);
-  show(tl, k(root, 'term-review'), 9.8, 0.2);
-  lines(tl, ks(root, 'tr'), 10.0, 0.22);
+  // the stack launches as one session
+  tl.to([...pslabs, ...fslabs], { scale: 0.97, duration: 0.16, yoyo: true, repeat: 1, stagger: 0.035, ease: 'power1.inOut' }, 5.0);
+  tl.set(pill, { xPercent: -50 }, 0);
+  show(tl, pill, 5.4, 0.3, { scale: 0.85, y: 6 });
+  tl.to(pill, { x: to.x - from.x, y: to.y - from.y, scale: 0.6, autoAlpha: 0, duration: 0.7, ease: 'power2.in' }, 6.0);
+  tl.fromTo(tab, { width: 0, paddingLeft: 0, paddingRight: 0, autoAlpha: 0 }, { width: tabWidth, paddingLeft: 12, paddingRight: 12, autoAlpha: 1, duration: 0.35 }, 6.7);
+  hide(tl, k(root, 'term-empty'), 6.8, 0.2);
+  show(tl, k(root, 'term'), 6.85, 0.2);
+
+  // the launch folder links the three real repositories
+  lines(tl, ks(root, 'tl'), 7.0, 0.2);
+
+  // one change across two of them
+  typed(tl, k(root, 't-prompt'), 8.6);
+  lines(tl, [k(root, 't-api')], 10.0);
+  tl.fromTo(pslabs[0], { scale: 1 }, { scale: 1.04, duration: 0.2, yoyo: true, repeat: 1, immediateRender: false }, 10.0);
+  lines(tl, [k(root, 't-web')], 10.7);
+  tl.fromTo(pslabs[1], { scale: 1 }, { scale: 1.04, duration: 0.2, yoyo: true, repeat: 1, immediateRender: false }, 10.7);
+  lines(tl, [k(root, 't-done')], 11.4);
   return tl;
 };

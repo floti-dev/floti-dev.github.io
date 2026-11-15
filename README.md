@@ -12,9 +12,15 @@ folder (a Pages workflow), not the repository as it is.
 npm install
 npm run dev            # http://localhost:4321
 npm run build          # dist/, what GitHub Pages serves
-npm run preview:bundle # build, then preview/: the home page with every file it
-                       # needs, linked by relative paths, for a hosted preview
+npm run preview:bundle # build, then preview/: the home page shaped for a
+                       # hosted preview (see scripts/preview-bundle.mjs)
 ```
+
+All of the home page's wording, from the nav to the footer and what each demo
+says to a screen reader, is in `copy.yaml` at the root, with a comment over
+each block saying where it shows. Edit it and rebuild; a missing or empty
+entry stops the build and names the entry. Text inside the demos' drawings
+(terminal lines, file names) stays in the demo components.
 
 - Nothing on the site comes from another origin: no script, font, image,
   stylesheet or tracker. Fonts are self-hosted from `@fontsource`. Each page's

@@ -5,6 +5,7 @@
  * session reports what broke. The page is the app's own ground, as Floti
  * draws foreign content. At rest: the error on the page and the report. */
 import Demo from '../Demo.astro';
+import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
 
@@ -15,7 +16,7 @@ const fields = [
 ] as const;
 ---
 
-<Demo name="browser" caption="A session opens its app's checkout page in a browser pane beside its terminal, types a name, an email and a card number, presses Pay, and takes a screenshot. The terminal lists each browser tool call, and the session reports that payment fails because the server rejects a card number with spaces.">
+<Demo name="browser" caption={copy.demos.descriptions.browser}>
   <FlotiWindow on="browser" side={false}>
     <div class="split">
       <div class="fw-island fw-pane">

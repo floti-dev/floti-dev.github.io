@@ -5,11 +5,12 @@
  * turns the other tab to "needs you", starts the helpers, then opens a note
  * in Files. Every name here is invented. */
 import Demo from '../Demo.astro';
+import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
 ---
 
-<Demo name="hero" loop bare caption="The Floti window: a project opens from the sidebar, a session starts in it, another tab turns to needs you, the session starts two helpers that appear beside it as a family, and a note opens in Files.">
+<Demo name="hero" loop bare caption={copy.demos.descriptions.hero}>
   <FlotiWindow badge shadow>
     <Fragment slot="side">
       <div class="side-panel" data-k="side-sessions">

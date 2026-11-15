@@ -1,0 +1,21 @@
+---
+/* A section of the page: its small label, headline and paragraph from
+ * copy.yaml, then its demo. */
+interface Props {
+  id: string;
+  text: { label: string; headline: string; lede: string };
+  /** The label in the lead colour: the sections the page leads with. */
+  lead?: boolean;
+}
+
+const { id, text, lead = false } = Astro.props;
+---
+
+<section class="feature wrap" aria-labelledby={id}>
+  <div class="feature-text">
+    <p class:list={['eyebrow', { lead }]}>{text.label}</p>
+    <h2 class="h2" id={id}>{text.headline}</h2>
+    <p class="lede">{text.lede}</p>
+  </div>
+  <slot />
+</section>

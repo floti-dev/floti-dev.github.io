@@ -58,11 +58,13 @@ function initInstall(): void {
       const os = box.querySelector<HTMLInputElement>('input:checked')?.value ?? 'unix';
       const line = box.querySelector<HTMLElement>(`.install-line[data-os="${os}"] [data-cmd]`);
       if (!line) return;
+      // the wording is copy.yaml's, carried on the button
+      const say = copy.dataset;
       let message: string;
       try {
         await navigator.clipboard.writeText(line.textContent ?? '');
-        copy.textContent = 'Copied';
-        message = 'Install command copied.';
+        copy.textContent = say.labelCopied ?? '';
+        message = say.statusCopied ?? '';
       } catch {
         // no clipboard access: select the command so it can be copied by hand
         const range = document.createRange();
@@ -70,14 +72,14 @@ function initInstall(): void {
         const selection = getSelection();
         selection?.removeAllRanges();
         selection?.addRange(range);
-        copy.textContent = 'Selected';
-        message = 'Install command selected. Copy it with your keyboard.';
+        copy.textContent = say.labelSelected ?? '';
+        message = say.statusSelected ?? '';
       }
       copy.dataset.copied = '';
       if (status) status.textContent = message;
       clearTimeout(timer);
       timer = window.setTimeout(() => {
-        copy.textContent = 'Copy';
+        copy.textContent = say.labelCopy ?? '';
         delete copy.dataset.copied;
       }, 1800);
     });

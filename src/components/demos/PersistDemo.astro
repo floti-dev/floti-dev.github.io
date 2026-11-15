@@ -4,6 +4,7 @@
  * The window opens again on the same tabs, with what happened meanwhile.
  * At rest: the window open again, the counters at their later values. */
 import Demo from '../Demo.astro';
+import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
 import Logo from '../Logo.astro';
@@ -16,7 +17,7 @@ const ships = [
 ];
 ---
 
-<Demo name="persist" caption="The Floti window closes while four sessions keep running on the host, each still counting its turns. The window opens again on the same three tabs, with the work done meanwhile in the terminal.">
+<Demo name="persist" caption={copy.demos.descriptions.persistence}>
   <div class="persist">
     <div class="win" data-k="win">
       <FlotiWindow side={false}>

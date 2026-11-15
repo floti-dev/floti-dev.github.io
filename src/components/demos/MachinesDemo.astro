@@ -4,11 +4,12 @@
  * keystroke takes to come back. The tester helper from the fleet section
  * turns out to be running on the server. At rest: all three hosts, tester open. */
 import Demo from '../Demo.astro';
+import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
 ---
 
-<Demo name="machines" caption="Three machines in one sidebar: this PC, a server called build-box and a laptop, each listing its sessions and how long a keystroke takes to come back, 24 and 41 milliseconds for the two remote ones. The tester helper started by a session on this PC is running on build-box and needs you.">
+<Demo name="machines" caption={copy.demos.descriptions.machines}>
   <FlotiWindow badge>
     <Fragment slot="side">
       <div class="fw-side-head">

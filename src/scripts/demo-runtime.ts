@@ -16,7 +16,6 @@ import { persist } from './demos/persist';
 const BUILDERS: Record<string, Builder> = { hero, compose, fleet, machines, plugins, browser, persist };
 
 type Mode = 'play' | 'pause' | 'replay';
-const LABELS: Record<Mode, string> = { play: 'Play', pause: 'Pause', replay: 'Replay' };
 
 /** Scales a stage drawn at --w by --h pixels to the width it is given. */
 export function fitStages(): void {
@@ -49,9 +48,10 @@ function setup(root: HTMLElement, reduced: boolean): void {
   let held = false; // paused by the visitor
   let visible = true;
 
+  // the wording of each mode is copy.yaml's, carried on the button
   const setMode = (mode: Mode) => {
     button.dataset.mode = mode;
-    label.textContent = LABELS[mode];
+    label.textContent = button.dataset[`label${mode[0].toUpperCase()}${mode.slice(1)}`] ?? mode;
   };
 
   const ensure = (): Timeline | null => {

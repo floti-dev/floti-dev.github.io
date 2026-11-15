@@ -1,11 +1,12 @@
 ---
 /* The floti.dev home page. Composition first, then the fleet; plugins, the
  * browser and persistence next; the principles and the install command last.
- * The copy is the approved brief's. */
+ * Every word outside the demos' drawings comes from copy.yaml. */
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import InstallBox from '../components/InstallBox.astro';
 import Parallax from '../components/Parallax.astro';
+import Feature from '../components/Feature.astro';
 import HeroDemo from '../components/demos/HeroDemo.astro';
 import ComposeDemo from '../components/demos/ComposeDemo.astro';
 import FleetDemo from '../components/demos/FleetDemo.astro';
@@ -13,26 +14,28 @@ import MachinesDemo from '../components/demos/MachinesDemo.astro';
 import PluginsDemo from '../components/demos/PluginsDemo.astro';
 import BrowserDemo from '../components/demos/BrowserDemo.astro';
 import PersistDemo from '../components/demos/PersistDemo.astro';
+import { copy } from '../copy';
 
 const github = 'https://github.com/floti-dev';
+const { nav, hero, sections, footer } = copy;
 ---
 
-<Base title="Floti" description="Floti runs your coding agents on every computer you have, from one window.">
+<Base title={copy.page.title} description={copy.page.description}>
   <Parallax />
 
   <header class="nav">
     <div class="nav-in">
-      <a class="brand" href="/" aria-label="Floti, home">
+      <a class="brand" href="/" aria-label={nav.home}>
         <Logo kind="mark" class="brand-mark" />
         <Logo kind="word" class="brand-word" />
       </a>
       <nav class="nav-links" aria-label="Site">
-        <a href="/install/">Install</a>
-        <a class="wide" href={github}>GitHub</a>
+        <a href="/install/">{nav.install}</a>
+        <a class="wide" href={github}>{nav.github}</a>
       </nav>
-      <div class="toggle" role="group" aria-label="Palette">
-        <button type="button" data-palette-set="gold" aria-pressed="true">Gold</button>
-        <button type="button" data-palette-set="sky" aria-pressed="false">Sky</button>
+      <div class="toggle" role="group" aria-label={nav.palette}>
+        <button type="button" data-palette-set="gold" aria-pressed="true">{nav.gold}</button>
+        <button type="button" data-palette-set="sky" aria-pressed="false">{nav.sky}</button>
       </div>
     </div>
   </header>
@@ -41,11 +44,8 @@ const github = 'https://github.com/floti-dev';
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-text">
         <Logo kind="word" class="hero-word" label="floti" />
-        <h1 id="hero-title">Your fleet of coding agents.</h1>
-        <p class="lede">
-          Floti runs your coding agents on every computer you have, from one window. Each project gets the setup it
-          needs, agents start agents, and nothing stops when the window closes.
-        </p>
+        <h1 id="hero-title">{hero.headline}</h1>
+        <p class="lede">{hero.lede}</p>
         <InstallBox id="hero" />
       </div>
       <div class="hero-stage">
@@ -56,100 +56,32 @@ const github = 'https://github.com/floti-dev';
       </div>
     </section>
 
-    <section class="feature wrap" aria-labelledby="composition">
-      <div class="feature-text">
-        <p class="eyebrow lead">Composition</p>
-        <h2 class="h2" id="composition">Every project, set up for the job.</h2>
-        <p class="lede">
-          Pick a profile and Floti puts the session together: the instructions, skills and tools that project needs,
-          composed at launch. Your agent's own settings are never touched.
-        </p>
-      </div>
-      <ComposeDemo />
-    </section>
-
-    <section class="feature wrap" aria-labelledby="fleet">
-      <div class="feature-text">
-        <p class="eyebrow lead">The fleet</p>
-        <h2 class="h2" id="fleet">Agents that run agents.</h2>
-        <p class="lede">
-          A session can start helpers, hand them work and hear back when they finish. Every helper runs in a terminal you
-          can watch, and stops when its work is done.
-        </p>
-      </div>
-      <FleetDemo />
-    </section>
-
-    <section class="feature wrap" aria-labelledby="machines">
-      <div class="feature-text">
-        <p class="eyebrow lead">The fleet</p>
-        <h2 class="h2" id="machines">One window. Every machine.</h2>
-        <p class="lede">
-          Your desktop, a server and a laptop in one sidebar, over the SSH you already use. There is no account and no
-          service in between.
-        </p>
-      </div>
-      <MachinesDemo />
-    </section>
-
-    <section class="feature wrap" aria-labelledby="plugins">
-      <div class="feature-text">
-        <p class="eyebrow">Plugins</p>
-        <h2 class="h2" id="plugins">Build your own tools into it.</h2>
-        <p class="lede">
-          A plugin is a folder you write: a page in the sidebar, an item on the status bar, tools your agents can call.
-          Track your work, keep your notes, wire in your own services.
-        </p>
-      </div>
-      <PluginsDemo />
-    </section>
-
-    <section class="feature wrap" aria-labelledby="browser">
-      <div class="feature-text">
-        <p class="eyebrow">Built-in tools</p>
-        <h2 class="h2" id="browser">A browser your agents can drive.</h2>
-        <p class="lede">
-          Agents open pages, click, read and take screenshots in a browser pane beside their terminal, in tabs you can
-          watch or share. Floti's own tools come with every launch and go when it ends.
-        </p>
-      </div>
-      <BrowserDemo />
-    </section>
-
-    <section class="feature wrap" aria-labelledby="persist">
-      <div class="feature-text">
-        <p class="eyebrow">Persistence</p>
-        <h2 class="h2" id="persist">Sessions outlive the window.</h2>
-        <p class="lede">
-          A small host on each machine holds every session. Close Floti, let it crash or update it, and your agents keep
-          working. Open it again and they are where you left them.
-        </p>
-      </div>
-      <PersistDemo />
-    </section>
+    <Feature id="composition" text={sections.composition} lead><ComposeDemo /></Feature>
+    <Feature id="fleet" text={sections.fleet} lead><FleetDemo /></Feature>
+    <Feature id="machines" text={sections.machines} lead><MachinesDemo /></Feature>
+    <Feature id="plugins" text={sections.plugins}><PluginsDemo /></Feature>
+    <Feature id="browser" text={sections.browser}><BrowserDemo /></Feature>
+    <Feature id="persistence" text={sections.persistence}><PersistDemo /></Feature>
 
     <section class="feature wrap" aria-labelledby="principles">
       <div class="feature-text">
-        <p class="eyebrow">Principles</p>
-        <h2 class="h2" id="principles">Yours, on your machines.</h2>
+        <p class="eyebrow">{sections.principles.label}</p>
+        <h2 class="h2" id="principles">{sections.principles.headline}</h2>
       </div>
       <ul class="principles">
-        <li>Floti never reads or stores your agent's credentials.</li>
-        <li>Your own SSH and your own login. No account, no service in between.</li>
-        <li>It contacts nothing on its own except its update check.</li>
-        <li>Your agent runs in its own terminal, untouched.</li>
+        {sections.principles.items.map((item) => <li>{item}</li>)}
       </ul>
     </section>
 
     <section class="feature launch wrap" aria-labelledby="install">
       <div class="feature-text">
-        <p class="eyebrow lead">Install</p>
-        <h2 class="h2" id="install">Launch your fleet.</h2>
-        <p class="lede">One command installs Floti and keeps it up to date. Works with Claude Code today, with more agents on the way.</p>
+        <p class="eyebrow lead">{sections.install.label}</p>
+        <h2 class="h2" id="install">{sections.install.headline}</h2>
+        <p class="lede">{sections.install.lede}</p>
         <InstallBox id="launch" />
         <p class="launch-links">
-          <a href="/install/">Install guide</a>
-          <a href={github}>Floti on GitHub</a>
+          <a href="/install/">{sections.install.guide_link}</a>
+          <a href={github}>{sections.install.github_link}</a>
         </p>
       </div>
     </section>
@@ -158,10 +90,10 @@ const github = 'https://github.com/floti-dev';
   <footer class="foot">
     <div class="foot-in">
       <Logo kind="mark" class="foot-mark" />
-      <p>Floti is Old Norse for a fleet, said FLOH-tee.</p>
+      <p>{footer.line}</p>
       <nav class="foot-links" aria-label="Footer">
-        <a href="/install/">Install</a>
-        <a href={github}>GitHub</a>
+        <a href="/install/">{footer.install}</a>
+        <a href={github}>{footer.github}</a>
       </nav>
     </div>
   </footer>

@@ -1,79 +1,106 @@
 ---
-/* Composition. A profile's layers slide in and stack, the stack launches as a
- * session in a tab, then a second profile composes a different stack for the
- * same repository. No agent is named: the tab says "agent" and the layers
- * use plain words. At rest: both tabs open, the review profile's stack shown. */
+/* Composition: projects first. A workspace picks three projects; each joins
+ * the session carrying its own instructions and skills, the profile's shared
+ * layers go on top, and the session opens in a launch folder that links the
+ * three real repositories. The agent then makes one change across two of
+ * them. No agent is named: the tab says "agent". At rest: the session open,
+ * the change made. */
 import Demo from '../Demo.astro';
 import Icon from '../Icon.astro';
+import { copy } from '../../copy';
 
-const stacks = {
-  backend: [
-    ['Shared instructions', ['house-rules.md']],
-    ['Project instructions', ['harbor-api/INSTRUCTIONS.md']],
-    ['Skills', ['review', 'release-notes', 'db-migrate']],
-    ['Tools', ['browser', 'agents', 'postgres']],
-    ['Plugins', ['tasks']],
-  ],
-  review: [
-    ['Shared instructions', ['house-rules.md']],
-    ['Project instructions', ['harbor-api/INSTRUCTIONS.md']],
-    ['Skills', ['security-review', 'style-guide']],
-    ['Tools', ['browser']],
-  ],
-} as const;
+const projects = [
+  { key: 'harbor', name: 'harbor-api', branch: 'main', hue: 'blue', skill: 'db-migrate' },
+  { key: 'tidewater', name: 'tidewater-web', branch: 'feature/checkout', hue: 'teal', skill: 'storybook' },
+  { key: 'lantern', name: 'lantern-docs', branch: 'main', hue: 'violet', skill: 'style-guide' },
+] as const;
+
+const profile = [
+  ['Shared instructions', ['house-rules.md']],
+  ['Skills', ['review', 'release-notes']],
+  ['Tools', ['browser', 'agents']],
+] as const;
 ---
 
-<Demo name="compose" caption="Two profiles for the same repository. The backend profile stacks shared instructions, the project's instructions, three skills, three tools and a plugin into a session that opens in a tab; the review profile stacks a smaller set and opens a second tab.">
+<Demo name="compose" caption={copy.demos.descriptions.composition}>
   <div class="cmp">
-    <div class="col profiles">
-      <div class="cap">Profiles <span class="proj mono">harbor-api</span></div>
-      <div class="prof" data-k="prof-backend">
-        <span class="pn">backend</span>
-        <span class="pd">Server work: migrations, tests, the task board</span>
-      </div>
-      <div class="prof on" data-k="prof-review">
-        <span class="pn">review</span>
-        <span class="pd">Reads and comments on changes</span>
+    <div class="col">
+      <div class="cap">Workspace</div>
+      <div class="card">
+        <div class="ws-head"><span class="wn">checkout-work</span><span class="file mono">workspace.yaml</span></div>
+        <div class="sub">Projects</div>
+        {
+          projects.map((p) => (
+            <div class="pick on" data-k={`pick-${p.key}`}>
+              <span class="box" data-k={`box-${p.key}`}>
+                <Icon name="check" />
+              </span>
+              <span class:list={['hue', p.hue]} />
+              <span class="pn">{p.name}</span>
+              <span class="br mono">{p.branch}</span>
+            </div>
+          ))
+        }
+        <div class="pick off">
+          <span class="box empty"></span>
+          <span class="hue amber"></span>
+          <span class="pn">keel</span>
+          <span class="br mono">release/2.4</span>
+        </div>
+        <div class="sub">Profile</div>
+        <div class="prof on" data-k="prof">
+          <span class="pn">backend</span>
+          <span class="pd">House rules, review skills, browser</span>
+        </div>
       </div>
       <p class="note"><Icon name="lock" class="lock" />The agent's own settings are not touched.</p>
     </div>
 
-    <div class="col stackcol">
+    <div class="col">
       <div class="cap">Composed at launch</div>
-      <div class="stacks">
+      <div class="stack" data-k="stack">
         {
-          (['backend', 'review'] as const).map((name) => (
-            <div class:list={['stack', { gone: name === 'backend' }]} data-k={`stack-${name}`}>
-              {stacks[name].map(([label, items]) => (
-                <div class="slab" data-k={`slab-${name}`}>
-                  <span class="sl">{label}</span>
-                  <span class="items">
-                    {items.map((item) => (
-                      <span class="item mono">{item}</span>
-                    ))}
-                  </span>
-                </div>
-              ))}
+          projects.map((p) => (
+            <div class="slab pslab" data-k={`pslab-${p.key}`}>
+              <div class="sh">
+                <span class:list={['hue', p.hue]} />
+                <span class="sn">{p.name}</span>
+                <span class="kind">project</span>
+              </div>
+              <div class="items">
+                <span class="item mono">INSTRUCTIONS.md</span>
+                <span class="item mono">skill · {p.skill}</span>
+              </div>
             </div>
           ))
         }
-        <div class="pill gone" data-k="pill-backend"><span class="dot"></span>agent <span class="mono">harbor-api · backend</span></div>
-        <div class="pill gone" data-k="pill-review"><span class="dot"></span>agent <span class="mono">harbor-api · review</span></div>
+        <div class="join" data-k="join"><span>profile</span><span class="mono">backend</span></div>
+        {
+          profile.map(([label, items]) => (
+            <div class="slab fslab" data-k="fslab">
+              <span class="sl">{label}</span>
+              <span class="items">
+                {items.map((item) => (
+                  <span class="item mono">{item}</span>
+                ))}
+              </span>
+            </div>
+          ))
+        }
+        <div class="pill gone" data-k="pill"><span class="dot"></span>agent <span class="mono">checkout-work</span></div>
       </div>
     </div>
 
-    <div class="col wincol">
+    <div class="col">
       <div class="cap">Session</div>
       <div class="pane">
         <div class="strip">
-          <span class="tab" data-k="tab-backend"><span class="dot"></span>agent<span class="tg">backend</span></span>
-          <span class="tab on" data-k="tab-review"><span class="dot"></span>agent<span class="tg">review</span></span>
+          <span class="tab on" data-k="tab"><span class="dot"></span>agent<span class="tg">checkout-work</span></span>
         </div>
-        <div class="crumb">harbor-api <span class="mono">main</span></div>
+        <div class="crumb">launch folder <span class="mono">checkout-work/</span><span class="sep">·</span>3 projects</div>
         <div class="body">
           <div class="term empty gone" data-k="term-empty">No session yet.</div>
-          <div class="term gone" data-k="term-backend"><span class="ln" data-k="tb">Session ready in <span class="t-b">harbor-api</span></span><span class="ln" data-k="tb"><span class="t-dim">instructions</span> 2 files</span><span class="ln" data-k="tb"><span class="t-dim">skills</span>       review, release-notes,</span><span class="ln" data-k="tb">             db-migrate</span><span class="ln" data-k="tb"><span class="t-dim">tools</span>        browser, agents, postgres</span><span class="ln" data-k="tb"><span class="t-dim">plugins</span>      tasks</span><span class="ln" data-k="tb"><span class="t-y">›</span> Add the upload_attempts column.</span></div>
-          <div class="term" data-k="term-review"><span class="ln" data-k="tr">Session ready in <span class="t-b">harbor-api</span></span><span class="ln" data-k="tr"><span class="t-dim">instructions</span> 2 files</span><span class="ln" data-k="tr"><span class="t-dim">skills</span>       security-review,</span><span class="ln" data-k="tr">             style-guide</span><span class="ln" data-k="tr"><span class="t-dim">tools</span>        browser</span><span class="ln" data-k="tr"><span class="t-y">›</span> Review the open pull request.</span></div>
+          <div class="term" data-k="term"><span class="ln" data-k="tl"><span class="t-dim">Launch folder</span> checkout-work/</span><span class="ln" data-k="tl">  harbor-api/     <span class="t-dim">→ ~/code/harbor-api</span></span><span class="ln" data-k="tl">  tidewater-web/  <span class="t-dim">→ ~/code/tidewater-web</span></span><span class="ln" data-k="tl">  lantern-docs/   <span class="t-dim">→ ~/code/lantern-docs</span></span><span class="ln" data-k="tl"><span class="t-dim">instructions</span>  3 projects + house-rules.md</span><span class="ln" data-k="tl"><span class="t-dim">skills</span>        5, from projects and profile</span><span class="ln" data-k="tl"><span class="t-dim">tools</span>         browser, agents</span><span class="ln" data-k="t-prompt"><span class="t-y">›</span> Let buyers add a delivery note at checkout.</span><span class="ln" data-k="t-api">  <span class="t-ok">Edit</span> <span class="t-b">harbor-api</span>/src/orders.ts        <span class="t-ok">+6</span></span><span class="ln" data-k="t-web">  <span class="t-ok">Edit</span> <span class="t-b">tidewater-web</span>/src/Checkout.tsx <span class="t-ok">+14</span> <span class="t-r">−2</span></span><span class="ln" data-k="t-done">  One change across two repositories.</span></div>
         </div>
       </div>
     </div>
@@ -83,8 +110,8 @@ const stacks = {
 <style>
   .cmp {
     display: grid;
-    grid-template-columns: 236px 340px 1fr;
-    gap: 36px;
+    grid-template-columns: 228px 336px minmax(0, 1fr);
+    gap: 26px;
     height: 100%;
     padding: 6px 4px;
     font: 400 13px/1.5 var(--body);
@@ -99,7 +126,6 @@ const stacks = {
   .cap {
     display: flex;
     align-items: center;
-    gap: 8px;
     height: 22px;
     font-size: 10px;
     font-weight: 600;
@@ -107,34 +133,122 @@ const stacks = {
     text-transform: uppercase;
     color: var(--fl-fg-subtle);
   }
-  .proj {
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0;
-    text-transform: none;
-    padding: 2px 8px;
-    border: 1px solid var(--fl-border-strong);
-    border-radius: 999px;
-    color: var(--fl-fg-muted);
-  }
   .mono {
     font-family: var(--mono);
   }
-  .prof {
-    position: relative;
-    display: grid;
-    gap: 2px;
-    padding: 12px 14px;
+
+  /* the workspace */
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 12px;
     background: var(--fl-surface);
     border: 1px solid var(--fl-border);
     border-radius: 4px;
   }
-  .prof .pn {
+  .ws-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .wn {
     font-size: 14px;
     font-weight: 500;
   }
+  .file {
+    font-size: 10.5px;
+    color: var(--fl-fg-subtle);
+  }
+  .sub {
+    margin: 10px 0 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg-subtle);
+  }
+  .pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    padding: 0 6px;
+    margin: 0 -6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .pick.flash {
+    background: var(--fl-hover);
+  }
+  .pick.off .pn,
+  .pick.idle .pn {
+    color: var(--fl-fg-muted);
+  }
+  .box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid var(--fl-border-strong);
+  }
+  .box :global(svg) {
+    width: 11px;
+    height: 11px;
+    fill: none;
+    stroke: var(--fl-accent-fg);
+    stroke-width: 2.4;
+    opacity: 0;
+  }
+  /* the one solid accent fill DESIGN.md allows: a ticked checkbox */
+  .pick.on .box {
+    background: var(--fl-accent);
+    border-color: var(--fl-accent);
+  }
+  .pick.on .box :global(svg) {
+    opacity: 1;
+  }
+  .hue {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .hue.blue {
+    background: var(--fl-hue-blue);
+  }
+  .hue.teal {
+    background: var(--fl-hue-teal);
+  }
+  .hue.violet {
+    background: var(--fl-hue-violet);
+  }
+  .hue.amber {
+    background: var(--fl-hue-amber);
+  }
+  .pn {
+    font-size: 13px;
+  }
+  .br {
+    margin-left: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10.5px;
+    color: var(--fl-fg-subtle);
+  }
+  .prof {
+    position: relative;
+    display: grid;
+    gap: 1px;
+    padding: 8px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--fl-border);
+  }
   .prof .pd {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--fl-fg-muted);
   }
   .prof.on {
@@ -145,8 +259,8 @@ const stacks = {
     content: '';
     position: absolute;
     left: -1px;
-    top: 10px;
-    bottom: 10px;
+    top: 8px;
+    bottom: 8px;
     width: 2px;
     border-radius: 2px;
     background: var(--fl-accent);
@@ -170,26 +284,49 @@ const stacks = {
     stroke-width: 1.5;
   }
 
-  .stacks {
+  /* the composed stack */
+  .stack {
     position: relative;
     flex: 1;
-  }
-  .stack {
-    position: absolute;
-    inset: 0 0 auto;
-    display: grid;
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
   }
   .slab {
-    display: grid;
-    gap: 6px;
-    padding: 10px 14px;
     background: var(--fl-surface);
     border: 1px solid var(--fl-border-strong);
     border-radius: 4px;
   }
-  .sl {
+  .pslab {
+    display: grid;
+    gap: 6px;
+    padding: 9px 12px 10px;
+  }
+  .sh {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sn {
     font-size: 13px;
+    font-weight: 500;
+  }
+  .kind {
+    margin-left: auto;
+    font-size: 10.5px;
+    color: var(--fl-fg-subtle);
+  }
+  .fslab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--fl-surface-raised);
+  }
+  .sl {
+    flex: none;
+    width: 128px;
+    font-size: 12.5px;
     font-weight: 500;
   }
   .items {
@@ -205,10 +342,38 @@ const stacks = {
     background: var(--fl-surface-raised);
     color: var(--fl-fg-muted);
   }
+  .fslab .item {
+    background: var(--fl-surface);
+  }
+  .join {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 22px;
+    margin-top: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg-subtle);
+  }
+  .join .mono {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--fl-accent-text);
+  }
+  .join::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--fl-border-strong), transparent);
+  }
   .pill {
     position: absolute;
     left: 50%;
-    bottom: 8px;
+    bottom: 4px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -224,6 +389,7 @@ const stacks = {
     color: var(--fl-fg-muted);
   }
 
+  /* the session */
   .pane {
     flex: 1;
     display: flex;
@@ -285,9 +451,13 @@ const stacks = {
     border-bottom: 1px solid var(--fl-border);
     font-size: 11.5px;
     color: var(--fl-fg-muted);
+    white-space: nowrap;
   }
   .crumb .mono {
     font-size: 11px;
+    color: var(--fl-fg-subtle);
+  }
+  .crumb .sep {
     color: var(--fl-fg-subtle);
   }
   .body {
@@ -299,7 +469,7 @@ const stacks = {
     position: absolute;
     inset: 0;
     padding: 10px 12px;
-    font: 400 11.5px/1.65 var(--mono);
+    font: 400 11px/1.7 var(--mono);
     color: var(--term-fg);
     white-space: pre;
   }

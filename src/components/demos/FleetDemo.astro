@@ -4,6 +4,7 @@
  * their reports travel back to the lead as short lines. The lead's ship is
  * the demo's one mark in the highlight colour. At rest: all three reported. */
 import Demo from '../Demo.astro';
+import { copy } from '../../copy';
 import Logo from '../Logo.astro';
 
 const helpers = [
@@ -34,7 +35,7 @@ const helpers = [
 ] as const;
 ---
 
-<Demo name="fleet" caption="A lead session called fix upload retry starts three helpers, scout, tester and docs, each in its own terminal. Their reports come back to the lead: scout is done, tester needs you, docs ended its turn.">
+<Demo name="fleet" caption={copy.demos.descriptions.fleet}>
   <div class="fleet">
     <svg class="wakes" viewBox="0 0 960 440" aria-hidden="true">
       <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="67" />

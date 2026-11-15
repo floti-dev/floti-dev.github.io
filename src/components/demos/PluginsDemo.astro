@@ -3,11 +3,12 @@
  * session calls the plugin's tools to pick up a task, and the card moves to
  * In progress by itself. At rest: HB-14 in progress. */
 import Demo from '../Demo.astro';
+import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
 ---
 
-<Demo name="plugins" caption="A task board plugin opens as a page in the sidebar. The session lists the open tasks through the plugin's tools, takes HB-14, Retry uploads on a 503, and the card moves from To do to In progress on its own.">
+<Demo name="plugins" caption={copy.demos.descriptions.plugins}>
   <FlotiWindow on="tasks" plugin>
     <Fragment slot="side">
       <div class="side-panel gone" data-k="side-sessions">
