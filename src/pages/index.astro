@@ -57,14 +57,20 @@ const { nav, hero, sections, footer } = copy;
     </section>
 
     <Feature id="composition" text={sections.composition} lead><ComposeDemo /></Feature>
-    <Feature id="fleet" text={sections.fleet} lead><FleetDemo /></Feature>
-    <Feature id="machines" text={sections.machines} lead><MachinesDemo /></Feature>
-    <Feature id="plugins" text={sections.plugins}><PluginsDemo /></Feature>
-    <Feature id="browser" text={sections.browser}><BrowserDemo /></Feature>
-    <Feature id="persistence" text={sections.persistence}><PersistDemo /></Feature>
+
+    <!-- the fleet: one band in the deeper ground, the showpiece then a split -->
+    <div class="band">
+      <Feature id="fleet" text={sections.fleet} lead layout="center"><FleetDemo /></Feature>
+      <Feature id="machines" text={sections.machines} lead layout="split" demo="left"><MachinesDemo /></Feature>
+    </div>
+
+    <Feature id="plugins" text={sections.plugins} layout="split" demo="right"><PluginsDemo /></Feature>
+    <Feature id="browser" text={sections.browser} layout="statement"><BrowserDemo /></Feature>
+    <Feature id="persistence" text={sections.persistence} layout="stage"><PersistDemo /></Feature>
 
     <section class="feature launch wrap" aria-labelledby="install">
       <div class="feature-text">
+        <Logo kind="word" class="launch-word" />
         <p class="eyebrow lead">{sections.install.label}</p>
         <h2 class="h2" id="install">{sections.install.headline}</h2>
         <p class="lede">{sections.install.lede}</p>

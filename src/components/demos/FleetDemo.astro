@@ -114,8 +114,8 @@ const lead: Line[] = [
 ];
 ---
 
-<Demo name="fleet" interactive caption={copy.demos.descriptions.fleet} text={text}>
-  <FlotiWindow>
+<Demo name="fleet" interactive bare caption={copy.demos.descriptions.fleet} text={text}>
+  <FlotiWindow shadow>
     <Fragment slot="side">
       <div class="fw-side-head">
         <span class="t">Sessions</span>
@@ -231,7 +231,7 @@ const lead: Line[] = [
   }
   .lead {
     flex: none;
-    width: 360px;
+    width: 440px;
     z-index: 1;
   }
   .col {
@@ -387,8 +387,9 @@ const lead: Line[] = [
     border-bottom: 0;
     padding: 0 12px 0 10px;
   }
+  /* folded, the body takes no width either: its lines would widen the chip */
   .hp.folded .hp-body {
-    height: 0;
+    display: none;
   }
   .hp.folded .timer {
     margin-left: 6px;

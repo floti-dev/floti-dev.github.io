@@ -197,6 +197,11 @@ export const fleet: Builder = (root, ctx) => {
 
   const leadW = lead.offsetWidth;
   const famW = fam.offsetWidth;
+  // the folded chips, at rest, as a little tree: centred in the column at the
+  // end so the final frame has no empty well beneath them
+  const col = k(root, 'col');
+  const last = col.lastElementChild as HTMLElement;
+  const settle = Math.max(0, (col.offsetHeight - (last.offsetTop + last.offsetHeight)) / 2);
   const beside = leadW < famW - 8;
 
   const spawn = (h: Helper, at: number) => {
@@ -245,6 +250,8 @@ export const fleet: Builder = (root, ctx) => {
     tl.fromTo(h.body, { height: h.bodyH }, { height: 0, duration: 0.4, ease: 'power2.inOut', immediateRender: false }, at + 1.2);
     tl.fromTo(h.pane, { width: h.paneW }, { width: h.foldW, duration: 0.4, ease: 'power2.inOut', immediateRender: false }, at + 1.2);
     flip(tl, h.pane, h.baseClass, at + 1.6, `${h.baseClass} folded`);
+    // the chip settles to exactly its own width
+    tl.set(h.pane, { width: 'auto' }, at + 1.6);
     flip(tl, h.tether as unknown as HTMLElement, 'tether', at + 1.2, 'tether faded');
     tl.call(() => {
       setState(h, h.end, true);
@@ -305,12 +312,16 @@ export const fleet: Builder = (root, ctx) => {
 
   // the lead uses what came back
   stream(tl, [k(root, 'lead-final')], 15.4);
-  tl.set({}, {}, 16);
+  tl.fromTo(col, { paddingTop: 0 }, { paddingTop: settle, duration: 0.9, ease: 'power2.inOut' }, 15.5);
+  tl.set({}, {}, 16.6);
 
   if (ctx.reduced) {
     // the final frame stays until the visitor presses Play
     tl.progress(1, true);
-    for (const h of helpers) setState(h, h.end, true);
+    for (const h of helpers) {
+      setState(h, h.end, true);
+      h.timer.textContent = clock(h.seconds);
+    }
   } else {
     reset();
   }

@@ -140,6 +140,11 @@ code {
 .px-s6 { top: 44%; left: 0; width: min(240px, 30vw); }
 .px-s7 { top: 63%; right: 0; width: min(220px, 30vw); }
 .px-s8 { top: 86%; left: 0; width: min(300px, 36vw); }
+/* more of the fleet around the persistence stage */
+.px-s9 { top: 77%; left: 0; width: min(460px, 46vw); }
+.px-s10 { top: 80%; right: 0; width: min(380px, 40vw); }
+.px-s11 { top: 83%; left: 6%; width: min(220px, 26vw); }
+.px-s12 { top: 79%; right: 12%; width: min(200px, 22vw); }
 .px-c1 { top: 4%; right: 4%; }
 .px-c2 { top: 23%; left: 3%; }
 .px-c3 { top: 39%; right: 3%; }
@@ -322,6 +327,7 @@ h1 {
 }
 .hero-stage .demo {
   position: relative;
+  margin: 0;
   z-index: 1;
 }
 
@@ -444,6 +450,7 @@ html:not(.js) .copy {
 
 .demo {
   position: relative;
+  margin: 0;
   background: color-mix(in srgb, var(--deep) 78%, transparent);
   border: 1px solid var(--edge);
   border-radius: 14px;
@@ -483,10 +490,10 @@ html:not(.js) .copy {
 /* each demo's drawing size */
 .st-hero { --w: 1040; --h: 600; }
 .st-compose { --w: 960; --h: 470; }
-.st-fleet { --w: 1040; --h: 600; }
-.st-machines { --w: 960; --h: 540; }
-.st-plugins { --w: 960; --h: 540; }
-.st-browser { --w: 960; --h: 520; }
+.st-fleet { --w: 1240; --h: 640; }
+.st-machines { --w: 700; --h: 560; }
+.st-plugins { --w: 700; --h: 560; }
+.st-browser { --w: 840; --h: 520; }
 .st-persist { --w: 1040; --h: 560; }
 
 .demo-ctl {
@@ -542,17 +549,185 @@ html:not(.js) .demo-ctl {
 
 /* ---------- install section and footer */
 
+/* ---------- the page's rhythm after composition
+ * Each layout is set on its section by Feature (layout=...). Below 1100px the
+ * splits and the statement fall back to the stack. */
+
+/* the fleet's band: the deeper ground, edge to edge, one chapter */
+.band {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(96px, 14vw, 168px);
+  padding-block: clamp(88px, 9vw, 136px);
+  background: var(--deep);
+  border-block: 1px solid var(--edge);
+  transition: background-color var(--swap);
+}
+.band > .feature:first-child {
+  padding-top: 0;
+}
+.band > .feature + .feature {
+  padding-top: clamp(96px, 10vw, 150px);
+}
+
+/* center: the showpiece, its demo wider than the reading column */
+.v-center .feature-in {
+  max-width: 1320px;
+}
+.v-center .feature-text {
+  margin-inline: auto;
+  max-width: 760px;
+  justify-items: center;
+  text-align: center;
+}
+.v-center .feature-text .h2 {
+  font-size: clamp(32px, 5.2vw, 60px);
+}
+
+/* split: demo and text side by side, vertically centred */
+.v-split .demo:not(.bare) {
+  padding: clamp(10px, 1.4vw, 18px);
+}
+@media (min-width: 1100px) {
+  .v-split .feature-in {
+    display: grid;
+    grid-template-columns: minmax(0, 16fr) minmax(0, 9fr);
+    align-items: center;
+    gap: clamp(36px, 4vw, 60px);
+  }
+  .v-split.demo-right .feature-in {
+    grid-template-columns: minmax(0, 9fr) minmax(0, 16fr);
+  }
+  .v-split.demo-left .feature-demo {
+    order: -1;
+  }
+  .v-split .feature-text {
+    margin-bottom: 0;
+  }
+  .v-split .h2 {
+    font-size: clamp(30px, 3vw, 42px);
+  }
+}
+
+/* statement: an oversized headline, the demo off-centre and rising into it */
+.v-statement .feature-text {
+  max-width: none;
+}
+.v-statement {
+  --statement: clamp(44px, 7.6vw, 116px);
+}
+.v-statement .h2 {
+  font-size: var(--statement);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+@media (min-width: 1100px) {
+  .v-statement .feature-in {
+    display: grid;
+    grid-template-columns: minmax(0, 23fr) minmax(0, 77fr);
+    column-gap: clamp(28px, 3vw, 48px);
+  }
+  .v-statement .feature-text {
+    display: contents;
+  }
+  .v-statement .eyebrow {
+    grid-column: 1 / -1;
+    margin-bottom: 18px;
+  }
+  .v-statement .h2 {
+    grid-column: 1 / -1;
+    position: relative;
+    z-index: 0;
+  }
+  .v-statement .lede {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+    padding-top: clamp(56px, 6vw, 88px);
+    font-size: 17px;
+  }
+  .v-statement .feature-demo {
+    grid-column: 2;
+    grid-row: 3;
+    position: relative;
+    z-index: 1;
+    /* rises into the headline's descenders */
+    margin-top: calc(-0.16 * var(--statement));
+  }
+}
+
+/* stage: persistence, centred, its own controls large; the background stays
+ * open so the parallax fleet shows through */
+.v-stage {
+  position: relative;
+  margin-top: clamp(40px, 6vw, 80px);
+  padding-block: clamp(110px, 12vw, 170px) clamp(40px, 6vw, 80px);
+  background: radial-gradient(ellipse 62% 54% at 50% 58%, color-mix(in srgb, var(--deep) 72%, transparent), transparent 78%);
+}
+.v-stage .feature-text {
+  margin-inline: auto;
+  max-width: 720px;
+  justify-items: center;
+  text-align: center;
+}
+.v-stage .demo-ctl {
+  position: relative;
+  justify-content: center;
+  margin-top: clamp(16px, 2vw, 26px);
+}
+.v-stage .demo-own {
+  justify-content: center;
+  gap: 12px;
+}
+.v-stage .demo-own .act {
+  font-size: 15px;
+  padding: 12px 22px;
+  min-height: 46px;
+}
+.v-stage .demo-own .act svg {
+  width: 15px;
+  height: 15px;
+}
+.v-stage .replay {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* install: the closing block, centred under the wordmark */
 .launch {
-  padding-bottom: clamp(80px, 12vw, 140px);
+  padding-bottom: clamp(96px, 13vw, 160px);
+}
+.launch .feature-text {
+  margin-inline: auto;
+  max-width: 760px;
+  justify-items: center;
+  text-align: center;
+}
+.launch-word {
+  height: clamp(64px, 9vw, 124px);
+  margin-bottom: clamp(8px, 1.4vw, 20px);
 }
 .launch .install {
-  margin-top: 8px;
+  width: min(660px, 100%);
+  margin-top: 14px;
+  justify-items: center;
+}
+.launch .install-cmd {
+  width: 100%;
+  padding: 8px 8px 8px 20px;
+}
+.launch .install-line {
+  font-size: clamp(13px, 1.4vw, 16px);
+  text-align: left;
 }
 .launch-links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px 22px;
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   font-size: 15px;
 }
 

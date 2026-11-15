@@ -1,21 +1,34 @@
 ---
 /* A section of the page: its small label, headline and paragraph from
- * copy.yaml, then its demo. */
+ * copy.yaml, and its demo, in one of the page's layouts (global.css):
+ * - stack: text above, demo below (composition)
+ * - center: text centred, demo wider than the column (the fleet)
+ * - split: demo and text side by side; `demo` says which side the demo takes
+ * - statement: an oversized headline across the width, the demo set below it
+ *   and off-centre, rising into the headline's lower edge
+ * - stage: text centred, the demo on its own with large controls under it
+ * The text always comes first in the markup, whichever side it shows on. */
 interface Props {
   id: string;
   text: { label: string; headline: string; lede: string };
   /** The label in the lead colour: the sections the page leads with. */
   lead?: boolean;
+  layout?: 'stack' | 'center' | 'split' | 'statement' | 'stage';
+  demo?: 'left' | 'right';
 }
 
-const { id, text, lead = false } = Astro.props;
+const { id, text, lead = false, layout = 'stack', demo = 'right' } = Astro.props;
 ---
 
-<section class="feature wrap" aria-labelledby={id}>
-  <div class="feature-text">
-    <p class:list={['eyebrow', { lead }]}>{text.label}</p>
-    <h2 class="h2" id={id}>{text.headline}</h2>
-    <p class="lede">{text.lede}</p>
+<section class:list={['feature', `v-${layout}`, { [`demo-${demo}`]: layout === 'split' }]} aria-labelledby={id}>
+  <div class="wrap feature-in">
+    <div class="feature-text">
+      <p class:list={['eyebrow', { lead }]}>{text.label}</p>
+      <h2 class="h2" id={id}>{text.headline}</h2>
+      <p class="lede">{text.lede}</p>
+    </div>
+    <div class="feature-demo">
+      <slot />
+    </div>
   </div>
-  <slot />
 </section>
