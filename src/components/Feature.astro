@@ -1,12 +1,10 @@
 ---
 /* A section of the page: its small label, headline and paragraph from
  * copy.yaml, and its demo, in one of the page's layouts (global.css):
- * - stack: text above, demo below (composition)
+ * - stack: text above, demo below (composition, the browser)
  * - center: text centred, demo below (the fleet)
  * - split: demo and text side by side across the wide column, the demo taking
  *   most of it; `demo` says which side the demo takes
- * - caption: the demo first, then the headline and paragraph as a two-column
- *   row beneath it (the browser)
  * - stage: text centred, the demo on its own with large controls under it
  * Every demo runs wider than the reading column, up to the wide column
  * (--wide-max in tokens.css). The text always comes first in the markup,
@@ -16,7 +14,7 @@ interface Props {
   text: { label: string; headline: string; lede: string };
   /** The label in the lead colour: the sections the page leads with. */
   lead?: boolean;
-  layout?: 'stack' | 'center' | 'split' | 'caption' | 'stage';
+  layout?: 'stack' | 'center' | 'split' | 'stage';
   demo?: 'left' | 'right';
 }
 

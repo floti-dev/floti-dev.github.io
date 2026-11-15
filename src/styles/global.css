@@ -624,7 +624,7 @@ html:not(.js) .demo-ctl {
 
 /* ---------- the page's rhythm after composition
  * Each layout is set on its section by Feature (layout=...). Below 1100px the
- * splits and the caption row fall back to the stack. */
+ * splits fall back to the stack. */
 
 /* Every demo runs wider than the reading column, centred on it, up to the
  * wide column (the splits widen their whole row instead, below). */
@@ -691,38 +691,6 @@ html:not(.js) .demo-ctl {
   }
   .v-split .lede {
     font-size: 18px;
-  }
-}
-
-/* caption: the demo first and wide, then the headline and paragraph as a
- * two-column row beneath it */
-@media (min-width: 1100px) {
-  .v-caption .feature-in {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: clamp(36px, 4vw, 64px);
-  }
-  .v-caption .feature-text {
-    display: contents;
-  }
-  .v-caption .feature-demo {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    margin-bottom: clamp(36px, 3.6vw, 52px);
-  }
-  .v-caption .eyebrow {
-    grid-column: 1;
-    grid-row: 2;
-    margin-bottom: 16px;
-  }
-  .v-caption .h2 {
-    grid-column: 1;
-    grid-row: 3;
-  }
-  .v-caption .lede {
-    grid-column: 2;
-    grid-row: 2 / span 2;
-    align-self: start;
   }
 }
 
