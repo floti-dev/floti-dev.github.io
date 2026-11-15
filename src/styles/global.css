@@ -87,6 +87,11 @@ code {
   fill: var(--hi);
   transition: fill var(--swap);
 }
+/* the app icon's square: light grey on Gold, sky blue on Sky, as on the brand sheet */
+.logo-svg .ground {
+  fill: var(--word);
+  transition: fill var(--swap);
+}
 
 /* ---------- background parallax: the ship silhouettes and faint code */
 
@@ -175,19 +180,21 @@ code {
   align-items: center;
   gap: 20px;
 }
+/* the app icon and the wordmark, the letters' body (not the f's tail) on the
+ * icon's centre line */
 .brand {
   display: inline-flex;
-  align-items: flex-end;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   height: 34px;
   text-decoration: none;
 }
-.brand-mark {
-  height: 34px;
+.brand-icon {
+  height: 32px;
 }
 .brand-word {
   height: 19px;
-  margin-bottom: 4px;
+  margin-top: 3px;
 }
 .nav-links {
   display: flex;
@@ -805,29 +812,51 @@ html:not(.js) .demo-ctl {
   z-index: 1;
   border-top: 1px solid var(--edge);
 }
+/* One row on one centre line: the icon, the line 14px after it, the licence
+ * at the far end. Both texts set 14px on a 22px line, so they share a
+ * baseline. On a phone the icon spans two rows and the line and the licence
+ * stack beside it, on one left edge. */
 .foot-in {
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 28px var(--gutter) 36px;
-  display: flex;
-  flex-wrap: wrap;
+  padding: 32px var(--gutter);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px 24px;
+  column-gap: 14px;
   font-size: 14px;
+  line-height: 22px;
   color: var(--muted);
 }
-.foot-mark {
-  height: 26px;
+.foot-icon {
+  height: 30px;
 }
 .foot p {
   margin: 0;
 }
 .foot-license {
-  margin-left: auto;
+  justify-self: end;
   color: var(--muted);
 }
-.foot-license:hover {
-  color: var(--text);
+@media (hover: hover) {
+  .foot-license:hover {
+    color: var(--text);
+  }
+}
+@media (max-width: 640px) {
+  .foot-in {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding-block: 24px 20px;
+  }
+  /* centred on the two lines of text, not on the licence's taller target */
+  .foot-icon {
+    grid-row: 1 / span 2;
+    height: 40px;
+    margin-bottom: 10px;
+  }
+  .foot-license {
+    justify-self: start;
+  }
 }
 
 @media (max-width: 640px) {
@@ -865,10 +894,6 @@ html:not(.js) .demo-ctl {
   }
   .brand {
     height: 44px;
-    align-items: center;
-  }
-  .brand-word {
-    margin-bottom: -6px;
   }
   .lede {
     font-size: 18px;

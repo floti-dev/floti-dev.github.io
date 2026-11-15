@@ -33,7 +33,10 @@ const csp = [
     <meta name="color-scheme" content="dark" />
     <!-- the demos' numbers (a test card, timers) are not phone numbers to iOS -->
     <meta name="format-detection" content="telephone=no" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- the app icon in each palette; the palette script turns on the one that
+         matches (Gold without script) -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" data-palette-icon="gold" />
+    <link rel="icon" href="/favicon-sky.svg" type="image/svg+xml" data-palette-icon="sky" media="not all" />
     <script is:inline src="/palette.js"></script>
   </head>
   <body>
