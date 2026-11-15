@@ -94,16 +94,6 @@ sections:
       or update it, and your agents keep working. Open it again and they are where
       you left them.
 
-  # Principles: the quiet row of four promises.
-  principles:
-    label: Principles
-    headline: Yours, on your machines.
-    items:
-      - Floti never reads or stores your agent's credentials.
-      - Your own SSH and your own login. No account, no service in between.
-      - It contacts nothing on its own except its update check.
-      - Your agent runs in its own terminal, untouched.
-
   # Install: the last section, with the install command again. The only place
   # the page names an agent.
   install:

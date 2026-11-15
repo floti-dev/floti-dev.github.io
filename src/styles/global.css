@@ -533,58 +533,6 @@ html:not(.js) .demo-ctl {
   display: none;
 }
 
-/* ---------- principles */
-
-.principles {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
-  border-top: 1px solid var(--edge);
-}
-.principles li {
-  padding: 22px 24px 4px 0;
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--text);
-}
-.principles li + li {
-  padding-left: 24px;
-  border-left: 1px solid var(--edge);
-}
-.principles li::before {
-  content: '';
-  display: block;
-  width: 18px;
-  height: 2px;
-  margin-bottom: 14px;
-  background: var(--lead);
-}
-@media (max-width: 860px) {
-  .principles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .principles li:nth-child(3) {
-    padding-left: 0;
-    border-left: 0;
-  }
-}
-@media (max-width: 520px) {
-  .principles {
-    grid-template-columns: 1fr;
-  }
-  .principles li,
-  .principles li + li {
-    padding: 18px 0 4px;
-    border-left: 0;
-  }
-  .principles li + li {
-    border-top: 1px solid var(--edge);
-  }
-}
-
 /* ---------- install section and footer */
 
 .launch {

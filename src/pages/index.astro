@@ -1,6 +1,6 @@
 ---
 /* The floti.dev home page. Composition first, then the fleet; plugins, the
- * browser and persistence next; the principles and the install command last.
+ * browser and persistence next; the install command last.
  * Every word outside the demos' drawings comes from copy.yaml. */
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
@@ -62,16 +62,6 @@ const { nav, hero, sections, footer } = copy;
     <Feature id="plugins" text={sections.plugins}><PluginsDemo /></Feature>
     <Feature id="browser" text={sections.browser}><BrowserDemo /></Feature>
     <Feature id="persistence" text={sections.persistence}><PersistDemo /></Feature>
-
-    <section class="feature wrap" aria-labelledby="principles">
-      <div class="feature-text">
-        <p class="eyebrow">{sections.principles.label}</p>
-        <h2 class="h2" id="principles">{sections.principles.headline}</h2>
-      </div>
-      <ul class="principles">
-        {sections.principles.items.map((item) => <li>{item}</li>)}
-      </ul>
-    </section>
 
     <section class="feature launch wrap" aria-labelledby="install">
       <div class="feature-text">

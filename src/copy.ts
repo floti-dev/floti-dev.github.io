@@ -30,7 +30,6 @@ const SHAPE = {
     plugins: { label: TEXT, headline: TEXT, lede: TEXT },
     browser: { label: TEXT, headline: TEXT, lede: TEXT },
     persistence: { label: TEXT, headline: TEXT, lede: TEXT },
-    principles: { label: TEXT, headline: TEXT, items: LIST },
     install: { label: TEXT, headline: TEXT, lede: TEXT, guide_link: TEXT, github_link: TEXT },
   },
   demos: {
