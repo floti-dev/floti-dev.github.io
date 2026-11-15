@@ -28,18 +28,18 @@
 # floti setup, update and uninstall, and docs/PACKAGING.md in the floti
 # repository). When the code changes, change this to match.
 title: Install Floti
-description: One command installs Floti on a Mac, a Windows PC or a Linux computer, with no admin rights. What it installs, where it goes, and how to update or remove it.
+description: One command installs Floti on a Mac, a Windows PC or a Linux computer, with no admin rights. This page covers what it installs, where it goes and how to update or remove it.
 lede: One command installs Floti on a Mac, a Windows PC or a Linux computer. It doesn't need admin rights, and updating it takes one command too.
 notice: Floti isn't released yet. The commands below go live with the first stable release, which puts the install scripts on floti.dev. Until then, they won't find anything to download.
 ---
 
 ## What you need
 
-- **Claude Code, installed and signed in,** on each computer your agents run on. Floti starts it the way you would. Support for other agents is coming.
+- **Claude Code, installed and signed in,** on each computer your agents run on. Floti starts it in a terminal, the same way you would. Support for other agents is coming.
 - **A computer Floti runs on:** a Mac with Apple Silicon, a Windows PC or a Linux computer, on x64 or Arm. WSL counts as Linux.
 - **For a computer you use remotely, SSH access to it.** `ssh` followed by its name should log you in from a terminal without asking for a password, because Floti uses your own SSH and types nothing into it.
 
-Nothing needs admin rights. If Claude Code is missing, or is a version Floti was not tested with, setup says so and gives you the line to run.
+Nothing needs admin rights. If Claude Code is missing, or is a version Floti wasn't tested with, setup says so and gives you the line to run.
 
 ## What each computer gets
 
@@ -69,7 +69,7 @@ You can also let the Floti app do it. In Settings > Hosts it installs `floti` on
 3. It puts `floti` in your own folder: `~/.local/bin` on a Mac and Linux, `%LOCALAPPDATA%\Programs\Floti\bin` on Windows. On Windows it also adds that folder to your Path.
 4. It runs `floti setup`, which:
    - checks that Claude Code is installed;
-   - on a Mac and Linux, adds `~/.local/bin` to your PATH if it is not there: one line, ending `# added by floti`, at the end of the startup file your shell reads (`~/.zshenv` for zsh), and it tells you which file;
+   - on a Mac and Linux, adds `~/.local/bin` to your PATH if it isn't there: one line, ending `# added by floti`, at the end of the startup file your shell reads (`~/.zshenv` for zsh), and it tells you which file;
    - makes Floti's data folder and the host's key;
    - sets the host to start: at each sign-in on a Mac and Linux, when it is needed on Windows. On a Linux server it turns on lingering, so the host runs from boot.
 5. On a computer with a screen, setup asks: `Install the Floti desktop app as well? [Y/n]`. Yes runs `floti add desktop`, which downloads the app from the same release, checks its signature and SHA-256, and installs it in your own folder.
@@ -86,7 +86,7 @@ irm https://floti.dev/install.ps1
 
 ## Where Floti puts things
 
-Everything goes in your own user folders. Nothing asks for sudo or a Windows admin prompt. The one exception: on a Linux server where your account may not turn on lingering, setup stops and says that an administrator can run `sudo loginctl enable-linger` with your user name.
+Everything goes in your own user folders, and nothing asks for sudo or a Windows admin prompt. There's one exception: on a Linux server where your account isn't allowed to turn on lingering, setup stops and tells you that an administrator can run `sudo loginctl enable-linger` with your user name.
 
 ### macOS
 
@@ -140,7 +140,7 @@ Neither touches your agent's own settings, `~/.ssh` or any repository. On Linux,
 
 ## Install by hand
 
-If you would rather not pipe a script to a shell, download and check `floti` yourself. Every file in a release has a minisign signature beside it, named after the file with `.minisig` added, and a GitHub build attestation.
+If you'd rather not pipe a script to a shell, download and check `floti` yourself. Every file in a release has a minisign signature beside it, named after the file with `.minisig` added, and a GitHub build attestation.
 
 1. On the [releases page](https://github.com/floti-dev/floti/releases/latest), note the version and pick your file:
 
@@ -197,7 +197,7 @@ Move-Item $f "$bin\floti.exe"
 
 Homebrew and winget install `floti` on its own, without the app. Run `floti setup` after either one.
 
-On a Mac or Linux, trust Floti's tap first, because Homebrew loads no formula from a tap you have not trusted:
+On a Mac or Linux, trust Floti's tap first, because Homebrew loads no formula from a tap you haven't trusted:
 
 ```sh
 brew trust floti-dev/tap && brew install floti-dev/tap/floti

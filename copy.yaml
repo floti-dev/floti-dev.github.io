@@ -29,8 +29,9 @@ hero:
   headline: Your fleet of coding agents.
   lede: >-
     Floti runs your coding agents on every computer you have, from one window.
-    It gives each project the setup it needs, lets your agents start helpers of
-    their own, and keeps your sessions running after you close the window.
+    It sets up each project with what it needs and lets your agents start
+    helpers of their own. Your sessions keep running after you close the app,
+    too.
 
 # The install command box, in the hero, in the install section and at the top
 # of the install guide.
@@ -59,11 +60,11 @@ sections:
     label: Composition
     headline: Every codebase you need, in one session.
     lede: >-
-      Put the projects you work on into a workspace, and Floti puts them together
-      into one session. Each repository brings its own instructions and skills,
+      Add the projects you work on to a workspace, and Floti opens them together
+      in one session. Each repository brings its own instructions and skills,
       and your profile adds the shared ones on top, so one agent can work across
-      all of them. Floti does this at launch and never edits your agent's own
-      settings.
+      all of them. Floti sets this up each time a session starts and never edits
+      your agent's own settings.
 
   # The fleet: sessions that start helpers, and every machine in one window.
   fleet:
@@ -81,7 +82,7 @@ sections:
     label: Plugins
     headline: Build your own tools into it.
     lede: >-
-      A plugin is a folder you write. It can add a page to the sidebar, an item to
+      A plugin is a folder of files you write. It can add a page to the sidebar, an item to
       the status bar and tools your agents can call. I use mine to track my work
       and keep notes, and you can wire in your own services the same way.
 
@@ -90,10 +91,11 @@ sections:
     label: Built-in tools
     headline: A browser your agents can drive.
     lede: >-
-      Your agents can open pages, click around, read them and take screenshots in
-      a browser pane next to their terminal, in tabs you can watch (or share with
-      them). Floti hands these tools to each session when it starts and takes
-      them back when it ends.
+      Your agents get a browser pane next to their terminal, where they can open
+      pages, click around, read what's on them and take screenshots. You can
+      watch their tabs as they work, and share one of your own when you want
+      them to look at it. Floti hands these tools to each session when it starts
+      and takes them back when it ends.
 
   # Persistence: sessions outlive the window.
   persistence:
@@ -102,7 +104,8 @@ sections:
     lede: >-
       A small host on each machine holds your sessions, so they keep running
       whether you close Floti, it crashes or it updates itself. When you open it
-      again, everything is where you left it.
+      again, the same tabs are there, and each terminal shows what happened while
+      you were away.
 
   # Install: the last section, with the install command again. The only place
   # the page names an agent.
@@ -155,15 +158,15 @@ demos:
   descriptions:
     hero: >-
       The Floti window: a project opens from the sidebar, a session starts in it,
-      another tab turns to needs you, the session starts two helpers that appear
+      another tab's status changes to needs you, the session starts two helpers that appear
       beside it as a family, and a note opens in Files.
     composition: >-
       A workspace takes three projects: harbor-api, tidewater-web and
       lantern-docs. Each joins the session with its own instructions and skills,
       and the backend profile adds shared instructions, skills and tools on top.
       The session opens in a launch folder that links all three repositories, and
-      the agent adds a field to the API and to the checkout form that uses it: one
-      change across two repositories.
+      the agent adds a delivery note to the checkout form and to the API that
+      saves it, editing two of the three repositories.
     fleet: >-
       One Floti window shows three machines in its sidebar: this PC, a server
       called build-box 24 milliseconds away and a laptop 41 milliseconds away,
