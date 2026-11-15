@@ -1,0 +1,302 @@
+---
+/* Agents that run agents. A lead session launches three helpers, drawn as a
+ * small fleet of the brand's longship; each works in a terminal you can watch, and
+ * their reports travel back to the lead as short lines. The lead's ship is
+ * the demo's one mark in the highlight colour. At rest: all three reported. */
+import Demo from '../Demo.astro';
+import Logo from '../Logo.astro';
+
+const helpers = [
+  {
+    key: 'scout',
+    task: 'Find every caller of upload().',
+    out: '4 callers in 3 files',
+    word: 'done',
+    tone: 'end',
+    report: 'done · 4 callers, one ignores the result',
+  },
+  {
+    key: 'tester',
+    task: 'Run the upload tests until green.',
+    out: '✗ 1 failed: timeout in retry.test.ts',
+    word: 'needs you',
+    tone: 'need',
+    report: 'needs you · may it raise the test timeout?',
+  },
+  {
+    key: 'docs',
+    task: 'Write the retry change up in NOTES.md.',
+    out: 'Wrote docs/NOTES.md',
+    word: 'turn ended',
+    tone: 'end',
+    report: 'turn ended · NOTES.md updated',
+  },
+] as const;
+---
+
+<Demo name="fleet" caption="A lead session called fix upload retry starts three helpers, scout, tester and docs, each in its own terminal. Their reports come back to the lead: scout is done, tester needs you, docs ended its turn.">
+  <div class="fleet">
+    <svg class="wakes" viewBox="0 0 960 440" aria-hidden="true">
+      <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="67" />
+      <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="202" />
+      <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="337" />
+    </svg>
+
+    <div class="lead" data-k="lead">
+      <div class="tile"><Logo kind="mark" /></div>
+    </div>
+    <div class="lead-label">
+      <span class="cap">Lead</span>
+      <span class="ln1">fix upload retry</span>
+    </div>
+
+    <div class="log">
+      <div class="log-head"><span class="dot"></span>fix upload retry <span class="sub">reports</span></div>
+      {
+        helpers.map((h) => (
+          <div class="log-line" data-k="log">
+            <span class="arrow">←</span>
+            <span class="who">{h.key}</span>
+            <span class:list={['what', h.tone]}>{h.report}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    {
+      helpers.map((h, i) => (
+        <div class:list={['helper', `at-${i}`]} data-k="helper">
+          <div class="ship" data-k="ship"><Logo kind="mark" /></div>
+          <div class="info">
+            <div class="row">
+              <span class="name">{h.key}</span>
+              <span class="state">
+                <span class="chip work gone" data-k={`work-${h.key}`}><span class="dot" />working</span>
+                <span class:list={['chip', h.tone]} data-k={`final-${h.key}`}>
+                  <span class:list={['dot', h.tone === 'need' ? 'need' : 'idle']} />
+                  {h.word}
+                </span>
+              </span>
+            </div>
+            <div class="mini">
+              <span class="tl" data-k={`t-${h.key}`}><span class="t-y">›</span> {h.task}</span>
+              <span class:list={['tl', h.tone === 'need' ? 't-r' : 't-ok']} data-k={`o-${h.key}`}>{h.out}</span>
+            </div>
+          </div>
+          <span class:list={['report', h.tone]} data-k={`rep-${h.key}`}>{h.word}</span>
+        </div>
+      ))
+    }
+  </div>
+</Demo>
+
+<style>
+  .fleet {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font: 400 13px/1.5 var(--body);
+    color: var(--fl-fg);
+  }
+  .wakes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .wakes line {
+    stroke: var(--fl-border-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .lead {
+    position: absolute;
+    left: 56px;
+    top: 70px;
+    width: 150px;
+    height: 150px;
+  }
+  .tile {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: end start;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--word);
+    padding: 18px 26px 0 0;
+  }
+  .tile :global(svg) {
+    height: 126px;
+  }
+  .tile :global(.ship) {
+    fill: var(--ship);
+  }
+  .lead-label {
+    position: absolute;
+    left: 56px;
+    top: 230px;
+    display: grid;
+    gap: 2px;
+  }
+  .cap {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg-subtle);
+  }
+  .ln1 {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .log {
+    position: absolute;
+    left: 40px;
+    top: 296px;
+    width: 452px;
+    padding: 10px 14px 12px;
+    background: var(--term);
+    border: 1px solid var(--fl-border);
+    border-radius: 4px;
+    font: 400 11.5px/1.75 var(--mono);
+    color: var(--term-fg);
+  }
+  .log-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font: 500 11.5px/1.6 var(--body);
+    color: var(--fl-fg);
+  }
+  .log-head .sub {
+    color: var(--term-dim);
+    font-weight: 400;
+  }
+  .log-line {
+    display: flex;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  .arrow {
+    color: var(--term-dim);
+  }
+  .who {
+    width: 6ch;
+    color: var(--term-blue);
+  }
+  .what.need {
+    color: var(--fl-warn);
+  }
+
+  .helper {
+    position: absolute;
+    left: 556px;
+    width: 400px;
+    height: 100px;
+    display: flex;
+    gap: 18px;
+  }
+  .at-0 {
+    top: 30px;
+  }
+  .at-1 {
+    top: 165px;
+  }
+  .at-2 {
+    top: 300px;
+  }
+  .ship {
+    flex: none;
+    width: 62px;
+    height: 76px;
+  }
+  .ship :global(svg) {
+    height: 76px;
+  }
+  .ship :global(.ship) {
+    fill: var(--light);
+  }
+  .ship :global(.hi) {
+    fill: var(--deep);
+  }
+  .info {
+    display: grid;
+    gap: 7px;
+    align-content: start;
+    min-width: 0;
+    padding-top: 4px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .name {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .state {
+    display: inline-grid;
+  }
+  .state > * {
+    grid-area: 1 / 1;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--fl-border-strong);
+    color: var(--fl-fg-muted);
+    white-space: nowrap;
+  }
+  .chip.need {
+    color: var(--fl-warn);
+    border-color: color-mix(in srgb, var(--fl-warn) 50%, transparent);
+  }
+  .chip.work {
+    color: var(--fl-fg);
+  }
+  .mini {
+    display: grid;
+    width: 300px;
+    padding: 7px 10px;
+    background: var(--term);
+    border: 1px solid var(--fl-border);
+    border-radius: 4px;
+    font: 400 10.5px/1.6 var(--mono);
+    color: var(--term-fg);
+    white-space: nowrap;
+  }
+  .tl {
+    display: block;
+    min-height: 1.6em;
+  }
+  .report {
+    position: absolute;
+    left: -36px;
+    top: 26px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font: 500 11px/1 var(--body);
+    white-space: nowrap;
+    background: var(--fl-surface-raised);
+    border: 1px solid var(--fl-border-strong);
+    color: var(--fl-fg);
+    opacity: 0;
+    visibility: hidden;
+  }
+  .report.need {
+    color: var(--fl-warn);
+    border-color: color-mix(in srgb, var(--fl-warn) 55%, transparent);
+  }
+</style>

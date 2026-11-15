@@ -1,0 +1,242 @@
+---
+/* The hero's window, looping. At rest it shows the middle of the story: a
+ * session in harbor-api with its two helpers beside it as a family, and a
+ * second tab that needs you. The loop opens the project, starts the session,
+ * turns the other tab to "needs you", starts the helpers, then opens a note
+ * in Files. Every name here is invented. */
+import Demo from '../Demo.astro';
+import FlotiWindow from '../FlotiWindow.astro';
+import Icon from '../Icon.astro';
+---
+
+<Demo name="hero" loop bare caption="The Floti window: a project opens from the sidebar, a session starts in it, another tab turns to needs you, the session starts two helpers that appear beside it as a family, and a note opens in Files.">
+  <FlotiWindow badge shadow>
+    <Fragment slot="side">
+      <div class="side-panel" data-k="side-sessions">
+        <div class="fw-side-head">
+          <span class="t">Sessions</span>
+          <span class="fw-icon-btn"><Icon name="plus" /></span>
+          <span class="fw-icon-btn"><Icon name="refresh" /></span>
+          <span class="fw-icon-btn"><Icon name="folderplus" /></span>
+        </div>
+        <div class="fw-filter">Filter projects and sessions</div>
+        <div class="fw-tree">
+          <div class="fw-label"><Icon name="caret" class="caret" />Work <span class="n">4</span><span class="r swap"><span data-k="run-1" class="gone">1 running</span><span data-k="run-2" class="gone">2 running</span><span data-k="run-4">4 running</span></span></div>
+          <div class="fw-row" data-k="proj-harbor">
+            <Icon name="repo" class="ico" /><span class="name">harbor-api</span>
+            <span class="branch swap"><span data-k="harbor-branch">main</span><span class="row-go gone" data-k="harbor-go"><Icon name="terminal" /></span></span>
+          </div>
+          <div class="fw-row session sel parent grow" data-k="row-fix"><span class="dot"></span><span class="name">fix upload retry</span><span class="word acc">6m</span></div>
+          <div class="fw-row session child grow" data-k="row-kid"><span class="dot"></span><span class="name">scout</span><span class="word">1m</span></div>
+          <div class="fw-row session child last grow" data-k="row-kid"><span class="dot"></span><span class="name">tester</span><span class="word">1m</span></div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">tidewater-web</span><span class="branch">feature/checkout</span></div>
+          <div class="fw-row session need" data-k="row-checkout">
+            <span class="dot need" data-k="checkout-dot"></span><span class="name">checkout form</span>
+            <span class="word swap"><span data-k="checkout-2m" class="gone">2m</span><span class="need" data-k="checkout-need">needs you</span></span>
+          </div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">lantern-docs</span><span class="branch">main</span></div>
+          <div class="fw-row"><Icon name="folder" class="ico" /><span class="name">keel</span><span class="branch">release/2.4</span></div>
+          <div class="fw-rule"></div>
+          <div class="fw-label"><Icon name="caret" class="caret" />Personal <span class="n">2</span></div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">dotfiles</span><span class="branch">main</span></div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">recipes</span><span class="branch">main</span></div>
+        </div>
+        <div class="fw-side-foot"><Icon name="terminal" class="foot-ico" />4 sessions on this PC</div>
+      </div>
+      <div class="side-panel gone" data-k="side-files">
+        <div class="fw-side-head">
+          <span class="t">Files</span>
+          <span class="pill mono">harbor-api</span>
+        </div>
+        <div class="fw-filter">Go to file</div>
+        <div class="fw-tree files">
+          <div class="frow"><Icon name="caretright" class="car" /><span>.github</span></div>
+          <div class="frow"><Icon name="caret" class="car" /><span>docs</span><span class="mdot"></span></div>
+          <div class="frow in"><Icon name="file" class="pg" /><span>api.md</span></div>
+          <div class="frow in" data-k="file-notes"><Icon name="file" class="pg" /><span>NOTES.md</span><span class="git m">M</span></div>
+          <div class="frow"><Icon name="caretright" class="car" /><span>src</span><span class="mdot"></span></div>
+          <div class="frow"><Icon name="caretright" class="car" /><span>test</span></div>
+          <div class="frow"><Icon name="file" class="pg" /><span>package.json</span></div>
+          <div class="frow"><Icon name="file" class="pg" /><span>README.md</span></div>
+          <div class="frow"><Icon name="file" class="pg" /><span>tsconfig.json</span></div>
+        </div>
+        <div class="fw-side-foot">2 changed files</div>
+      </div>
+    </Fragment>
+
+    <div class="fw-island fw-pane" data-k="pane">
+      <div class="fw-strip">
+        <span class="fw-tab" data-k="tab-checkout"><span class="dot need" data-k="tab-checkout-dot"></span><span class="label">checkout form</span><span class="need-word" data-k="tab-need">needs you</span></span>
+        <span class="fw-tab on" data-k="tab-fix"><span class="dot"></span><span class="label">fix upload retry</span></span>
+        <span class="fw-tab hide" data-k="tab-notes"><Icon name="file" /><span class="label">NOTES.md</span></span>
+        <span class="fw-strip-plus"><Icon name="plus" /></span>
+        <span class="fw-strip-ctl"><span><Icon name="split" /></span><span><Icon name="max" /></span></span>
+      </div>
+      <div class="fw-crumb swapc">
+        <span class="crumb gone" data-k="crumb-checkout">tidewater-web <span class="mono">feature/checkout</span></span>
+        <span class="crumb" data-k="crumb-fix">harbor-api <span class="mono">main</span><span class="sep">·</span>2 helpers</span>
+        <span class="crumb gone" data-k="crumb-notes">harbor-api <span class="sep">/</span> <span class="mono">docs/NOTES.md</span></span>
+      </div>
+      <div class="fw-body">
+        <div class="view gone" data-k="view-checkout">
+          <div class="fw-term"><span class="ln"><span class="t-y">›</span> The Pay button does nothing on Safari. Find out why.</span><span class="ln t-dim">  Reading src/checkout/PayButton.tsx</span><span class="ln t-dim">  Reading src/checkout/useCard.ts</span><span class="ln">  The click handler waits on a promise that never</span><span class="ln">  settles when the card field is empty.</span><span class="ln">  Checking how the field is validated.</span><span class="ln"><span class="t-cursor"></span></span></div>
+        </div>
+        <div class="view fam" data-k="view-fix">
+          <div class="fam-parent" data-k="fam-parent">
+            <div class="fw-term" data-k="term-fix"><span class="ln" data-k="l-prompt"><span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.</span><span class="ln t-dim" data-k="l">  Reading src/upload/client.ts</span><span class="ln t-dim" data-k="l">  Reading src/upload/retry.ts</span><span class="ln" data-k="l">  It gives up after the first 503.</span><span class="ln" data-k="l">  Adding backoff with jitter.</span><span class="ln" data-k="l">  <span class="t-ok">Edit</span> src/upload/retry.ts  <span class="t-ok">+18</span> <span class="t-r">−4</span></span><span class="ln" data-k="l2">  Two helpers: one finds callers, one runs tests.</span><span class="ln" data-k="l2"><span class="t-dim">  $</span> floti agent start <span class="t-b">scout</span></span><span class="ln" data-k="l2"><span class="t-dim">  $</span> floti agent start <span class="t-b">tester</span></span><span class="ln t-dim" data-k="l3">  Waiting on scout and tester.</span><span class="ln" data-k="l3"><span class="t-cursor"></span></span></div>
+          </div>
+          <div class="fw-kids fam-kids" data-k="fam-kids">
+            <div class="fw-kid">
+              <div class="fw-kid-head"><span class="dot"></span><span class="n">scout</span><span class="fw-tag">agent</span><span class="state">Working · 1m</span></div>
+              <div class="fw-term"><span class="ln" data-k="ks"><span class="t-y">›</span> Find every caller of upload().</span><span class="ln t-dim" data-k="ks">  Searching src/ for upload(</span><span class="ln" data-k="ks">  4 callers in 3 files</span><span class="ln" data-k="ks">  src/sync/push.ts:41 ignores the result</span></div>
+            </div>
+            <div class="fw-kid">
+              <div class="fw-kid-head"><span class="dot"></span><span class="n">tester</span><span class="fw-tag">agent</span><span class="state">Working · 1m</span></div>
+              <div class="fw-term"><span class="ln" data-k="kt"><span class="t-y">›</span> Run the upload tests until green.</span><span class="ln t-dim" data-k="kt">  npm test -- upload</span><span class="ln" data-k="kt">  <span class="t-ok">✓ 11 passed</span>  <span class="t-r">✗ 1 failed</span></span><span class="ln" data-k="kt">  Fixing the timeout in retry.test.ts</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="view gone" data-k="view-notes">
+          <div class="fw-doc">
+            <h4 data-k="doc">Upload retries</h4>
+            <p data-k="doc">The client now retries a 503 three times, with backoff and jitter, and gives up with a clear error after that.</p>
+            <h5 data-k="doc">Left to do</h5>
+            <ul data-k="doc"><li>Retry on 429 as well</li><li>Log each retry with its attempt number</li></ul>
+            <h5 data-k="doc">Try it</h5>
+            <pre data-k="doc">npm test -- upload</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Fragment slot="status">
+      <span>Floti 3.1.0</span>
+      <span class="bar"></span>
+      <span class="grp"><span class="dot"></span><span class="swap"><span data-k="st-1" class="gone">1 working</span><span data-k="st-2" class="gone">2 working</span><span data-k="st-3">3 working</span></span></span>
+      <span class="grp need" data-k="st-need"><span class="dot need"></span>1 needs you</span>
+      <span class="bar"></span>
+      <span>This PC · quit keeps sessions</span>
+    </Fragment>
+  </FlotiWindow>
+  <svg class="cursor gone" data-k="cursor" viewBox="0 0 18 22"><path d="M2 2l12.5 11.2-5.6.6 3.2 6.6-2.6 1.2-3.2-6.7L2 19z" /></svg>
+  <span class="click-ring" data-k="ring"></span>
+</Demo>
+
+<style>
+  .side-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .swap {
+    display: inline-grid;
+    justify-items: end;
+  }
+  .swap > :global(*) {
+    grid-area: 1 / 1;
+  }
+  .row-go {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    margin-right: -4px;
+    border-radius: 4px;
+    background: var(--fl-hover);
+    color: var(--fl-fg);
+  }
+  .row-go :global(svg) {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  .grow {
+    overflow: hidden;
+  }
+  .fw-side-foot :global(.foot-ico) {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+  }
+  .pill {
+    font-size: 11px;
+    font-weight: 400;
+    padding: 2px 8px;
+    border: 1px solid var(--fl-border-strong);
+    border-radius: 999px;
+    color: var(--fl-fg-muted);
+  }
+  .files .frow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--fl-fg);
+  }
+  .files .frow.in {
+    padding-left: 30px;
+  }
+  .files .frow :global(.car),
+  .files .frow :global(.pg) {
+    flex: none;
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: var(--fl-fg-subtle);
+    stroke-width: 1.5;
+  }
+  .files .frow .git {
+    margin-left: auto;
+    font: 400 10.5px/1 var(--mono);
+  }
+  .files .frow .git.m {
+    color: var(--fl-warn);
+  }
+  .files .frow .mdot {
+    margin-left: auto;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--fl-warn);
+  }
+  .files .frow.sel {
+    background: var(--fl-active);
+  }
+  .fw-tab.hide {
+    display: none;
+  }
+  .swapc {
+    display: grid;
+  }
+  .swapc > .crumb {
+    grid-area: 1 / 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .view {
+    position: absolute;
+    inset: 0;
+  }
+  .fam-parent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 55%;
+  }
+  .fam-kids {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 45%;
+  }
+</style>

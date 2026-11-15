@@ -1,0 +1,180 @@
+---
+/* Sessions outlive the window. The window closes; the fleet below keeps
+ * sailing, held by the host on this PC, its sessions still counting turns.
+ * The window opens again on the same tabs, with what happened meanwhile.
+ * At rest: the window open again, the counters at their later values. */
+import Demo from '../Demo.astro';
+import FlotiWindow from '../FlotiWindow.astro';
+import Icon from '../Icon.astro';
+import Logo from '../Logo.astro';
+
+const ships = [
+  { name: 'fix upload retry', from: 14, to: 19, lead: true },
+  { name: 'scout', from: 6, to: 9, lead: false },
+  { name: 'nightly build', from: 31, to: 38, lead: false },
+  { name: 'meal planner', from: 3, to: 5, lead: false },
+];
+---
+
+<Demo name="persist" caption="The Floti window closes while four sessions keep running on the host, each still counting its turns. The window opens again on the same three tabs, with the work done meanwhile in the terminal.">
+  <div class="persist">
+    <div class="win" data-k="win">
+      <FlotiWindow side={false}>
+        <div class="fw-island fw-pane">
+          <div class="fw-strip">
+            <span class="fw-tab on"><span class="dot"></span><span class="label">fix upload retry</span></span>
+            <span class="fw-tab"><span class="dot"></span><span class="label">nightly build</span></span>
+            <span class="fw-tab"><span class="dot"></span><span class="label">meal planner</span></span>
+            <span class="fw-strip-plus"><Icon name="plus" /></span>
+          </div>
+          <div class="fw-crumb">harbor-api <span class="mono">main</span></div>
+          <div class="fw-body">
+            <div class="fw-term"><span class="ln"><span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.</span><span class="ln">  <span class="t-ok">Edit</span> src/upload/retry.ts  <span class="t-ok">+18</span> <span class="t-r">−4</span></span><span class="ln t-dim">  Waiting on scout.</span><span class="ln" data-k="away">  scout reported: 4 callers, one ignores the result.</span><span class="ln" data-k="away">  <span class="t-ok">Edit</span> src/sync/push.ts  <span class="t-ok">+6</span> <span class="t-r">−1</span></span><span class="ln" data-k="away">  npm test -- upload   <span class="t-ok">✓ 12 passed</span></span></div>
+          </div>
+        </div>
+        <Fragment slot="status">
+          <span>Floti 3.1.0</span>
+          <span class="bar"></span>
+          <span class="grp"><span class="dot"></span>4 working</span>
+          <span class="bar"></span>
+          <span>This PC · quit keeps sessions</span>
+        </Fragment>
+      </FlotiWindow>
+    </div>
+    <div class="closed gone" data-k="closed">
+      <span class="dot ring"></span>
+      <span>Floti is closed. The host on this PC keeps 4 sessions running.</span>
+    </div>
+
+    <div class="sea">
+      <svg class="waves" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+        <path data-k="wave" d="M0 20 Q 37.5 8 75 20 T 150 20 T 225 20 T 300 20 T 375 20 T 450 20 T 525 20 T 600 20 T 675 20 T 750 20 T 825 20 T 900 20 T 975 20 T 1050 20 T 1125 20 T 1200 20" />
+      </svg>
+      <div class="host"><span class="dot ring"></span><span class="mono">floti host</span><span class="sub">this PC</span></div>
+      {
+        ships.map((s) => (
+          <div class:list={['boat', { lead: s.lead }]} data-k="boat">
+            <div class="hull" data-k="hull"><Logo kind="mark" /></div>
+            <div class="bn">{s.name}</div>
+            <div class="turn mono">
+              turn <span data-k="turn" data-from={s.from} data-to={s.to}>{s.to}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Demo>
+
+<style>
+  .persist {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font: 400 13px/1.5 var(--body);
+    color: var(--fl-fg);
+  }
+  .win {
+    position: absolute;
+    left: 120px;
+    right: 120px;
+    top: 0;
+    height: 300px;
+    transform-origin: 50% 60%;
+  }
+  .closed {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 130px;
+    width: max-content;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    white-space: nowrap;
+    font-size: 14px;
+    color: var(--fl-fg-muted);
+    border: 1px dashed var(--fl-border-strong);
+    border-radius: 999px;
+  }
+  .sea {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 44px;
+    padding-bottom: 6px;
+  }
+  .waves {
+    position: absolute;
+    left: -120px;
+    right: -120px;
+    bottom: 58px;
+    width: calc(100% + 240px);
+    height: 22px;
+  }
+  .waves path {
+    fill: none;
+    stroke: var(--fl-border-strong);
+    stroke-width: 1.5;
+  }
+  .host {
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--fl-fg-muted);
+  }
+  .host .mono {
+    font-family: var(--mono);
+    color: var(--fl-fg);
+  }
+  .host .sub {
+    color: var(--fl-fg-subtle);
+  }
+  .boat {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    width: 150px;
+  }
+  .hull {
+    height: 74px;
+    margin-bottom: 6px;
+    transform-origin: 50% 90%;
+  }
+  .hull :global(svg) {
+    height: 74px;
+  }
+  .boat:not(.lead) .hull :global(.ship) {
+    fill: var(--light);
+  }
+  .boat:not(.lead) .hull :global(.hi) {
+    fill: var(--deep);
+  }
+  .boat.lead .hull :global(.ship) {
+    fill: var(--light);
+  }
+  .bn {
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .turn {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fl-fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

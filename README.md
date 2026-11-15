@@ -1,15 +1,37 @@
 # floti.dev
 
-The website for Floti, served at [floti.dev](https://floti.dev) by GitHub Pages
-from `main`, as it is: no build step and no Jekyll (`.nojekyll`). `CNAME`
-holds the domain.
+The website for Floti, served at [floti.dev](https://floti.dev) by GitHub Pages.
+`CNAME` holds the domain.
+
+The home page is built with [Astro](https://astro.build) into static files;
+the install page and the not-found page are plain HTML in `public/` and are
+copied into the build unchanged. GitHub Pages has to serve the built `dist/`
+folder (a Pages workflow), not the repository as it is.
+
+```sh
+npm install
+npm run dev            # http://localhost:4321
+npm run build          # dist/, what GitHub Pages serves
+npm run preview:bundle # build, then preview/: the home page with every file it
+                       # needs, linked by relative paths, for a hosted preview
+```
 
 - Nothing on the site comes from another origin: no script, font, image,
-  stylesheet or tracker. Each page's Content-Security-Policy says so, and a
-  page that needs something from elsewhere is the wrong page.
-- The colours and rules are the app's design system (`docs/DESIGN.md` in the
-  app's repository): Daylight in a light scheme, Nocturne in a dark one.
-  `site.css` names each role the way the app does, and a change to a value
-  starts there.
-- Every page works at phone width, in light and dark.
-- The release workflow copies the install scripts here.
+  stylesheet or tracker. Fonts are self-hosted from `@fontsource`. Each page's
+  Content-Security-Policy allows the site's own files and nothing inline, so
+  the build never inlines a stylesheet or script and markup has no `style`
+  attributes.
+- The home page is written in the two brand palettes, Gold and Sky; the toggle in
+  the nav switches them and remembers the choice. `src/styles/tokens.css`
+  holds both, and the matching Floti themes for the app window in the demos.
+- The logo, wordmark and ship silhouette in `src/assets/brand/` are traced
+  from the vector paths of the approved brand artwork and coloured from the
+  palette tokens.
+- Each section's demo is drawn in HTML, CSS and SVG and animated with GSAP:
+  it plays once when it comes into view, pauses off screen, and keeps its
+  final frame under reduced motion. Only the demos ship JavaScript.
+- The install and not-found pages still use the app's own colours
+  (`public/site.css`, named after the roles in the app's design system).
+- Every page works at phone width.
+- Install scripts the release workflow publishes belong in `public/`, so the
+  build carries them.

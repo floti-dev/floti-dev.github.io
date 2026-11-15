@@ -1,0 +1,229 @@
+---
+/* A browser your agents can drive. The session opens the app it is building
+ * in a browser pane, fills the checkout form and presses Pay; the pointer
+ * moves on its own, the terminal beside it shows each tool call, and the
+ * session reports what broke. The page is the app's own ground, as Floti
+ * draws foreign content. At rest: the error on the page and the report. */
+import Demo from '../Demo.astro';
+import FlotiWindow from '../FlotiWindow.astro';
+import Icon from '../Icon.astro';
+
+const fields = [
+  ['name', 'Name', 'Sam Rivera'],
+  ['email', 'Email', 'sam@example.com'],
+  ['card', 'Card number', '4242 4242 4242 4242'],
+] as const;
+---
+
+<Demo name="browser" caption="A session opens its app's checkout page in a browser pane beside its terminal, types a name, an email and a card number, presses Pay, and takes a screenshot. The terminal lists each browser tool call, and the session reports that payment fails because the server rejects a card number with spaces.">
+  <FlotiWindow on="browser" side={false}>
+    <div class="split">
+      <div class="fw-island fw-pane">
+        <div class="fw-strip">
+          <span class="fw-tab on"><Icon name="globe" /><span class="label">Checkout · tidewater</span></span>
+          <span class="fw-strip-plus"><Icon name="plus" /></span>
+        </div>
+        <div class="bbar">
+          <span class="nav"><Icon name="arrowleft" /><Icon name="arrowright" /><Icon name="refresh" /></span>
+          <span class="url mono"><Icon name="lock" class="lk" /><span data-k="url">localhost:5173/checkout</span></span>
+          <span class="shared">watched by checkout form</span>
+        </div>
+        <div class="fw-body">
+          <div class="page" data-k="page">
+            <div class="site">
+              <span class="logo">tidewater</span>
+              <span class="cart">Cart · 2</span>
+            </div>
+            <div class="form">
+              <h4>Checkout</h4>
+              {
+                fields.map(([key, label, value]) => (
+                  <label class="field">
+                    <span class="fl">{label}</span>
+                    <span class="input" data-k={`f-${key}`}>
+                      <span class="val" data-k={`v-${key}`}>{value}</span>
+                    </span>
+                  </label>
+                ))
+              }
+              <span class="pay" data-k="pay">Pay $24.00</span>
+              <span class="err" data-k="err">Payment failed. Please try again.</span>
+            </div>
+            <div class="flash" data-k="flash"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fw-island fw-pane">
+        <div class="fw-strip">
+          <span class="fw-tab on"><span class="dot"></span><span class="label">checkout form</span></span>
+          <span class="fw-strip-plus"><Icon name="plus" /></span>
+        </div>
+        <div class="fw-crumb">tidewater-web <span class="mono">feature/checkout</span></div>
+        <div class="fw-body">
+          <div class="fw-term"><span class="ln" data-k="b-prompt"><span class="t-y">›</span> Click through checkout. What breaks?</span><span class="ln" data-k="b-open"><span class="t-ok">●</span> <span class="t-b">browser_open</span>  localhost:5173/checkout</span><span class="ln" data-k="b-name"><span class="t-ok">●</span> <span class="t-b">browser_type</span>  Name  <span class="t-dim">"Sam Rivera"</span></span><span class="ln" data-k="b-email"><span class="t-ok">●</span> <span class="t-b">browser_type</span>  Email <span class="t-dim">"sam@example.com"</span></span><span class="ln" data-k="b-card"><span class="t-ok">●</span> <span class="t-b">browser_type</span>  Card  <span class="t-dim">"4242 4242 …"</span></span><span class="ln" data-k="b-click"><span class="t-ok">●</span> <span class="t-b">browser_click</span> "Pay $24.00"</span><span class="ln" data-k="b-shot"><span class="t-ok">●</span> <span class="t-b">browser_screenshot</span></span><span class="ln" data-k="b-rep">  Pay fails: POST /api/pay answers 500</span><span class="ln" data-k="b-rep">  when the card number has spaces. The</span><span class="ln" data-k="b-rep">  form sends it as typed; the server wants</span><span class="ln" data-k="b-rep">  digits only. Strip them in useCard.ts?</span></div>
+        </div>
+      </div>
+    </div>
+    <Fragment slot="status">
+      <span>Floti 3.1.0</span>
+      <span class="bar"></span>
+      <span class="grp"><span class="dot"></span>1 working</span>
+      <span class="bar"></span>
+      <span>This PC · quit keeps sessions</span>
+    </Fragment>
+  </FlotiWindow>
+  <svg class="cursor gone" data-k="cursor" viewBox="0 0 18 22"><path d="M2 2l12.5 11.2-5.6.6 3.2 6.6-2.6 1.2-3.2-6.7L2 19z" /></svg>
+  <span class="click-ring" data-k="ring"></span>
+</Demo>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: 57% minmax(0, 1fr);
+    gap: 6px;
+    min-height: 0;
+  }
+  .bbar {
+    flex: none;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    border-bottom: 1px solid var(--fl-border);
+  }
+  .nav {
+    display: flex;
+    gap: 6px;
+    color: var(--fl-fg-subtle);
+  }
+  .nav :global(svg),
+  .url :global(.lk) {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  .url {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 9px;
+    font-size: 11.5px;
+    color: var(--fl-fg-muted);
+    background: var(--fl-surface-sunken);
+    border: 1px solid var(--fl-border);
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .url :global(.lk) {
+    width: 12px;
+    height: 12px;
+    color: var(--fl-fg-subtle);
+  }
+  .shared {
+    font-size: 10.5px;
+    color: var(--fl-accent-text);
+    background: var(--fl-accent-soft);
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  /* the app under test paints its own ground, in every theme */
+  .page {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #f6f5f1;
+    color: #1f2328;
+    font: 400 13px/1.5 var(--body);
+  }
+  .site {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 44px;
+    padding: 0 22px;
+    border-bottom: 1px solid #e3e1da;
+    background: #ffffff;
+  }
+  .logo {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #1d5c63;
+  }
+  .cart {
+    font-size: 12px;
+    color: #59606a;
+  }
+  .form {
+    display: grid;
+    gap: 11px;
+    width: 300px;
+    margin: 20px auto 0;
+  }
+  .form h4 {
+    margin: 0 0 2px;
+    font-size: 19px;
+    font-weight: 600;
+  }
+  .field {
+    display: grid;
+    gap: 4px;
+  }
+  .fl {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #3d434b;
+  }
+  .input {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 10px;
+    background: #ffffff;
+    border: 1px solid #cfccc3;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .input.focus {
+    border-color: #1d5c63;
+    box-shadow: 0 0 0 3px rgb(29 92 99 / 0.18);
+  }
+  .val {
+    white-space: nowrap;
+  }
+  .pay {
+    display: grid;
+    place-items: center;
+    height: 36px;
+    margin-top: 4px;
+    border-radius: 6px;
+    background: #1d5c63;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .pay.down {
+    background: #164a50;
+    transform: scale(0.98);
+  }
+  .err {
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: #fbe9e7;
+    border: 1px solid #f0b8b0;
+    color: #a3271b;
+    font-size: 12px;
+  }
+  .flash {
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    opacity: 0;
+    visibility: hidden;
+  }
+</style>

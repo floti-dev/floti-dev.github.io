@@ -1,0 +1,40 @@
+---
+/* The background: the brand's ship silhouette and faint lines of Floti's own
+ * commands at three depths. The script moves each layer by a share of the
+ * scroll (data-depth), so far layers drift slower than the page; content is
+ * never on these layers. With reduced motion, or no script, they stay put. */
+import Logo from './Logo.astro';
+---
+
+<div class="px" aria-hidden="true">
+  <div class="px-layer px-far" data-depth="0.55">
+    <div class="px-ship px-s5 flip"><Logo kind="silhouette" /></div>
+    <div class="px-ship px-s6"><Logo kind="silhouette" /></div>
+    <div class="px-ship px-s7 flip"><Logo kind="silhouette" /></div>
+    <pre class="px-code px-c7">profile backend
+  instructions  shared, project
+  skills        review, release-notes
+  tools         browser, agents</pre>
+    <pre class="px-code px-c8">build-box   3 sessions   24 ms
+laptop      2 sessions   41 ms</pre>
+    <pre class="px-code px-c9">floti session title "retry uploads"</pre>
+  </div>
+  <div class="px-layer px-mid" data-depth="0.35">
+    <div class="px-ship px-s2 flip"><Logo kind="silhouette" /></div>
+    <div class="px-ship px-s8"><Logo kind="silhouette" /></div>
+    <pre class="px-code px-c1">floti agent start scout --wait</pre>
+    <pre class="px-code px-c3">agents_report  done
+agents_report  needs you
+agents_report  turn ended</pre>
+    <pre class="px-code px-c5">browser_open   localhost:5173/checkout
+browser_click  "Pay"</pre>
+  </div>
+  <div class="px-layer px-near" data-depth="0.18">
+    <div class="px-ship px-s1"><Logo kind="silhouette" /></div>
+    <div class="px-ship px-s3"><Logo kind="silhouette" /></div>
+    <div class="px-ship px-s4 flip"><Logo kind="silhouette" /></div>
+    <pre class="px-code px-c2">$ floti agent wait --background</pre>
+    <pre class="px-code px-c4">tasks.update HB-14 in_progress</pre>
+    <pre class="px-code px-c6">floti agent stop scout</pre>
+  </div>
+</div>

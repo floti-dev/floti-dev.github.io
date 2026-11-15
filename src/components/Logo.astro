@@ -1,0 +1,27 @@
+---
+/* The brand artwork, traced from the vector paths of the approved logo into
+ * src/assets/brand. Inlined so the page's tokens colour each part: .ship the
+ * body, .word the letters, .hi the f, </>, eye and underscore. */
+import mark from '../assets/brand/ship-mark.svg?raw';
+import word from '../assets/brand/wordmark.svg?raw';
+import silhouette from '../assets/brand/ship-silhouette.svg?raw';
+
+interface Props {
+  kind: 'mark' | 'word' | 'silhouette';
+  class?: string;
+  /** An accessible name; without one the drawing is decorative. */
+  label?: string;
+}
+
+const { kind, class: className, label } = Astro.props;
+const source = { mark, word, silhouette }[kind];
+
+// Swap the file's own role and name for the ones this use needs.
+const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+const svg = source
+  .trim()
+  .replace(/\s(role|aria-label)="[^"]*"/g, '')
+  .replace('<svg ', `<svg class="logo-svg${className ? ` ${className}` : ''}" ${a11y} preserveAspectRatio="xMinYMin meet" `);
+---
+
+<Fragment set:html={svg} />

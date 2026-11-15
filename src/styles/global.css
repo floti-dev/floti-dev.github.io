@@ -1,0 +1,673 @@
+/* The page: one dark reading column on the brand's ground, headlines in JetBrains
+ * Mono ExtraBold Italic after the wordmark, running text in IBM Plex Sans.
+ * The highlight colour (--hi) is kept to the logo's f, </> and underscore,
+ * the install prompt and one mark per demo; links and marks use --lead. */
+
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-800-italic.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import './tokens.css';
+@import './app.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--ground);
+  transition: background-color var(--swap);
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--ground);
+  color: var(--text);
+  font: 400 17px/1.6 var(--body);
+  transition:
+    background-color var(--swap),
+    color var(--swap);
+}
+
+a {
+  color: var(--lead);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--lead);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- logo (inline SVG, coloured from tokens so the toggle reaches it) */
+
+.logo-svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  overflow: visible;
+}
+.logo-svg .ship {
+  fill: var(--ship);
+  transition: fill var(--swap);
+}
+.logo-svg .word {
+  fill: var(--word);
+  transition: fill var(--swap);
+}
+.logo-svg .hi {
+  fill: var(--hi);
+  transition: fill var(--swap);
+}
+
+/* ---------- background parallax: the ship silhouettes and faint code */
+
+.px {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.px-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.px-ship {
+  position: absolute;
+  display: block;
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+}
+.px-ship .ship {
+  fill: var(--silhouette);
+  transition: fill var(--swap);
+}
+.px-ship.flip {
+  transform: scaleX(-1);
+}
+.px-code {
+  position: absolute;
+  margin: 0;
+  font: 400 13px/1.9 var(--mono);
+  color: var(--code-ghost);
+  white-space: pre;
+  transition: color var(--swap);
+}
+.px-far .px-code {
+  font-size: 11px;
+}
+.px-near .px-code {
+  font-size: 15px;
+}
+
+/* positions: each item is placed by class, because the page's CSP allows no
+ * inline style attributes */
+.px-s1 { top: 7%; left: 0; width: min(560px, 60vw); }
+.px-s2 { top: 31%; right: 0; width: min(420px, 50vw); }
+.px-s3 { top: 52%; left: 0; width: min(360px, 44vw); }
+.px-s4 { top: 72%; right: 0; width: min(520px, 58vw); }
+.px-s5 { top: 18%; right: 0; width: min(260px, 34vw); }
+.px-s6 { top: 44%; left: 0; width: min(240px, 30vw); }
+.px-s7 { top: 63%; right: 0; width: min(220px, 30vw); }
+.px-s8 { top: 86%; left: 0; width: min(300px, 36vw); }
+.px-c1 { top: 4%; right: 4%; }
+.px-c2 { top: 23%; left: 3%; }
+.px-c3 { top: 39%; right: 3%; }
+.px-c4 { top: 57%; left: 4%; }
+.px-c5 { top: 69%; right: 5%; }
+.px-c6 { top: 81%; left: 3%; }
+.px-c7 { top: 13%; left: 6%; }
+.px-c8 { top: 48%; right: 7%; }
+.px-c9 { top: 92%; right: 4%; }
+
+/* ---------- nav */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 84%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--edge);
+  transition: background-color var(--swap);
+}
+.nav-in {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 10px var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.brand {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 34px;
+  text-decoration: none;
+}
+.brand-mark {
+  height: 34px;
+}
+.brand-word {
+  height: 19px;
+  margin-bottom: 4px;
+}
+.nav-links {
+  display: flex;
+  gap: 18px;
+  margin-left: auto;
+  font: 500 14px/1 var(--body);
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 2px;
+}
+.nav-links a:hover {
+  color: var(--text);
+}
+
+.toggle {
+  display: inline-flex;
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.toggle button {
+  font: 600 12px/1 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 13px;
+  min-height: 32px;
+  cursor: pointer;
+  transition:
+    background-color var(--swap),
+    color var(--swap);
+}
+.toggle button:hover {
+  color: var(--text);
+}
+.toggle button[aria-pressed='true'] {
+  color: var(--deep);
+  background: var(--lead);
+}
+html:not(.js) .toggle {
+  display: none;
+}
+
+/* ---------- page column and sections */
+
+main {
+  position: relative;
+  z-index: 1;
+}
+.wrap {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.hero {
+  position: relative;
+  padding-top: clamp(40px, 6vw, 72px);
+}
+.hero-text {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  max-width: 760px;
+}
+.hero-word {
+  height: clamp(50px, 8vw, 88px);
+  margin-bottom: 4px;
+}
+.hero-word .hi {
+  animation: blink 1.1s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+h1,
+.h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--light);
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.04;
+}
+.h2 {
+  font-size: clamp(28px, 4.4vw, 48px);
+  line-height: 1.08;
+}
+.lede {
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(18px, 2vw, 21px);
+  line-height: 1.55;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+.hero-stage {
+  position: relative;
+  margin-top: clamp(40px, 5vw, 60px);
+}
+.hero-ship {
+  position: absolute;
+  z-index: 0;
+  left: max(-16vw, -230px);
+  bottom: 4%;
+  width: min(540px, 62vw);
+  pointer-events: none;
+}
+.hero-ship-rock {
+  transform-origin: 50% 100%;
+}
+.hero-ship .ship {
+  fill: var(--silhouette);
+  transition: fill var(--swap);
+}
+.hero-ship svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+}
+.hero-stage .demo {
+  position: relative;
+  z-index: 1;
+}
+
+.feature {
+  padding-top: clamp(96px, 14vw, 168px);
+}
+.feature-text {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  max-width: 680px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.eyebrow {
+  margin: 0;
+  font: 600 12px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.eyebrow.lead {
+  color: var(--lead);
+}
+
+/* ---------- install box */
+
+.install {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  max-width: 600px;
+}
+.install-os {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.install-os input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.install-os label {
+  font: 500 13px/1 var(--body);
+  color: var(--muted);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.install-os label:hover {
+  color: var(--text);
+}
+.install-os input:checked + label {
+  color: var(--text);
+  background: var(--raised);
+  box-shadow: inset 0 -2px 0 var(--lead);
+}
+.install-os input:focus-visible + label {
+  outline: 2px solid var(--lead);
+  outline-offset: 2px;
+}
+.install-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--deep);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  padding: 6px 6px 6px 16px;
+  transition: background-color var(--swap);
+}
+.install-line {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  font: 400 clamp(12.5px, 1.6vw, 15px) / 2.4 var(--mono);
+  color: var(--text);
+  scrollbar-width: thin;
+}
+.install-line .p {
+  color: var(--hi);
+  margin-right: 0.6em;
+  user-select: none;
+}
+.install:has(input[value='windows']:checked) .install-line[data-os='unix'],
+.install:not(:has(input[value='windows']:checked)) .install-line[data-os='windows'] {
+  display: none;
+}
+.copy {
+  flex: none;
+  font: 500 13px/1 var(--body);
+  color: var(--text);
+  background: var(--raised);
+  border: 1px solid var(--edge-strong);
+  border-radius: 7px;
+  padding: 10px 14px;
+  min-width: 74px;
+  cursor: pointer;
+  transition: background-color var(--swap);
+}
+.copy:hover {
+  border-color: var(--lead);
+}
+.copy[data-copied] {
+  color: var(--lead-text);
+}
+html:not(.js) .copy {
+  display: none;
+}
+.install-note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ---------- demo frame */
+
+.demo {
+  position: relative;
+  background: color-mix(in srgb, var(--deep) 78%, transparent);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  padding: clamp(10px, 2.4vw, 28px);
+  transition: background-color var(--swap);
+}
+.demo.bare {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.stage {
+  --w: 960;
+  --h: 540;
+  --s: 1;
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--w) * 1px);
+  margin: 0 auto;
+  aspect-ratio: var(--w) / var(--h);
+}
+.stage-in {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--w) * 1px);
+  height: calc(var(--h) * 1px);
+  transform-origin: 0 0;
+  transform: scale(var(--s));
+}
+/* Until the script measures a stage, a step scale keeps it inside the column. */
+@media (max-width: 1100px) { .stage:not([data-fit]) { --s: 0.8; } }
+@media (max-width: 860px) { .stage:not([data-fit]) { --s: 0.62; } }
+@media (max-width: 640px) { .stage:not([data-fit]) { --s: 0.44; } }
+@media (max-width: 460px) { .stage:not([data-fit]) { --s: 0.36; } }
+
+/* each demo's drawing size */
+.st-hero { --w: 1040; --h: 600; }
+.st-compose { --w: 960; --h: 440; }
+.st-fleet { --w: 960; --h: 440; }
+.st-machines { --w: 960; --h: 540; }
+.st-plugins { --w: 960; --h: 540; }
+.st-browser { --w: 960; --h: 520; }
+.st-persist { --w: 960; --h: 470; }
+
+.demo-ctl {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: clamp(8px, 1.4vw, 14px);
+}
+.replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 13px/1 var(--body);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+  padding: 7px 13px 7px 10px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.replay:hover {
+  color: var(--text);
+  border-color: var(--lead);
+}
+.replay svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.replay .i-play {
+  fill: currentColor;
+  stroke: none;
+}
+.replay:not([data-mode='play']) .i-play,
+.replay:not([data-mode='replay']) .i-replay,
+.replay:not([data-mode='pause']) .i-pause {
+  display: none;
+}
+html:not(.js) .demo-ctl {
+  display: none;
+}
+
+/* ---------- principles */
+
+.principles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--edge);
+}
+.principles li {
+  padding: 22px 24px 4px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.principles li + li {
+  padding-left: 24px;
+  border-left: 1px solid var(--edge);
+}
+.principles li::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 2px;
+  margin-bottom: 14px;
+  background: var(--lead);
+}
+@media (max-width: 860px) {
+  .principles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .principles li:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+@media (max-width: 520px) {
+  .principles {
+    grid-template-columns: 1fr;
+  }
+  .principles li,
+  .principles li + li {
+    padding: 18px 0 4px;
+    border-left: 0;
+  }
+  .principles li + li {
+    border-top: 1px solid var(--edge);
+  }
+}
+
+/* ---------- install section and footer */
+
+.launch {
+  padding-bottom: clamp(80px, 12vw, 140px);
+}
+.launch .install {
+  margin-top: 8px;
+}
+.launch-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 6px 0 0;
+  font-size: 15px;
+}
+
+.foot {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--edge);
+}
+.foot-in {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 28px var(--gutter) 36px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.foot-mark {
+  height: 26px;
+}
+.foot p {
+  margin: 0;
+}
+.foot-links {
+  display: flex;
+  gap: 18px;
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+  /* demos take the full width of a phone */
+  .demo:not(.bare) {
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 10px 0 12px;
+    border-radius: 0;
+    border-inline: 0;
+  }
+  .demo-ctl {
+    padding-inline: var(--gutter);
+  }
+  .demo.bare {
+    margin-inline: calc(-1 * var(--gutter) + 6px);
+  }
+  .nav-in {
+    gap: 12px;
+  }
+  .nav-links .wide {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+  .hero-word .hi {
+    animation: none;
+  }
+}
+
+.px-far {
+  opacity: 0.5;
+}
+.px-mid {
+  opacity: 0.75;
+}
