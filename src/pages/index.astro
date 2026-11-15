@@ -16,6 +16,7 @@ import PersistDemo from '../components/demos/PersistDemo.astro';
 import { copy } from '../copy';
 
 const github = 'https://github.com/floti-dev';
+const license = 'https://github.com/floti-dev/floti/blob/main/LICENSE';
 const { nav, hero, sections, footer } = copy;
 ---
 
@@ -85,10 +86,7 @@ const { nav, hero, sections, footer } = copy;
     <div class="foot-in">
       <Logo kind="mark" class="foot-mark" />
       <p>{footer.line}</p>
-      <nav class="foot-links" aria-label="Footer">
-        <a href="/install/">{footer.install}</a>
-        <a href={github}>{footer.github}</a>
-      </nav>
+      <a class="foot-license" href={license}>{footer.license}</a>
     </div>
   </footer>
 </Base>

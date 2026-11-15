@@ -60,7 +60,7 @@ const SHAPE = {
       persistence: TEXT,
     },
   },
-  footer: { line: TEXT, install: TEXT, github: TEXT },
+  footer: { line: TEXT, license: TEXT },
 } as const;
 
 type Shape = { readonly [key: string]: typeof TEXT | typeof LIST | Shape };

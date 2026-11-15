@@ -177,8 +177,8 @@ demos:
       a clock shows the time passing. When Floti opens again it is on the same
       tabs, and each terminal marks what happened while you were away.
 
-# The line along the bottom of the page.
+# The line along the bottom of the page: the ship, this line, and on the right
+# the licence, linked to the LICENSE file in the floti repository.
 footer:
   line: Floti is Old Norse for a fleet, said FLOH-tee.
-  install: Install
-  github: GitHub
+  license: Open source, MIT License

@@ -822,10 +822,12 @@ html:not(.js) .demo-ctl {
 .foot p {
   margin: 0;
 }
-.foot-links {
-  display: flex;
-  gap: 18px;
+.foot-license {
   margin-left: auto;
+  color: var(--muted);
+}
+.foot-license:hover {
+  color: var(--text);
 }
 
 @media (max-width: 640px) {
@@ -898,7 +900,7 @@ html:not(.js) .demo-ctl {
 @media (max-width: 899.98px) {
   .nav-links a,
   .launch-links a,
-  .foot-links a {
+  .foot-license {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -945,7 +947,7 @@ html:not(.js) .demo-ctl {
   .copy,
   .replay,
   .launch-links a,
-  .foot-links a {
+  .foot-license {
     position: relative;
   }
   .nav-links a::after,
@@ -954,7 +956,7 @@ html:not(.js) .demo-ctl {
   .copy::after,
   .replay::after,
   .launch-links a::after,
-  .foot-links a::after {
+  .foot-license::after {
     content: '';
     position: absolute;
     inset: -7px -4px;
