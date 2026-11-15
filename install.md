@@ -193,18 +193,6 @@ Move-Item $f "$bin\floti.exe"
 & "$bin\floti.exe" setup
 ```
 
-### The app by hand
-
-The app is in the same release, listed with its SHA-256s in `Floti-<version>-desktop-SHA256SUMS`, each file with its signature:
-
-- Windows: `Floti-<version>-setup.exe`, which installs for you alone, with no admin rights.
-- Mac: `Floti-<version>-arm64.dmg`, or the same app zipped as `Floti-<version>-arm64-mac.zip`.
-- Linux: `Floti-<version>-linux-x64.AppImage`, for glibc 2.34 or later: Ubuntu 22.04, Debian 12, Fedora 35 and anything newer.
-
-The app puts `floti` in your own folder and sets up the host, as the command does.
-
-Floti's builds are not signed by Apple or Microsoft. A Mac stops an app downloaded in a browser the first time you open it: open System Settings > Privacy & Security, choose Open Anyway, and open the app again. Windows may show a SmartScreen warning for the setup file: choose More info, then Run anyway. The command, `floti add desktop` and `floti update` need neither, because the files `floti` downloads carry no download mark.
-
 ## Homebrew and winget
 
 Homebrew and winget install `floti` on its own, without the app. Run `floti setup` after either one.
