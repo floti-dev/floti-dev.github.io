@@ -37,6 +37,7 @@ const SHAPE = {
       states: { working: TEXT, needs_you: TEXT, done: TEXT, turn_ended: TEXT, stopped: TEXT },
       needs_you_count: TEXT,
       hint: TEXT,
+      hint_touch: TEXT,
       answer: TEXT,
       answered_by_you: TEXT,
       answered_by_demo: TEXT,

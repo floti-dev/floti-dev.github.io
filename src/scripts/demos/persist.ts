@@ -73,10 +73,19 @@ export const persist: Builder = (root, ctx) => {
     ship: k(root, `ship-${d.key}`),
   }));
 
-  // the window shrinks into the app icon and grows back out of it
-  const winAt = centre(win, stage);
-  const appAt = centre(k(root, 'app'), stage);
-  const shrunk = { x: appAt.x - winAt.x, y: appAt.y - winAt.y, scale: 0.05, autoAlpha: 0 };
+  // the window shrinks into the app icon and grows back out of it; measured
+  // each time it goes, while it still stands where it rests
+  const app = k(root, 'app');
+  let shrunk = { x: 0, y: 0, scale: 0.05, autoAlpha: 0 };
+  const measure = () => {
+    const winAt = centre(win, stage);
+    const appAt = centre(app, stage);
+    shrunk = { x: appAt.x - winAt.x, y: appAt.y - winAt.y, scale: 0.05, autoAlpha: 0 };
+  };
+  measure();
+  /** False once the demo is torn down to be built again: a sequence still
+   * under way stops where it is. */
+  const alive = () => !ctx.signal.aborted;
 
   let mode: 'open' | 'closed' = 'open';
   let busy = false;
@@ -106,8 +115,10 @@ export const persist: Builder = (root, ctx) => {
     s.turnEl.textContent = `turn ${n}`;
     s.hostTurn.textContent = `turn ${n}`;
   };
+  /** How far along its lane a ship is, 0 to 1; the styles place it, along
+   * the lane on a desktop and down it on a phone. */
   const placeShip = (s: Session) => {
-    s.ship.style.left = `calc(${(s.x * 100).toFixed(2)}% - ${Math.round(s.x * 32)}px)`;
+    s.ship.style.setProperty('--x', s.x.toFixed(4));
   };
 
   /** A session writes its next line; its turn count rises with its work. */
@@ -200,6 +211,7 @@ export const persist: Builder = (root, ctx) => {
 
   const close = (message = text.closed): Promise<void> => {
     setBusy(true);
+    measure();
     markAway();
     setMode('closed');
     return new Promise((done) => {
@@ -225,6 +237,7 @@ export const persist: Builder = (root, ctx) => {
 
   const crash = () => {
     // no animation: the window is simply gone
+    measure();
     markAway();
     setMode('closed');
     gsap.set(win, { autoAlpha: 0 });
@@ -271,12 +284,15 @@ export const persist: Builder = (root, ctx) => {
       .fromTo(updateBar, { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: 'power1.inOut' })
       .to(update, { autoAlpha: 0, duration: 0.2 }, '+=0.15')
       .then();
+    if (!alive()) return;
     await close(text.updating);
     setBusy(true);
     await gsap.delayedCall(1.4, () => {}).then();
+    if (!alive()) return;
     versionEl.textContent = `Floti ${version}`;
     say.textContent = text.updated;
     await gsap.delayedCall(0.7, () => {}).then();
+    if (!alive()) return;
     await open();
     gsap.fromTo(updated, { display: 'inline-block', autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
     gsap.to(updated, { autoAlpha: 0, duration: 0.4, delay: 4, onComplete: () => void gsap.set(updated, { display: 'none' }) });
@@ -290,7 +306,7 @@ export const persist: Builder = (root, ctx) => {
     else if (name === 'update' && mode === 'open') void upgrade();
     else if (name === 'open' && mode === 'closed') void open();
   };
-  buttons.forEach((b) => b.addEventListener('click', () => act(b.dataset.act ?? '')));
+  buttons.forEach((b) => b.addEventListener('click', () => act(b.dataset.act ?? ''), { signal: ctx.signal }));
 
   // ---- the start frame and the first sequence
 
@@ -326,6 +342,16 @@ export const persist: Builder = (root, ctx) => {
   tl.call(() => {
     if (!driven && mode === 'closed' && !busy) void open();
   }, [], 7.6);
+
+  // torn down to be built again: Floti stands open, its controls free
+  ctx.signal.addEventListener('abort', () => {
+    gsap.killTweensOf([win, host, update, updateBar, updated]);
+    gsap.set(win, { x: 0, y: 0, scale: 1, autoAlpha: 1 });
+    gsap.set(host, { autoAlpha: 0 });
+    gsap.set(update, { autoAlpha: 0 });
+    setMode('open');
+    setBusy(false);
+  });
 
   setMode('open');
   if (!instant) reset();

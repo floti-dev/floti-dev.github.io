@@ -3,7 +3,11 @@
  * in a browser pane, fills the checkout form and presses Pay; the pointer
  * moves on its own, the terminal beside it shows each tool call, and the
  * session reports what broke. The page is the app's own ground, as Floti
- * draws foreign content. At rest: the error on the page and the report. */
+ * draws foreign content. At rest: the error on the page and the report.
+ *
+ * On a phone the browser pane sits on top, the pointer still filling the
+ * form, and the session's terminal below it lists the tool calls as they
+ * are made, newest at the foot. */
 import Demo from '../Demo.astro';
 import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
@@ -19,7 +23,7 @@ const fields = [
 <Demo name="browser" caption={copy.demos.descriptions.browser}>
   <FlotiWindow on="browser" side={false}>
     <div class="split">
-      <div class="fw-island fw-pane">
+      <div class="fw-island fw-pane browse">
         <div class="fw-strip">
           <span class="fw-tab on"><Icon name="globe" /><span class="label">Checkout · tidewater</span></span>
           <span class="fw-strip-plus"><Icon name="plus" /></span>
@@ -69,8 +73,8 @@ const fields = [
       <span>Floti 3.1.0</span>
       <span class="bar"></span>
       <span class="grp"><span class="dot"></span>1 working</span>
-      <span class="bar"></span>
-      <span>This PC</span>
+      <span class="bar wide"></span>
+      <span class="wide">This PC</span>
     </Fragment>
   </FlotiWindow>
   <svg class="cursor gone" data-k="cursor" viewBox="0 0 18 22"><path d="M2 2l12.5 11.2-5.6.6 3.2 6.6-2.6 1.2-3.2-6.7L2 19z" /></svg>
@@ -226,5 +230,38 @@ const fields = [
     background: #ffffff;
     opacity: 0;
     visibility: hidden;
+  }
+
+  /* the phone layout: the browser pane on top, the tool calls under it */
+  @media (max-width: 899.98px) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .browse {
+      height: 456px;
+    }
+    .browse + .fw-pane .fw-crumb,
+    .shared {
+      display: none;
+    }
+    .url {
+      font-size: 12px;
+    }
+    .site {
+      height: 40px;
+      padding: 0 16px;
+    }
+    .cart,
+    .fl,
+    .err {
+      font-size: 12px;
+    }
+    /* the form keeps its width where the pane allows, 16px from its edges */
+    .form {
+      width: auto;
+      margin: 14px max(16px, (100% - 340px) / 2) 0;
+      gap: 9px;
+    }
   }
 </style>

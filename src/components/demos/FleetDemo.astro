@@ -15,6 +15,11 @@
  * At rest (the final frame): the lead's terminal with all three reports and
  * the merge, the helpers folded into chips under faded tethers, and every
  * machine's sessions in the sidebar.
+ *
+ * On a phone the lead's terminal sits on top and its helpers stack under it
+ * as cards, their tethers running down its left side; the other machines'
+ * sessions (build-box and the laptop) follow as a compact list, side by
+ * side, and the Answer button under the demo is a thumb-size target.
  */
 import Demo from '../Demo.astro';
 import FlotiWindow from '../FlotiWindow.astro';
@@ -191,6 +196,7 @@ const lead: Line[] = [
           machines.map((m, i) => (
             <Fragment>
               {i > 0 && <div class="fw-rule" />}
+              <div class:list={['mach', { local: !m.remote }]}>
               <div class="hrow">
                 <span class="dot ring" />
                 <span class:list={['hn', { mono: m.remote }]}>{m.name}</span>
@@ -227,6 +233,7 @@ const lead: Line[] = [
                   </div>
                 ),
               )}
+              </div>
             </Fragment>
           ))
         }
@@ -263,7 +270,14 @@ const lead: Line[] = [
                 <span class:list={['chip', h.end === 'done' ? 'end' : 'end']} data-k={`chip-${h.key}`}>
                   {text.stopped} · {text[h.end]}
                 </span>
-                {h.key === 'tester' && <span class="hint">{words.hint}</span>}
+                {
+                  h.key === 'tester' && (
+                    <span class="hint">
+                      <span class="by-mouse">{words.hint}</span>
+                      <span class="by-touch">{words.hint_touch}</span>
+                    </span>
+                  )
+                }
                 <span class="timer" data-k={`timer-${h.key}`}>
                   {h.timer}
                 </span>
@@ -294,9 +308,9 @@ const lead: Line[] = [
       <span class="bar"></span>
       <span class="grp"><span class="dot"></span><span data-k="st-work">2 working</span></span>
       <span class="grp need st-need" data-k="st-need"><span class="dot need"></span>{words.needs_you_count}</span>
-      <span class="bar"></span>
-      <span class="grp"><span class="mono">build-box</span> 24 ms</span>
-      <span class="grp"><span class="mono">laptop</span> 41 ms</span>
+      <span class="bar wide"></span>
+      <span class="grp wide"><span class="mono">build-box</span> 24 ms</span>
+      <span class="grp wide"><span class="mono">laptop</span> 41 ms</span>
     </Fragment>
   </FlotiWindow>
 
@@ -567,10 +581,120 @@ const lead: Line[] = [
     display: inline-flex;
   }
 
+  /* the hint names the way a visitor answers: a click, or a tap */
+  .by-touch {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .by-mouse {
+      display: none;
+    }
+    .by-touch {
+      display: inline;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     :global([data-waiting]) .chip.need,
     .lead :global(.ln.landed) {
       animation: none;
+    }
+  }
+
+  /* the phone layout: the lead on top, its helpers stacked under it, and the
+   * other machines as a compact list below */
+  @media (max-width: 899.98px) {
+    :global(.st-fleet .fw-main) {
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    :global(.st-fleet .fw-side) {
+      display: flex;
+      order: 2;
+    }
+    :global(.st-fleet .fw-side-head),
+    :global(.st-fleet .fw-filter),
+    :global(.st-fleet .fw-side-foot),
+    .fw-rule,
+    .mach.local,
+    .mach > .fw-row:not(.session) {
+      display: none;
+    }
+    .fw-tree {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 4px;
+      height: 88px;
+      padding: 4px 0;
+    }
+    .mach + .mach {
+      border-left: 1px solid var(--fl-border);
+    }
+    .hrow {
+      padding: 0 8px 0 10px;
+      font-size: 13px;
+    }
+    .hn.mono,
+    .lat {
+      font-size: 12px;
+    }
+    .mach .fw-row.session {
+      padding: 0 8px 0 24px;
+    }
+    .mach .fw-row.session.child {
+      padding-left: 36px;
+    }
+    .mach .fw-row.parent::before,
+    .mach .fw-row.child::before,
+    .mach .fw-row.child:not(.last)::after {
+      left: 26.5px;
+    }
+
+    .fam {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .lead {
+      width: 100%;
+      height: 196px;
+    }
+    .lead .stream {
+      font-size: 12px;
+    }
+    .col {
+      flex: 1;
+      min-height: 0;
+      padding-left: 38px;
+    }
+    .hp.d2 {
+      margin-left: 38px;
+      width: calc(100% - 38px);
+    }
+    .hp-head {
+      height: 30px;
+      font-size: 13px;
+    }
+    .chip,
+    .timer,
+    .hint,
+    .report {
+      font-size: 12px;
+    }
+    .hp-body {
+      height: 78px;
+    }
+    .hp-body .fw-term {
+      font-size: 12px;
+    }
+    .hp.d2 .hp-body {
+      height: 62px;
+    }
+    .hp.folded .hp-head {
+      height: 28px;
+    }
+    .answer {
+      min-height: 48px;
+      padding: 0 20px;
+      font-size: 15px;
     }
   }
 </style>

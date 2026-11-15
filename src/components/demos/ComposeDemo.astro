@@ -4,7 +4,13 @@
  * layers go on top, and the session opens in a launch folder that links the
  * three real repositories. The agent then makes one change across two of
  * them. No agent is named: the tab says "agent". At rest: the session open,
- * the change made. */
+ * the change made.
+ *
+ * On a phone the three columns stack: the workspace's name, then its
+ * projects and the profile's layers piling up, then the session card they
+ * drop into, with the note about the agent's own settings last. The
+ * project picker's ticks are left out there; each project's layer arriving
+ * on the stack carries that beat. */
 import Demo from '../Demo.astro';
 import Icon from '../Icon.astro';
 import { copy } from '../../copy';
@@ -482,5 +488,81 @@ const profile = [
     font-family: var(--body);
     font-size: 12px;
     color: var(--term-dim);
+  }
+
+  /* the phone layout: one column, workspace to session */
+  @media (max-width: 899.98px) {
+    .cmp {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: auto;
+      padding: 4px 2px 6px;
+    }
+    .col:first-child {
+      display: contents;
+    }
+    /* the workspace file names it */
+    .col:first-child .cap {
+      display: none;
+    }
+    .col + .col {
+      margin-top: 10px;
+    }
+    .cap {
+      font-size: 12px;
+    }
+    .card {
+      padding: 10px 12px;
+    }
+    .ws-head {
+      margin-bottom: 0;
+    }
+    .card .sub,
+    .card .pick,
+    .card .prof {
+      display: none;
+    }
+    .file,
+    .br,
+    .kind,
+    .item,
+    .join,
+    .join .mono,
+    .prof .pd,
+    .tg,
+    .crumb,
+    .crumb .mono,
+    .pill .mono {
+      font-size: 12px;
+    }
+    .note {
+      order: 9;
+      margin: 10px 0 0;
+      font-size: 13px;
+    }
+    .sl {
+      width: 132px;
+      font-size: 13px;
+    }
+    .pill {
+      bottom: 10px;
+    }
+    .pane {
+      flex: none;
+    }
+    .body {
+      flex: none;
+      height: 244px;
+      overflow: hidden;
+    }
+    .term {
+      top: auto;
+      min-height: 100%;
+      font-size: 12px;
+      line-height: 1.62;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
   }
 </style>

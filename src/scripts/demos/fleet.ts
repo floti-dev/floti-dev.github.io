@@ -3,7 +3,7 @@
  * answers tester, reports come home along the tethers; meanwhile the other
  * machines' sessions change in the sidebar on their own. */
 import { gsap } from 'gsap';
-import { flip, k, ks, stageOf, textOf, type Builder, type Timeline } from './kit';
+import { flip, k, ks, stageOf, textOf, typed, type Builder, type Timeline } from './kit';
 
 type Key = 'scout' | 'tester' | 'fixture' | 'docs';
 type State = 'working' | 'need' | 'done' | 'turn_ended';
@@ -48,17 +48,10 @@ function stream(tl: Timeline, els: HTMLElement[], at: number, gap = 0.5): void {
   });
 }
 
-/** A command typed out character by character. */
+/** A command typed out character by character; like a streamed line it
+ * takes no room until it arrives. */
 function type(tl: Timeline, el: HTMLElement, at: number, cps = 34): number {
-  const n = Math.max(1, (el.textContent ?? '').length);
-  const duration = n / cps;
-  tl.fromTo(
-    el,
-    { display: 'none', clipPath: 'inset(0 100% 0 0)' },
-    { display: 'block', clipPath: 'inset(0 0% 0 0)', duration, ease: `steps(${n})` },
-    at,
-  );
-  return at + duration;
+  return typed(tl, el, at, cps, { display: 'none' }, { display: 'block' });
 }
 
 function clock(seconds: number): string {
@@ -124,6 +117,9 @@ export const fleet: Builder = (root, ctx) => {
     return { l: (r.left - f.left) / scale, t: (r.top - f.top) / scale, r: (r.right - f.left) / scale, b: (r.bottom - f.top) / scale };
   };
 
+  // a tether that runs down its parent's side leaves it this far in; on a
+  // phone, far enough that a report riding home stays in view
+  const inset = ctx.phone ? 24 : 12;
   const draw = () => {
     for (const h of helpers) {
       const anchor = box(h.depth === 2 ? testerPane : lead);
@@ -137,7 +133,7 @@ export const fleet: Builder = (root, ctx) => {
         h.tether.setAttribute('d', `M${anchor.r} ${ay}C${anchor.r + dx} ${ay} ${head.l - dx} ${hy} ${head.l} ${hy}`);
       } else {
         // below its parent: down its left side, then in
-        const ax = anchor.l + 12;
+        const ax = anchor.l + inset;
         h.tether.setAttribute('d', `M${ax} ${anchor.b}V${hy}H${head.l}`);
       }
     }
@@ -213,8 +209,11 @@ export const fleet: Builder = (root, ctx) => {
     if (on) arm();
     else auto?.kill();
   });
-  for (const el of [by.tester.chip, k(root, 'st-need'), k(root, 'answer')]) {
-    el.addEventListener('click', () => answer(true));
+  // on a phone the whole of tester's header answers, a target a thumb can find
+  const targets = [by.tester.chip, k(root, 'st-need'), k(root, 'answer')];
+  if (ctx.phone) targets.push(by.tester.head);
+  for (const el of targets) {
+    el.addEventListener('click', () => answer(true), { signal: ctx.signal });
   }
 
   // ---- the start frame
@@ -231,6 +230,23 @@ export const fleet: Builder = (root, ctx) => {
     }
     note.textContent = '';
   };
+
+  /** The final frame's words, as the markup has them. */
+  const finalFrame = () => {
+    setWorking(WORKING_AT_START - 1);
+    setLive(perf, 'stopped', text.done);
+    setLive(meal, 'stopped', text.turn_ended);
+    for (const h of helpers) {
+      setState(h, h.end, true);
+      h.timer.textContent = clock(h.seconds);
+    }
+    note.textContent = `(${text.answered_by_you})`;
+  };
+  // torn down to be built again: the next build measures the final frame
+  ctx.signal.addEventListener('abort', () => {
+    auto?.kill();
+    finalFrame();
+  });
 
   // ---- the timeline
 
@@ -376,10 +392,7 @@ export const fleet: Builder = (root, ctx) => {
   if (ctx.reduced) {
     // the final frame stays until the visitor presses Play
     tl.progress(1, true);
-    for (const h of helpers) {
-      setState(h, h.end, true);
-      h.timer.textContent = clock(h.seconds);
-    }
+    finalFrame();
   } else {
     reset();
   }

@@ -115,7 +115,8 @@ function typeWordmark(): void {
 
 /** Background layers drift slower than the page, each by its own depth.
  * Each layer is made just tall enough that its items cross the screen once
- * over the whole scroll. The hero's ship rocks on a timer while in view. */
+ * over the whole scroll. The hero's ship rocks on a timer while in view.
+ * A phone shows two of the three layers (global.css). */
 function initParallax(): void {
   const layers = Array.from(document.querySelectorAll<HTMLElement>('.px-layer[data-depth]'));
   const size = () => {
@@ -159,14 +160,14 @@ function initParallax(): void {
 }
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** The visitor asked their browser to save data: the background stays still. */
+const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
 initPalette();
 initInstall();
 fitStages();
-if (!reduced) {
-  typeWordmark();
-  initParallax();
-}
+if (!reduced) typeWordmark();
+if (!reduced && !saveData) initParallax();
 // demos measure text, so they wait for the fonts
 document.fonts.ready.then(() => {
   initDemos(reduced);

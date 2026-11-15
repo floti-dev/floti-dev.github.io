@@ -31,6 +31,8 @@ const csp = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
+    <!-- the demos' numbers (a test card, timers) are not phone numbers to iOS -->
+    <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline src="/palette.js"></script>
   </head>

@@ -10,9 +10,19 @@ import { gsap } from 'gsap';
 
 export type Timeline = gsap.core.Timeline;
 
+/** Below this width every demo uses its phone layout: the same elements and
+ * the same timeline, laid out for a narrow screen at the size they are drawn
+ * (global.css and each demo's styles use the same query). */
+export const PHONE_QUERY = '(max-width: 899.98px)';
+
 /** What the runtime tells a demo about where it stands. */
 export interface DemoContext {
   reduced: boolean;
+  /** The demo is laid out for a phone (PHONE_QUERY); a layout change rebuilds it. */
+  phone: boolean;
+  /** Aborted when the demo is torn down to be rebuilt: listeners a builder
+   * adds use it, so a rebuild never doubles them. */
+  signal: AbortSignal;
   visible(): boolean;
   /** Called whenever the demo goes off screen or comes back. */
   onVisibility(watch: (on: boolean) => void): void;
@@ -100,24 +110,73 @@ export function startShown(tl: Timeline, targets: gsap.TweenTarget): Timeline {
   return tl.fromTo(targets, { autoAlpha: 1 }, { autoAlpha: 1, duration: 0.01 }, 0);
 }
 
-/** Terminal lines arriving one after another. */
+/** Terminal lines arriving one after another. In the phone layout a line
+ * takes no room until it arrives, so a short terminal fills like a real one
+ * and its newest line is never pushed out of sight by lines still to come. */
 export function lines(tl: Timeline, els: HTMLElement[], at: number, gap = 0.45): Timeline {
+  const collapse = els[0]?.closest('[data-layout="phone"]') != null;
   els.forEach((el, i) => {
-    tl.fromTo(el, { autoAlpha: 0, y: 3 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power1.out' }, at + i * gap);
+    const from = collapse ? { display: 'none', autoAlpha: 0, y: 3 } : { autoAlpha: 0, y: 3 };
+    const to = collapse ? { display: 'block', autoAlpha: 1, y: 0 } : { autoAlpha: 1, y: 0 };
+    tl.fromTo(el, from, { ...to, duration: 0.18, ease: 'power1.out' }, at + i * gap);
   });
   return tl;
 }
 
-/** A line typed out character by character. */
-export function typed(tl: Timeline, el: HTMLElement, at: number, cps = 38): Timeline {
+interface Row {
+  top: number;
+  width: number;
+}
+
+/** The rows a line wraps onto, top to bottom, in its own pixels. */
+function rowsOf(el: HTMLElement): Row[] {
+  const box = el.getBoundingClientRect();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const rows: Row[] = [];
+  for (const r of Array.from(range.getClientRects())) {
+    if (r.width === 0) continue;
+    const top = r.top - box.top;
+    const right = r.right - box.left;
+    const row = rows.find((x) => Math.abs(x.top - top) < r.height / 2);
+    if (row) row.width = Math.max(row.width, right);
+    else rows.push({ top, width: right });
+  }
+  return rows.sort((a, b) => a.top - b.top);
+}
+
+/** A line typed out character by character; returns when it is done.
+ * `from` and `to` add to the first frame and the typing (a line that takes
+ * no room until it is typed, say). A line that wraps, as lines do in the
+ * phone layout, is typed one row after another. */
+export function typed(tl: Timeline, el: HTMLElement, at: number, cps = 38, from: gsap.TweenVars = { autoAlpha: 1 }, to: gsap.TweenVars = {}): number {
   const chars = Math.max(1, (el.textContent ?? '').length);
-  tl.fromTo(
-    el,
-    { clipPath: 'inset(0 100% 0 0)', autoAlpha: 1 },
-    { clipPath: 'inset(0 0% 0 0)', duration: chars / cps, ease: `steps(${chars})` },
-    at,
-  );
-  return tl;
+  const rows = el.closest('[data-layout="phone"]') ? rowsOf(el) : [];
+  if (rows.length < 2) {
+    const duration = chars / cps;
+    tl.fromTo(el, { clipPath: 'inset(0 100% 0 0)', ...from }, { clipPath: 'inset(0 0% 0 0)', ...to, duration, ease: `steps(${chars})` }, at);
+    return at + duration;
+  }
+  // the rows above the one being typed show whole, the rows below not at all
+  const total = rows.reduce((sum, row) => sum + row.width, 0);
+  const height = el.offsetHeight;
+  let t = at;
+  rows.forEach((row, i) => {
+    const n = Math.max(1, Math.round((chars * row.width) / total));
+    const top = i === 0 ? 0 : row.top;
+    const bottom = i === rows.length - 1 ? height : rows[i + 1].top;
+    const upTo = (x: number) => `polygon(0px 0px, 100% 0px, 100% ${top}px, ${x}px ${top}px, ${x}px ${bottom}px, 0px ${bottom}px)`;
+    const first = i === 0;
+    tl.fromTo(
+      el,
+      { clipPath: upTo(0), ...(first ? from : {}) },
+      { clipPath: upTo(Math.ceil(row.width)), ...(first ? to : {}), duration: n / cps, ease: `steps(${n})`, immediateRender: first },
+      t,
+    );
+    t += n / cps;
+  });
+  tl.set(el, { clipPath: 'inset(0 0% 0 0)' }, t);
+  return t;
 }
 
 /** Rows of a tree that grow in, pushing the rows below them down. */

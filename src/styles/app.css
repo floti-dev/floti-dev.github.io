@@ -737,3 +737,128 @@
   visibility: hidden;
   opacity: 0;
 }
+
+/* ---------- the phone layout (PHONE_QUERY in demos/kit.ts)
+ * Below 900px a demo is not the drawing scaled down: the window is laid out
+ * again at the size it is shown, with only the part of it that tells the
+ * demo's story. The rail, the sidebar and the title strip go (a demo that
+ * needs one brings it back), terminals wrap their lines and keep their
+ * newest line in view, and no text is set under 12px. */
+@media (max-width: 899.98px) {
+  .fw {
+    grid-template-rows: minmax(0, 1fr) 28px;
+    padding-top: var(--gap);
+  }
+  /* a lighter shadow: cheaper to paint as the hero fades in and out */
+  .fw.shadow {
+    box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+  }
+  .fw-title,
+  .fw-rail,
+  .fw-side {
+    display: none;
+  }
+  .fw-main,
+  .fw-main.no-side {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: var(--gap);
+  }
+
+  .fw-side-head {
+    font-size: 13px;
+  }
+  .fw-filter,
+  .fw-side-foot {
+    font-size: 12px;
+  }
+  .fw-label,
+  .fw-label .tpl,
+  .fw-label .r,
+  .fw-row .branch,
+  .fw-row .word {
+    font-size: 12px;
+  }
+
+  .fw-tab {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 210px;
+    padding: 0 12px 0 11px;
+    font-size: 13px;
+  }
+  .fw-tab .need-word,
+  .fw-tab .tag,
+  .fw-tag {
+    flex: none;
+    font-size: 12px;
+  }
+  .fw-tab svg {
+    flex: none;
+  }
+  .fw-strip-plus {
+    flex: none;
+  }
+  .fw-strip-ctl {
+    display: none;
+  }
+  .fw-crumb,
+  .fw-crumb .mono {
+    font-size: 12px;
+  }
+  .fw-crumb {
+    overflow: hidden;
+  }
+
+  /* a terminal wraps like a real one, and when its lines outgrow it the
+   * oldest go off the top: it sits on the foot of its box and is at least
+   * as tall as the box */
+  .fw-body {
+    overflow: hidden;
+  }
+  .fw-term {
+    font-size: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .fw-body > .fw-term {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    min-height: 100%;
+  }
+  .fw-kid-head,
+  .fw-kid-head .state,
+  .fw-kid .fw-term {
+    font-size: 12px;
+  }
+
+  .fw-status {
+    gap: 8px;
+    padding: 0 10px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .fw-status .chip {
+    font-size: 12px;
+  }
+  /* status-bar items that only fit a desktop window */
+  .fw-status .wide {
+    display: none;
+  }
+
+  .fw-doc {
+    padding: 16px 16px;
+  }
+  .fw-doc h4 {
+    font-size: 18px;
+  }
+  .fw-doc code,
+  .fw-doc pre {
+    font-size: 12px;
+  }
+  .fw-doc pre {
+    white-space: pre-wrap;
+  }
+}

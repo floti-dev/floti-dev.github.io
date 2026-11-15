@@ -3,11 +3,17 @@
  * session in harbor-api with its two helpers beside it as a family, and a
  * second tab that needs you. The loop opens the project, starts the session,
  * turns the other tab to "needs you", starts the helpers, then opens a note
- * in Files. Every name here is invented. */
+ * in Files. Every name here is invented.
+ *
+ * On a phone the rail and sidebar give way to a compact header naming the
+ * open project and what is running; it carries the sidebar's beats (the
+ * project opening, Sessions turning to Files) on the same timeline, and the
+ * family stacks the helpers under their parent. */
 import Demo from '../Demo.astro';
 import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
 import Icon from '../Icon.astro';
+import Logo from '../Logo.astro';
 ---
 
 <Demo name="hero" loop bare caption={copy.demos.descriptions.hero}>
@@ -65,6 +71,13 @@ import Icon from '../Icon.astro';
       </div>
     </Fragment>
 
+    <div class="fw-island ph-head" data-k="ph-head">
+      <span class="ph-mark"><Logo kind="mark" /></span>
+      <span class="ph-where swap"><span data-k="side-sessions">Sessions</span><span class="gone" data-k="side-files">Files</span></span>
+      <span class="ph-proj" data-k="ph-proj"><Icon name="repo" class="ico" /><span class="swap"><span class="gone" data-k="ph-tide">tidewater-web</span><span data-k="ph-harbor">harbor-api</span></span></span>
+      <span class="ph-run swap"><span data-k="run-1" class="gone">1 running</span><span data-k="run-2" class="gone">2 running</span><span data-k="run-4">4 running</span></span>
+    </div>
+
     <div class="fw-island fw-pane" data-k="pane">
       <div class="fw-strip">
         <span class="fw-tab" data-k="tab-checkout"><span class="dot need" data-k="tab-checkout-dot"></span><span class="label">checkout form</span><span class="need-word" data-k="tab-need">needs you</span></span>
@@ -115,8 +128,8 @@ import Icon from '../Icon.astro';
       <span class="bar"></span>
       <span class="grp"><span class="dot"></span><span class="swap"><span data-k="st-1" class="gone">1 working</span><span data-k="st-2" class="gone">2 working</span><span data-k="st-3">3 working</span></span></span>
       <span class="grp need" data-k="st-need"><span class="dot need"></span>1 needs you</span>
-      <span class="bar"></span>
-      <span>This PC · quit keeps sessions</span>
+      <span class="bar wide"></span>
+      <span class="wide">This PC · quit keeps sessions</span>
     </Fragment>
   </FlotiWindow>
   <svg class="cursor gone" data-k="cursor" viewBox="0 0 18 22"><path d="M2 2l12.5 11.2-5.6.6 3.2 6.6-2.6 1.2-3.2-6.7L2 19z" /></svg>
@@ -239,5 +252,111 @@ import Icon from '../Icon.astro';
     top: 0;
     bottom: 0;
     width: 45%;
+  }
+  .ph-head {
+    display: none;
+  }
+
+  /* the phone layout: the header, then one session's tab strip and terminal */
+  @media (max-width: 899.98px) {
+    :global(.st-hero .fw-panes) {
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .ph-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 42px;
+      padding: 0 12px 0 10px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .ph-mark {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 22px;
+    }
+    .ph-mark :global(svg) {
+      height: 20px;
+    }
+    .ph-mark :global(.ship) {
+      fill: var(--fl-accent);
+    }
+    .ph-mark :global(.hi) {
+      fill: var(--fl-surface);
+    }
+    .ph-where {
+      justify-items: start;
+    }
+    .ph-proj {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      padding: 3px 9px 3px 7px;
+      border: 1px solid var(--fl-border-strong);
+      border-radius: 999px;
+      font-weight: 400;
+    }
+    .ph-proj.hot {
+      background: var(--fl-hover);
+      border-color: var(--fl-accent);
+    }
+    .ph-proj :global(.ico) {
+      flex: none;
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: var(--fl-fg-muted);
+      stroke-width: 1.4;
+    }
+    .ph-proj .swap {
+      justify-items: start;
+    }
+    .ph-run {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--fl-accent-text);
+    }
+    .cursor,
+    .click-ring {
+      display: none;
+    }
+    /* the family: the parent on top, its helpers stacked under it (the
+     * timeline grows the parent to the full height before they join) */
+    .fam-parent {
+      right: 0;
+      bottom: auto;
+      height: 44%;
+      width: 100%;
+      overflow: hidden;
+    }
+    .fam-parent .fw-term {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: auto;
+      min-height: 100%;
+    }
+    .fam-kids {
+      top: auto;
+      left: 0;
+      height: 56%;
+      width: 100%;
+      border-left: 0;
+      border-top: 1px solid var(--fl-border-strong);
+    }
+    .fam-kids .fw-term {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .fam-kids :global(.ln) {
+      flex: none;
+    }
   }
 </style>

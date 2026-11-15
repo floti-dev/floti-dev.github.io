@@ -116,6 +116,7 @@ demos:
       stopped: stopped
     needs_you_count: 1 needs you # on the status bar while tester waits
     hint: Click to answer # beside tester's chip while it waits
+    hint_touch: Tap to answer # the same hint on a touch screen, which has nothing to click
     answer: Answer tester # the button under the demo while tester waits
     answered_by_you: you answered # after the y in tester's terminal
     answered_by_demo: answered for you # when nobody clicked in time

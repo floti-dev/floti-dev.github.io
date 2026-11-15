@@ -1,7 +1,12 @@
 ---
 /* Plugins. A task board plugin adds its page to the rail and the sidebar; the
  * session calls the plugin's tools to pick up a task, and the card moves to
- * In progress by itself. At rest: HB-14 in progress. */
+ * In progress by itself. At rest: HB-14 in progress.
+ *
+ * On a phone the rail lies along the top, where the plugin's page joins it,
+ * the task board fills the width under it (To do and In progress, where the
+ * card moves; Done is left out), and a short excerpt of the session's
+ * terminal sits below, its newest lines in view. */
 import Demo from '../Demo.astro';
 import { copy } from '../../copy';
 import FlotiWindow from '../FlotiWindow.astro';
@@ -38,13 +43,13 @@ import Icon from '../Icon.astro';
               <span class="who swap"><span class="gone" data-k="who-none">Unassigned</span><span data-k="who-fix"><span class="dot"></span>fix upload retry</span></span>
             </div>
           </div>
-          <div class="grp-label">Done <span class="n">1</span></div>
+          <div class="grp-label done-label">Done <span class="n">1</span></div>
           <div class="card done"><span class="id mono">HB-12</span><span class="tt">Show upload progress</span></div>
         </div>
       </div>
     </Fragment>
 
-    <div class="fw-island fw-pane">
+    <div class="fw-island fw-pane term-pane">
       <div class="fw-strip">
         <span class="fw-tab on"><span class="dot"></span><span class="label">fix upload retry</span></span>
         <span class="fw-strip-plus"><Icon name="plus" /></span>
@@ -161,5 +166,57 @@ import Icon from '../Icon.astro';
     color: var(--fl-fg-subtle);
     border: 1px dashed var(--fl-border-strong);
     border-radius: 3px;
+  }
+
+  /* the phone layout: the rail along the top, the board, then the terminal */
+  @media (max-width: 899.98px) {
+    :global(.st-plugins .fw-main) {
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+    :global(.st-plugins .fw-rail) {
+      display: flex;
+      flex-direction: row;
+      gap: 2px;
+      padding: 0;
+    }
+    :global(.st-plugins .fw-rail-sep) {
+      width: 1px;
+      height: 20px;
+      margin: 0 6px;
+    }
+    :global(.st-plugins .fw-rail-foot) {
+      margin: 0 0 0 auto;
+    }
+    :global(.st-plugins .fw-rail-btn.on::before) {
+      left: 10px;
+      right: 10px;
+      top: auto;
+      bottom: -3px;
+      width: auto;
+      height: 2px;
+    }
+    /* tall enough for the board's first frame, when To do still holds the card */
+    :global(.st-plugins .fw-side) {
+      display: flex;
+      height: 362px;
+    }
+    :global(.st-plugins .fw-filter),
+    .done-label,
+    .card.done,
+    .term-pane .fw-crumb {
+      display: none;
+    }
+    .plug,
+    .grp-label,
+    .card .id,
+    .card .who {
+      font-size: 12px;
+    }
+    .card .tt {
+      font-size: 13px;
+    }
+    .board {
+      padding: 0 8px 10px;
+    }
   }
 </style>

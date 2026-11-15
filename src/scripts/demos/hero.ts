@@ -1,8 +1,10 @@
-/* The hero window's 30-second loop. */
+/* The hero window's 30-second loop. On a phone the same beats play: the
+ * compact header stands in for the sidebar, and the helpers join under
+ * their parent rather than beside it. */
 import { gsap } from 'gsap';
 import { centre, clickAt, flip, grow, hide, k, ks, lines, moveTo, naturalWidth, placeAt, show, stageOf, typed, type Builder } from './kit';
 
-export const hero: Builder = (root) => {
+export const hero: Builder = (root, ctx) => {
   const stage = stageOf(root);
   const p = { cursor: k(root, 'cursor'), ring: k(root, 'ring'), stage };
   const tl = gsap.timeline({ paused: true, repeat: -1 });
@@ -29,6 +31,7 @@ export const hero: Builder = (root) => {
   // 0.4: the pointer opens harbor-api from the sidebar and starts a session
   moveTo(tl, p, harbor, 0.4, 1.0);
   flip(tl, k(root, 'proj-harbor'), 'fw-row', 1.4, 'fw-row hot');
+  flip(tl, k(root, 'ph-proj'), 'ph-proj', 1.4, 'ph-proj hot');
   hide(tl, k(root, 'harbor-branch'), 1.45, 0.12);
   show(tl, k(root, 'harbor-go'), 1.45, 0.12);
   moveTo(tl, p, go, 1.6, 0.5);
@@ -46,22 +49,27 @@ export const hero: Builder = (root) => {
   hide(tl, k(root, 'crumb-checkout'), 2.3, 0.15);
   show(tl, k(root, 'view-fix'), 2.3, 0.25);
   show(tl, k(root, 'crumb-fix'), 2.35, 0.2);
+  hide(tl, k(root, 'ph-tide'), 2.2, 0.12);
+  show(tl, k(root, 'ph-harbor'), 2.25, 0.15);
   grow(tl, [k(root, 'row-fix')], 2.4);
-  hide(tl, k(root, 'run-1'), 2.4, 0.1);
-  show(tl, k(root, 'run-2'), 2.45, 0.15);
+  hide(tl, ks(root, 'run-1'), 2.4, 0.1);
+  show(tl, ks(root, 'run-2'), 2.45, 0.15);
   hide(tl, k(root, 'st-1'), 2.4, 0.1);
   show(tl, k(root, 'st-2'), 2.45, 0.15);
 
   tl.to(k(root, 'harbor-go'), { autoAlpha: 0, duration: 0.15 }, 2.6);
   tl.to(k(root, 'harbor-branch'), { autoAlpha: 1, duration: 0.15 }, 2.65);
   tl.set(k(root, 'proj-harbor'), { attr: { class: 'fw-row' } }, 2.6);
+  tl.set(k(root, 'ph-proj'), { attr: { class: 'ph-proj' } }, 2.6);
   moveTo(tl, p, park, 2.7, 1.1);
   tl.to(p.cursor, { autoAlpha: 0, duration: 0.3 }, 3.7);
 
   // 3: the session works
   const fixParent = k(root, 'fam-parent');
   const kids = k(root, 'fam-kids');
-  tl.fromTo(fixParent, { width: '100%' }, { width: '55%', duration: 0.7, ease: 'power3.inOut' }, 12.2);
+  // beside the parent on a desktop, under it on a phone
+  const room = ctx.phone ? 'height' : 'width';
+  tl.fromTo(fixParent, { [room]: '100%' }, { [room]: ctx.phone ? '44%' : '55%', duration: 0.7, ease: 'power3.inOut' }, 12.2);
   tl.fromTo(kids, { xPercent: 100 }, { xPercent: 0, duration: 0.7, ease: 'power3.inOut' }, 12.2);
   typed(tl, k(root, 'l-prompt'), 3.0);
   lines(tl, ks(root, 'l'), 4.4, 0.6);
@@ -81,8 +89,8 @@ export const hero: Builder = (root) => {
   // 9.8: the session starts two helpers, which join it as a family
   lines(tl, ks(root, 'l2'), 9.8, 0.7);
   grow(tl, ks(root, 'row-kid'), 12.0, 0.22);
-  tl.to(k(root, 'run-2'), { autoAlpha: 0, duration: 0.1 }, 12.2);
-  show(tl, k(root, 'run-4'), 12.25, 0.15);
+  tl.to(ks(root, 'run-2'), { autoAlpha: 0, duration: 0.1 }, 12.2);
+  show(tl, ks(root, 'run-4'), 12.25, 0.15);
   tl.to(k(root, 'st-1'), { autoAlpha: 0, duration: 0.1 }, 12.2);
   show(tl, k(root, 'st-3'), 12.25, 0.15);
   lines(tl, ks(root, 'ks'), 13.0, 0.75);
@@ -95,8 +103,8 @@ export const hero: Builder = (root) => {
   clickAt(tl, p, files, 20.85);
   flip(tl, k(root, 'rail-sessions'), 'fw-rail-btn on', 20.9, 'fw-rail-btn');
   flip(tl, k(root, 'rail-files'), 'fw-rail-btn', 20.9, 'fw-rail-btn on');
-  hide(tl, k(root, 'side-sessions'), 20.9, 0.2);
-  show(tl, k(root, 'side-files'), 21.0, 0.25, { x: -8 });
+  hide(tl, ks(root, 'side-sessions'), 20.9, 0.2);
+  show(tl, ks(root, 'side-files'), 21.0, 0.25, { x: -8 });
   moveTo(tl, p, notes, 21.4, 0.8);
   clickAt(tl, p, notes, 22.25);
   flip(tl, k(root, 'file-notes'), 'frow in', 22.3, 'frow in sel');
