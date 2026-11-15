@@ -13,7 +13,7 @@ released: false
 # The browser tab's title, and the summary search engines and link previews show.
 page:
   title: Floti
-  description: One developer, a whole fleet of coding agents. Every agent you run, on every machine you own, in one window.
+  description: Be the captain of your fleet of coding agents. Every agent you run, on every machine you own, in one window.
 
 # The bar along the top of the page.
 nav:
@@ -24,12 +24,10 @@ nav:
   gold: Gold
   sky: Sky
 
-# The top of the page, above the looping Floti window.
+# The top of the page, above the looping Floti window: the tagline under the
+# name.
 hero:
-  headline: One developer. A whole fleet.
-  lede: >-
-    Every coding agent you run, on every machine you own, under one flag. They
-    hire their own help and keep working when you walk away.
+  headline: Be the captain of your fleet.
 
 # The install command box, in the hero, in the install section and at the top
 # of the install guide.

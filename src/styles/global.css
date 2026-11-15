@@ -285,6 +285,9 @@ main {
 .hero-word .hi {
   animation: blink 1.1s steps(1) infinite;
 }
+.hero-text .install {
+  margin-top: 14px;
+}
 @keyframes blink {
   50% {
     opacity: 0;

@@ -15,7 +15,7 @@ const SHAPE = {
   released: YESNO,
   page: { title: TEXT, description: TEXT },
   nav: { home: TEXT, install: TEXT, github: TEXT, palette: TEXT, gold: TEXT, sky: TEXT },
-  hero: { headline: TEXT, lede: TEXT },
+  hero: { headline: TEXT },
   install_box: {
     system: TEXT,
     unix: TEXT,
