@@ -73,7 +73,7 @@ sections:
     headline: Build your own tools into it.
     lede: >-
       Extend Floti with your own views, features and tools your agents can
-      call.
+      use.
 
   # Built-in tools: the browser.
   browser:
