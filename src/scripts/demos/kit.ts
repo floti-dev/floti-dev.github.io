@@ -9,7 +9,25 @@
 import { gsap } from 'gsap';
 
 export type Timeline = gsap.core.Timeline;
-export type Builder = (root: HTMLElement) => Timeline;
+
+/** What the runtime tells a demo about where it stands. */
+export interface DemoContext {
+  reduced: boolean;
+  visible(): boolean;
+  /** Called whenever the demo goes off screen or comes back. */
+  onVisibility(watch: (on: boolean) => void): void;
+}
+
+export type Builder = (root: HTMLElement, ctx: DemoContext) => Timeline;
+
+/** The wording a demo's script shows, from copy.yaml (Demo's `text`). */
+export function textOf(root: HTMLElement): Record<string, string> {
+  try {
+    return JSON.parse(root.dataset.text ?? '{}') as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
 
 export function k(root: HTMLElement, key: string): HTMLElement {
   const el = root.querySelector<HTMLElement>(`[data-k="${key}"]`);

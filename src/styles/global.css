@@ -483,16 +483,23 @@ html:not(.js) .copy {
 /* each demo's drawing size */
 .st-hero { --w: 1040; --h: 600; }
 .st-compose { --w: 960; --h: 470; }
-.st-fleet { --w: 960; --h: 440; }
+.st-fleet { --w: 1040; --h: 600; }
 .st-machines { --w: 960; --h: 540; }
 .st-plugins { --w: 960; --h: 540; }
 .st-browser { --w: 960; --h: 520; }
-.st-persist { --w: 960; --h: 470; }
+.st-persist { --w: 1040; --h: 560; }
 
 .demo-ctl {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-top: clamp(8px, 1.4vw, 14px);
+}
+.demo-own {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .replay {
   display: inline-flex;

@@ -337,6 +337,29 @@
   bottom: 0;
   border-left: 1px solid var(--fl-border-strong);
 }
+/* a grandchild: one step further in, its elbow from its parent's dot, with
+ * the grandparent's rule running on past it when more children follow */
+.fw-row.session.grand {
+  padding-left: 72px;
+}
+.fw-row.grand::before {
+  content: '';
+  position: absolute;
+  left: 62.5px;
+  top: 0;
+  height: 50%;
+  width: 7px;
+  border-left: 1px solid var(--fl-border-strong);
+  border-bottom: 1px solid var(--fl-border-strong);
+}
+.fw-row.grand.through::after {
+  content: '';
+  position: absolute;
+  left: 50.5px;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--fl-border-strong);
+}
 .fw-row .word {
   margin-left: auto;
   font-size: 11px;

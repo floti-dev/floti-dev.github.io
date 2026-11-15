@@ -34,6 +34,23 @@ const SHAPE = {
   },
   demos: {
     buttons: { replay: TEXT, pause: TEXT, play: TEXT },
+    fleet: {
+      states: { working: TEXT, needs_you: TEXT, done: TEXT, turn_ended: TEXT, stopped: TEXT },
+      needs_you_count: TEXT,
+      hint: TEXT,
+      answer: TEXT,
+      answered_by_you: TEXT,
+      answered_by_demo: TEXT,
+    },
+    persistence: {
+      buttons: { close: TEXT, crash: TEXT, update: TEXT, open: TEXT },
+      host: TEXT,
+      closed: TEXT,
+      crashed: TEXT,
+      updating: TEXT,
+      updated: TEXT,
+      away: TEXT,
+    },
     descriptions: {
       hero: TEXT,
       composition: TEXT,

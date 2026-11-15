@@ -112,6 +112,35 @@ demos:
     replay: Replay
     pause: Pause
     play: Play
+
+  # Agents that run agents: the words inside the drawing a visitor reads.
+  fleet:
+    states: # the chip on each helper's pane
+      working: working
+      needs_you: needs you
+      done: done
+      turn_ended: turn ended
+      stopped: stopped
+    needs_you_count: 1 needs you # on the status bar while tester waits
+    hint: Click to answer # beside tester's chip while it waits
+    answer: Answer tester # the button under the demo while tester waits
+    answered_by_you: you answered # after the y in tester's terminal
+    answered_by_demo: answered for you # when nobody clicked in time
+
+  # Sessions outlive the window: the buttons under the demo and the lines on
+  # the host strip that shows while the window is closed.
+  persistence:
+    buttons:
+      close: Close Floti
+      crash: Crash it
+      update: Update it
+      open: Open Floti
+    host: Host on this PC
+    closed: Floti is closed. Its sessions are not.
+    crashed: Floti crashed. Nothing it started did.
+    updating: Updating Floti
+    updated: Floti updated
+    away: while you were away
   descriptions:
     hero: >-
       The Floti window: a project opens from the sidebar, a session starts in it,
@@ -125,9 +154,14 @@ demos:
       the agent adds a field to the API and to the checkout form that uses it: one
       change across two repositories.
     fleet: >-
-      A lead session called fix upload retry starts three helpers, scout, tester
-      and docs, each in its own terminal. Their reports come back to the lead:
-      scout is done, tester needs you, docs ended its turn.
+      One lead session, fix upload retry, starts three helpers from its terminal:
+      scout, tester on the server build-box, and docs. Each opens as a pane tied
+      to the lead and works in parallel, and tester starts a helper of its own,
+      fixture-gen. Tester stops to ask whether it may raise a test timeout; you
+      can answer it, or it is answered for you after a few seconds. As each
+      helper finishes, its report travels back to the lead and its pane folds
+      into a small stopped chip. With all three reported, the lead merges the
+      fix.
     machines: >-
       Three machines in one sidebar: this PC, a server called build-box and a
       laptop, each listing its sessions and how long a keystroke takes to come
@@ -144,9 +178,11 @@ demos:
       reports that payment fails because the server rejects a card number with
       spaces.
     persistence: >-
-      The Floti window closes while four sessions keep running on the host, each
-      still counting its turns. The window opens again on the same three tabs,
-      with the work done meanwhile in the terminal.
+      A Floti window with four sessions working. Buttons under it close Floti,
+      crash it or update it. Each time the window goes, the host on this PC keeps
+      every session running, drawn as a line of ships still counting turns while
+      a clock shows the time passing. When Floti opens again it is on the same
+      tabs, and each terminal marks what happened while you were away.
 
 # The line along the bottom of the page.
 footer:

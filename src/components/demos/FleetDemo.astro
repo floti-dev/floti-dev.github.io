@@ -1,303 +1,472 @@
 ---
-/* Agents that run agents. A lead session launches three helpers, drawn as a
- * small fleet of the brand's longship; each works in a terminal you can watch, and
- * their reports travel back to the lead as short lines. The lead's ship is
- * the demo's one mark in the highlight colour. At rest: all three reported. */
+/* Agents that run agents, inside the Floti window. One lead session starts
+ * three helpers from its terminal; each opens as a pane grown out of the lead
+ * and tied to it by a tether in the highlight colour. Tester starts a helper
+ * of its own, so the family is two deep. Tester stops to ask a question the
+ * visitor can answer. Reports travel back along the tethers, finished panes
+ * fold into stopped chips, and the lead merges the fix.
+ *
+ * At rest (the final frame): the lead's terminal with all three reports, the
+ * helpers folded into chips under faded tethers, the family in the sidebar.
+ */
 import Demo from '../Demo.astro';
-import { copy } from '../../copy';
+import FlotiWindow from '../FlotiWindow.astro';
+import Icon from '../Icon.astro';
 import Logo from '../Logo.astro';
+import { copy } from '../../copy';
 
-const helpers = [
+const words = copy.demos.fleet;
+const text = {
+  working: words.states.working,
+  needs_you: words.states.needs_you,
+  done: words.states.done,
+  turn_ended: words.states.turn_ended,
+  stopped: words.states.stopped,
+  answered_by_you: words.answered_by_you,
+  answered_by_demo: words.answered_by_demo,
+};
+
+type Line = { k?: string; html: string };
+interface Helper {
+  key: string;
+  name: string;
+  host?: string;
+  depth: 1 | 2;
+  end: 'done' | 'turn_ended';
+  timer: string;
+  lines: Line[];
+}
+
+const helpers: Helper[] = [
   {
     key: 'scout',
-    task: 'Find every caller of upload().',
-    out: '4 callers in 3 files',
-    word: 'done',
-    tone: 'end',
-    report: 'done · 4 callers, one ignores the result',
+    name: 'scout',
+    depth: 1,
+    end: 'done',
+    timer: '1:12',
+    lines: [
+      { html: '<span class="t-y">›</span> Find every caller of upload().' },
+      { html: '<span class="t-dim">  Searching src/ for upload(</span>' },
+      { html: '  src/sync/push.ts:41' },
+      { html: '  src/api/files.ts:88' },
+      { html: '  src/jobs/import.ts:17, 52' },
+      { html: '  4 callers; push.ts ignores the result.' },
+    ],
   },
   {
     key: 'tester',
-    task: 'Run the upload tests until green.',
-    out: '✗ 1 failed: timeout in retry.test.ts',
-    word: 'needs you',
-    tone: 'need',
-    report: 'needs you · may it raise the test timeout?',
+    name: 'tester',
+    host: 'build-box',
+    depth: 1,
+    end: 'done',
+    timer: '3:05',
+    lines: [
+      { html: '<span class="t-y">›</span> Run the upload tests until green.' },
+      { html: '<span class="t-dim">  npm test -- upload</span>' },
+      { html: '  <span class="t-ok">✓ 11 passed</span>  <span class="t-r">✗ 1 failed</span>' },
+      { k: 'tester-start', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">fixture-gen</span>' },
+      { k: 'tester-report', html: '<span class="t-ok">←</span> fixture-gen · done · 6 fixtures' },
+      { html: '  retry.test.ts times out at 5000 ms.' },
+      { k: 'tester-ask', html: '<span class="t-y">? Raise its timeout to 10 s? (y/n)</span>' },
+      { k: 'tester-answer', html: `<span class="t-y">›</span> y  <span class="t-dim" data-k="answer-note">(${words.answered_by_you})</span>` },
+      { html: '  <span class="t-ok">✓ 12 passed</span>' },
+    ],
+  },
+  {
+    key: 'fixture',
+    name: 'fixture-gen',
+    host: 'build-box',
+    depth: 2,
+    end: 'done',
+    timer: '0:48',
+    lines: [
+      { html: '<span class="t-y">›</span> Make 503 fixtures for the tests.' },
+      { html: '<span class="t-dim">  Reading test/upload.test.ts</span>' },
+      { html: '  Wrote test/fixtures/503-*.json (6)' },
+    ],
   },
   {
     key: 'docs',
-    task: 'Write the retry change up in NOTES.md.',
-    out: 'Wrote docs/NOTES.md',
-    word: 'turn ended',
-    tone: 'end',
-    report: 'turn ended · NOTES.md updated',
+    name: 'docs',
+    depth: 1,
+    end: 'turn_ended',
+    timer: '1:40',
+    lines: [
+      { html: '<span class="t-y">›</span> Write the retry change up in NOTES.md.' },
+      { html: '<span class="t-dim">  Reading src/upload/retry.ts</span>' },
+      { html: '  Drafting docs/NOTES.md' },
+      { html: '  Wrote docs/NOTES.md, 18 lines.' },
+    ],
   },
-] as const;
+];
+
+const lead: Line[] = [
+  { k: 'lead-prompt', html: '<span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.' },
+  { k: 'lead-think', html: '  The client gives up after the first 503.' },
+  { k: 'lead-start-scout', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">scout</span>' },
+  { k: 'lead-start-tester', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">tester</span> --host build-box' },
+  { k: 'lead-start-docs', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">docs</span>' },
+  { k: 'lead-work', html: '  Adding backoff: src/upload/retry.ts <span class="t-ok">+18</span> <span class="t-r">−4</span>' },
+  { k: 'lead-rep-scout', html: '<span class="t-ok">←</span> scout · done · 4 callers, one ignores the result' },
+  { k: 'lead-rep-docs', html: '<span class="t-ok">←</span> docs · turn ended · NOTES.md updated' },
+  { k: 'lead-rep-tester', html: '<span class="t-ok">←</span> tester · done · 12 passed, timeout now 10 s' },
+  { k: 'lead-final', html: '  All three reported. Merging the fix.' },
+];
 ---
 
-<Demo name="fleet" caption={copy.demos.descriptions.fleet}>
-  <div class="fleet">
-    <svg class="wakes" viewBox="0 0 960 440" aria-hidden="true">
-      <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="67" />
-      <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="202" />
-      <line pathLength="1" data-k="wake" x1="210" y1="145" x2="552" y2="337" />
-    </svg>
+<Demo name="fleet" interactive caption={copy.demos.descriptions.fleet} text={text}>
+  <FlotiWindow>
+    <Fragment slot="side">
+      <div class="fw-side-head">
+        <span class="t">Sessions</span>
+        <span class="fw-icon-btn"><Icon name="plus" /></span>
+        <span class="fw-icon-btn"><Icon name="refresh" /></span>
+      </div>
+      <div class="fw-filter">Filter projects and sessions</div>
+      <div class="fw-tree">
+        <div class="fw-label"><Icon name="caret" class="caret" />Work <span class="n">3</span></div>
+        <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">harbor-api</span><span class="branch">main</span></div>
+        <div class="fw-row session sel parent"><span class="dot"></span><span class="name">fix upload retry</span><span class="word acc">8m</span></div>
+        {
+          helpers.map((h, i) => (
+            <div
+              class:list={[
+                'fw-row session grow',
+                h.depth === 2 ? 'grand through' : 'child',
+                { last: i === helpers.length - 1 },
+              ]}
+              data-k={`row-${h.key}`}
+            >
+              <span class="dot idle" data-k={`rowdot-${h.key}`} />
+              <span class="name">{h.name}</span>
+              <span class="word" data-k={`word-${h.key}`}>{text[h.end]}</span>
+            </div>
+          ))
+        }
+        <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">tidewater-web</span><span class="branch">feature/checkout</span></div>
+        <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">lantern-docs</span><span class="branch">main</span></div>
+      </div>
+      <div class="fw-side-foot"><span class="dot"></span>5 sessions in this family</div>
+    </Fragment>
 
-    <div class="lead" data-k="lead">
-      <div class="tile"><Logo kind="mark" /></div>
-    </div>
-    <div class="lead-label">
-      <span class="cap">Lead</span>
-      <span class="ln1">fix upload retry</span>
-    </div>
+    <div class="fam" data-k="fam">
+      <svg class="tethers" aria-hidden="true">
+        {helpers.map((h) => <path class="tether faded" pathLength="1" data-k={`tether-${h.key}`} />)}
+      </svg>
 
-    <div class="log">
-      <div class="log-head"><span class="dot"></span>fix upload retry <span class="sub">reports</span></div>
+      <div class="fw-island fw-pane lead" data-k="lead">
+        <div class="fw-strip">
+          <span class="fw-tab on"><span class="dot"></span><span class="label">fix upload retry</span></span>
+          <span class="fw-strip-plus"><Icon name="plus" /></span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-term stream">
+            {lead.map((l) => <span class="ln" data-k={l.k} set:html={l.html} />)}
+          </div>
+        </div>
+      </div>
+
+      <div class="col" data-k="col">
+        {
+          helpers.map((h) => (
+            <div class:list={['hp folded', `d${h.depth}`]} data-k={`hp-${h.key}`}>
+              <div class="hp-head">
+                <span class="hp-ship">
+                  <Logo kind="mark" />
+                </span>
+                <span class="hp-name">{h.name}</span>
+                {h.host && <span class="hp-host">{h.host}</span>}
+                <span class:list={['chip', h.end === 'done' ? 'end' : 'end']} data-k={`chip-${h.key}`}>
+                  {text.stopped} · {text[h.end]}
+                </span>
+                {h.key === 'tester' && <span class="hint">{words.hint}</span>}
+                <span class="timer" data-k={`timer-${h.key}`}>
+                  {h.timer}
+                </span>
+              </div>
+              <div class="hp-body" data-k={`body-${h.key}`}>
+                <div class="fw-term stream">
+                  {h.lines.map((l) => (
+                    <span class="ln" data-k={l.k ?? `ln-${h.key}`} set:html={l.html} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
       {
         helpers.map((h) => (
-          <div class="log-line" data-k="log">
-            <span class="arrow">←</span>
-            <span class="who">{h.key}</span>
-            <span class:list={['what', h.tone]}>{h.report}</span>
-          </div>
+          <span class="report" data-k={`report-${h.key}`}>
+            {text[h.end]}
+          </span>
         ))
       }
     </div>
 
-    {
-      helpers.map((h, i) => (
-        <div class:list={['helper', `at-${i}`]} data-k="helper">
-          <div class="ship" data-k="ship"><Logo kind="mark" /></div>
-          <div class="info">
-            <div class="row">
-              <span class="name">{h.key}</span>
-              <span class="state">
-                <span class="chip work gone" data-k={`work-${h.key}`}><span class="dot" />working</span>
-                <span class:list={['chip', h.tone]} data-k={`final-${h.key}`}>
-                  <span class:list={['dot', h.tone === 'need' ? 'need' : 'idle']} />
-                  {h.word}
-                </span>
-              </span>
-            </div>
-            <div class="mini">
-              <span class="tl" data-k={`t-${h.key}`}><span class="t-y">›</span> {h.task}</span>
-              <span class:list={['tl', h.tone === 'need' ? 't-r' : 't-ok']} data-k={`o-${h.key}`}>{h.out}</span>
-            </div>
-          </div>
-          <span class:list={['report', h.tone]} data-k={`rep-${h.key}`}>{h.word}</span>
-        </div>
-      ))
-    }
-  </div>
+    <Fragment slot="status">
+      <span>Floti 3.1.0</span>
+      <span class="bar"></span>
+      <span class="grp"><span class="dot"></span><span data-k="st-work">1 working</span></span>
+      <span class="grp need st-need" data-k="st-need"><span class="dot need"></span>{words.needs_you_count}</span>
+      <span class="bar wide"></span>
+      <span class="wide">This PC · build-box</span>
+    </Fragment>
+  </FlotiWindow>
+
+  <button slot="controls" type="button" class="answer" data-k="answer">{words.answer}: y</button>
 </Demo>
 
 <style>
-  .fleet {
+  /* the family: the lead, the helpers' column, and the tethers between */
+  .fam {
     position: relative;
-    width: 100%;
+    display: flex;
+    gap: 32px;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
     height: 100%;
-    font: 400 13px/1.5 var(--body);
-    color: var(--fl-fg);
   }
-  .wakes {
+  .lead {
+    flex: none;
+    width: 360px;
+    z-index: 1;
+  }
+  .col {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tethers {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     overflow: visible;
+    z-index: 0;
+    pointer-events: none;
   }
-  .wakes line {
-    stroke: var(--fl-border-strong);
+  .tether {
+    fill: none;
+    stroke: var(--hi);
     stroke-width: 1.5;
     stroke-dasharray: 1;
     stroke-dashoffset: 0;
+    transition: stroke 400ms ease;
+  }
+  .tether.faded {
+    stroke: var(--fl-border-strong);
   }
 
-  .lead {
-    position: absolute;
-    left: 56px;
-    top: 70px;
-    width: 150px;
-    height: 150px;
+  /* a terminal whose newest line sits at the bottom, older lines scrolling off */
+  .stream {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
   }
-  .tile {
+  .lead .stream {
+    justify-content: flex-start;
+    font-size: 11px;
+  }
+  .stream :global(.ln) {
+    flex: none;
+  }
+
+  /* a helper's pane */
+  .hp {
+    flex: none;
     width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: end start;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    border-radius: 22px;
-    background: var(--word);
-    padding: 18px 26px 0 0;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border-strong);
+    border-radius: 3px;
   }
-  .tile :global(svg) {
-    height: 126px;
+  .hp.d2 {
+    margin-left: 28px;
+    width: calc(100% - 28px);
   }
-  .tile :global(.ship) {
-    fill: var(--ship);
+  .hp.ask {
+    border-color: var(--fl-warn);
   }
-  .lead-label {
-    position: absolute;
-    left: 56px;
-    top: 230px;
-    display: grid;
-    gap: 2px;
+  .hp.focus {
+    border-color: var(--fl-accent);
+    box-shadow: 0 0 0 2px var(--fl-accent-soft);
   }
-  .cap {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--fl-fg-subtle);
-  }
-  .ln1 {
-    font-size: 15px;
-    font-weight: 500;
-  }
-
-  .log {
-    position: absolute;
-    left: 40px;
-    top: 296px;
-    width: 452px;
-    padding: 10px 14px 12px;
-    background: var(--term);
-    border: 1px solid var(--fl-border);
-    border-radius: 4px;
-    font: 400 11.5px/1.75 var(--mono);
-    color: var(--term-fg);
-  }
-  .log-head {
+  .hp-head {
+    flex: none;
+    height: 28px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-    font: 500 11.5px/1.6 var(--body);
-    color: var(--fl-fg);
-  }
-  .log-head .sub {
-    color: var(--term-dim);
-    font-weight: 400;
-  }
-  .log-line {
-    display: flex;
-    gap: 10px;
+    gap: 7px;
+    padding: 0 8px 0 9px;
+    border-bottom: 1px solid var(--fl-border);
+    font-size: 11.5px;
     white-space: nowrap;
   }
-  .arrow {
-    color: var(--term-dim);
-  }
-  .who {
-    width: 6ch;
-    color: var(--term-blue);
-  }
-  .what.need {
-    color: var(--fl-warn);
-  }
-
-  .helper {
-    position: absolute;
-    left: 556px;
-    width: 400px;
-    height: 100px;
-    display: flex;
-    gap: 18px;
-  }
-  .at-0 {
-    top: 30px;
-  }
-  .at-1 {
-    top: 165px;
-  }
-  .at-2 {
-    top: 300px;
-  }
-  .ship {
+  .hp-ship {
     flex: none;
-    width: 62px;
-    height: 76px;
+    width: 12px;
+    height: 15px;
   }
-  .ship :global(svg) {
-    height: 76px;
+  .hp-ship :global(svg) {
+    height: 15px;
   }
-  .ship :global(.ship) {
-    fill: var(--light);
+  .hp-ship :global(.ship) {
+    fill: var(--fl-fg-muted);
   }
-  .ship :global(.hi) {
-    fill: var(--deep);
+  .hp-ship :global(.hi) {
+    fill: var(--fl-surface);
   }
-  .info {
-    display: grid;
-    gap: 7px;
-    align-content: start;
-    min-width: 0;
-    padding-top: 4px;
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .name {
-    font-size: 15px;
+  .hp-name {
     font-weight: 500;
   }
-  .state {
-    display: inline-grid;
-  }
-  .state > * {
-    grid-area: 1 / 1;
+  .hp-host {
+    font: 400 10.5px/1 var(--mono);
+    color: var(--fl-fg-subtle);
   }
   .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
+    font-size: 10.5px;
     line-height: 1;
-    padding: 4px 8px;
+    padding: 3px 7px;
     border-radius: 999px;
     border: 1px solid var(--fl-border-strong);
     color: var(--fl-fg-muted);
-    white-space: nowrap;
-  }
-  .chip.need {
-    color: var(--fl-warn);
-    border-color: color-mix(in srgb, var(--fl-warn) 50%, transparent);
   }
   .chip.work {
     color: var(--fl-fg);
   }
-  .mini {
-    display: grid;
-    width: 300px;
-    padding: 7px 10px;
-    background: var(--term);
-    border: 1px solid var(--fl-border);
-    border-radius: 4px;
-    font: 400 10.5px/1.6 var(--mono);
-    color: var(--term-fg);
-    white-space: nowrap;
+  .chip.need {
+    color: var(--fl-warn);
+    border-color: color-mix(in srgb, var(--fl-warn) 55%, transparent);
+    cursor: pointer;
   }
-  .tl {
-    display: block;
-    min-height: 1.6em;
+  .chip.end {
+    color: var(--fl-fg-subtle);
   }
+  .timer {
+    margin-left: auto;
+    padding-left: 6px;
+    font: 400 10.5px/1 var(--mono);
+    color: var(--fl-fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .hint {
+    display: none;
+    font-size: 10.5px;
+    color: var(--fl-warn);
+  }
+  .hp-body {
+    flex: none;
+    height: 92px;
+    overflow: hidden;
+  }
+  .hp-body .fw-term {
+    height: 100%;
+    padding: 6px 10px;
+    font-size: 10.5px;
+  }
+  .hp.d2 .hp-body {
+    height: 74px;
+  }
+  .hp.folded {
+    width: auto;
+    border-color: var(--fl-border);
+    border-radius: 999px;
+  }
+  .hp.folded .hp-head {
+    height: 26px;
+    border-bottom: 0;
+    padding: 0 12px 0 10px;
+  }
+  .hp.folded .hp-body {
+    height: 0;
+  }
+  .hp.folded .timer {
+    margin-left: 6px;
+  }
+
+  /* a report on its way back along a tether */
   .report {
     position: absolute;
-    left: -36px;
-    top: 26px;
-    padding: 4px 9px;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    padding: 3px 8px;
     border-radius: 999px;
-    font: 500 11px/1 var(--body);
+    font: 500 10.5px/1 var(--body);
     white-space: nowrap;
     background: var(--fl-surface-raised);
-    border: 1px solid var(--fl-border-strong);
+    border: 1px solid var(--hi);
     color: var(--fl-fg);
     opacity: 0;
     visibility: hidden;
   }
-  .report.need {
+
+  /* a line that has just arrived in the lead's terminal */
+  .lead :global(.ln.landed) {
+    animation: landed 1.6s ease-out;
+  }
+  @keyframes landed {
+    from {
+      background: var(--fl-accent-soft-hover);
+    }
+    to {
+      background: transparent;
+    }
+  }
+
+  /* while tester waits for an answer */
+  .st-need {
+    display: none;
+  }
+  :global([data-waiting]) .st-need {
+    display: flex;
+    cursor: pointer;
+  }
+  :global([data-waiting]) .hint {
+    display: inline;
+  }
+  :global([data-waiting]) .chip.need {
+    animation: ask 1.1s ease-in-out infinite;
+  }
+  :global([data-waiting]) :global(.fw-rail-badge) {
+    visibility: visible;
+    opacity: 1;
+  }
+  @keyframes ask {
+    50% {
+      background: color-mix(in srgb, var(--fl-warn) 22%, transparent);
+    }
+  }
+  .answer {
+    display: none;
+    align-items: center;
+    font: 500 13px/1 var(--body);
     color: var(--fl-warn);
-    border-color: color-mix(in srgb, var(--fl-warn) 55%, transparent);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--fl-warn) 60%, transparent);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  :global([data-waiting]) .answer {
+    display: inline-flex;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-waiting]) .chip.need,
+    .lead :global(.ln.landed) {
+      animation: none;
+    }
   }
 </style>

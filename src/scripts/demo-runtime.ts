@@ -2,9 +2,16 @@
  * before it comes into view, plays it once on entry, pauses it off screen,
  * and wires its replay (or, for the looping hero, pause) button. Under
  * reduced motion nothing plays on its own: each demo keeps its final frame
- * and its button says Play. */
+ * and its button says Play.
+ *
+ * Two more things for the demos that need them:
+ * - An interactive demo (data-interactive) is built as soon as the page is
+ *   ready, so its own controls work at once, reduced motion included.
+ * - A demo that waits for the visitor sets data-waiting on its root; while it
+ *   is set, coming back on screen does not resume it.
+ */
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import type { Builder, Timeline } from './demos/kit';
+import type { Builder, DemoContext, Timeline } from './demos/kit';
 import { hero } from './demos/hero';
 import { compose } from './demos/compose';
 import { fleet } from './demos/fleet';
@@ -20,9 +27,9 @@ type Mode = 'play' | 'pause' | 'replay';
 /** Scales a stage drawn at --w by --h pixels to the width it is given. */
 export function fitStages(): void {
   document.querySelectorAll<HTMLElement>('.stage').forEach((stage) => {
-    const w = Number.parseFloat(getComputedStyle(stage).getPropertyValue('--w'));
-    if (!Number.isFinite(w) || w <= 0) return;
     const apply = () => {
+      const w = Number.parseFloat(getComputedStyle(stage).getPropertyValue('--w'));
+      if (!Number.isFinite(w) || w <= 0) return;
       stage.style.setProperty('--s', String(Math.min(1, stage.clientWidth / w)));
       stage.dataset.fit = '';
     };
@@ -42,11 +49,21 @@ function setup(root: HTMLElement, reduced: boolean): void {
   if (!build || !button || !label) return;
 
   const loop = root.dataset.loop === 'true';
+  const interactive = root.dataset.interactive === 'true';
   let tl: Timeline | null = null;
   let broken = false;
   let started = false;
   let held = false; // paused by the visitor
   let visible = true;
+  let watchers: Array<(on: boolean) => void> = [];
+
+  const ctx: DemoContext = {
+    reduced,
+    visible: () => visible,
+    onVisibility: (watch) => {
+      watchers.push(watch);
+    },
+  };
 
   // the wording of each mode is copy.yaml's, carried on the button
   const setMode = (mode: Mode) => {
@@ -57,7 +74,8 @@ function setup(root: HTMLElement, reduced: boolean): void {
   const ensure = (): Timeline | null => {
     if (tl || broken) return tl;
     try {
-      tl = build(root);
+      watchers = [];
+      tl = build(root, ctx);
       tl.eventCallback('onComplete', () => setMode('replay'));
     } catch (error) {
       // a demo that cannot build keeps its final frame; the page goes on
@@ -100,11 +118,14 @@ function setup(root: HTMLElement, reduced: boolean): void {
     end: 'bottom top',
     onToggle: (self) => {
       visible = self.isActive;
+      watchers.forEach((watch) => watch(visible));
       if (!tl || !started) return;
       if (!visible) tl.pause();
-      else if (!held && (loop || tl.progress() < 1)) tl.resume();
+      else if (!held && root.dataset.waiting === undefined && (loop || tl.progress() < 1)) tl.resume();
     },
   });
+
+  if (interactive) ensure();
 
   if (reduced) {
     setMode('play');
