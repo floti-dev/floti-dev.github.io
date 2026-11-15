@@ -2,8 +2,9 @@
  * ("Nocturne Islands") in the matching Floti theme. Islands sit on a sunken
  * canvas with a 1px hairline edge and 6px gutters; the accent appears only as
  * 2px marks, outlines, its soft tint and text; mono is for machine data; no
- * text is heavier than 500 except 10px caps labels. Sizes are the app's own,
- * and each demo's stage scales the whole drawing to fit. */
+ * text is heavier than 500 except 11px caps labels. Sizes are the app's own,
+ * with nothing under 11px, and each demo's stage scales the whole drawing to
+ * fit (up to about 1.2x on a desktop, so the smallest text reads at 13px). */
 
 .fw {
   --gap: 6px;
@@ -237,7 +238,7 @@
   gap: 6px;
   height: 26px;
   padding: 0 12px 0 10px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -261,7 +262,7 @@
   letter-spacing: 0;
   text-transform: none;
   color: var(--fl-fg-subtle);
-  font-size: 10.5px;
+  font-size: 11px;
 }
 .fw-label .r {
   margin-left: auto;
@@ -475,7 +476,7 @@
 }
 .fw-tab .tag,
 .fw-tag {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1;
   padding: 3px 6px;
   border-radius: 999px;
@@ -610,14 +611,14 @@
 }
 .fw-kid-head .state {
   margin-left: auto;
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--fl-fg-muted);
 }
 .fw-kid .fw-term {
   flex: 1;
   height: auto;
   padding: 8px 10px;
-  font-size: 10.5px;
+  font-size: 11px;
 }
 
 /* status bar: plain caption text on the canvas */
@@ -645,7 +646,7 @@
 }
 .fw-status .chip {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   padding: 1px 6px;
   border: 1px solid var(--fl-border-strong);
   border-radius: 4px;

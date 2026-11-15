@@ -24,13 +24,16 @@ const BUILDERS: Record<string, Builder> = { hero, compose, fleet, machines, plug
 
 type Mode = 'play' | 'pause' | 'replay';
 
-/** Scales a stage drawn at --w by --h pixels to the width it is given. */
+/** Scales a stage drawn at --w by --h pixels to the width it is given, up to
+ * its --s-max. */
 export function fitStages(): void {
   document.querySelectorAll<HTMLElement>('.stage').forEach((stage) => {
     const apply = () => {
-      const w = Number.parseFloat(getComputedStyle(stage).getPropertyValue('--w'));
+      const style = getComputedStyle(stage);
+      const w = Number.parseFloat(style.getPropertyValue('--w'));
       if (!Number.isFinite(w) || w <= 0) return;
-      stage.style.setProperty('--s', String(Math.min(1, stage.clientWidth / w)));
+      const max = Number.parseFloat(style.getPropertyValue('--s-max'));
+      stage.style.setProperty('--s', String(Math.min(Number.isFinite(max) ? max : 1, stage.clientWidth / w)));
       stage.dataset.fit = '';
     };
     new ResizeObserver(apply).observe(stage);
