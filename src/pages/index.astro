@@ -3,6 +3,8 @@
  * browser and persistence next; the install command last.
  * Every word outside the demos' drawings comes from copy.yaml. */
 import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import Logo from '../components/Logo.astro';
 import InstallBox from '../components/InstallBox.astro';
 import Parallax from '../components/Parallax.astro';
@@ -14,31 +16,15 @@ import PluginsDemo from '../components/demos/PluginsDemo.astro';
 import BrowserDemo from '../components/demos/BrowserDemo.astro';
 import PersistDemo from '../components/demos/PersistDemo.astro';
 import { copy } from '../copy';
+import { GITHUB, INSTALL } from '../links';
 
-const github = 'https://github.com/floti-dev';
-const license = 'https://github.com/floti-dev/floti/blob/main/LICENSE';
-const { nav, hero, sections, footer } = copy;
+const { hero, sections } = copy;
 ---
 
 <Base title={copy.page.title} description={copy.page.description}>
   <Parallax />
 
-  <header class="nav">
-    <div class="nav-in">
-      <a class="brand" href="/" aria-label={nav.home}>
-        <Logo kind="icon" class="brand-icon" />
-        <Logo kind="word" class="brand-word" />
-      </a>
-      <nav class="nav-links" aria-label="Site">
-        <a href="/install/">{nav.install}</a>
-        <a class="wide" href={github}>{nav.github}</a>
-      </nav>
-      <div class="toggle" role="group" aria-label={nav.palette}>
-        <button type="button" data-palette-set="gold" aria-pressed="true">{nav.gold}</button>
-        <button type="button" data-palette-set="sky" aria-pressed="false">{nav.sky}</button>
-      </div>
-    </div>
-  </header>
+  <SiteHeader />
 
   <main>
     <section class="hero wrap" aria-labelledby="hero-title">
@@ -75,18 +61,16 @@ const { nav, hero, sections, footer } = copy;
         <p class="lede">{sections.install.lede}</p>
         <InstallBox id="launch" />
         <p class="launch-links">
-          <a href="/install/">{sections.install.guide_link}</a>
-          <a href={github}>{sections.install.github_link}</a>
+          <a href={INSTALL}>{sections.install.guide_link}</a>
+          <a href={GITHUB}>{sections.install.github_link}</a>
         </p>
       </div>
     </section>
   </main>
 
-  <footer class="foot">
-    <div class="foot-in">
-      <Logo kind="icon" class="foot-icon" />
-      <p>{footer.line}</p>
-      <a class="foot-license" href={license}>{footer.license}</a>
-    </div>
-  </footer>
+  <SiteFooter />
+
+  <script>
+    import '../scripts/main.ts';
+  </script>
 </Base>

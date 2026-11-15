@@ -1,0 +1,55 @@
+---
+/* The install guide, floti.dev/install/: what a new user reads before running
+ * anything. The command box first, then the guide's sections. Its prose is
+ * install.md at the repository root; its short labels are in copy.yaml.
+ * It takes the Sky palette until the visitor picks one. */
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import InstallBox from '../components/InstallBox.astro';
+import { copy } from '../copy';
+import { Guide, sections, top } from '../guide';
+import '../styles/guide.css';
+---
+
+<Base title={top.title} description={top.description} palette="sky">
+  <SiteHeader current="install" />
+
+  <main class="guide wrap">
+    <header class="guide-top">
+      <p class="eyebrow lead">{copy.guide.label}</p>
+      <h1>{top.title}</h1>
+      <p class="lede">{top.lede}</p>
+      {
+        !copy.released && (
+          <p class="guide-notice" role="note">
+            {top.notice}
+          </p>
+        )
+      }
+      <InstallBox id="guide" />
+      <nav class="guide-toc" aria-labelledby="guide-toc-label">
+        <p class="eyebrow" id="guide-toc-label">{copy.guide.contents}</p>
+        <ul>
+          {
+            sections.map((section) => (
+              <li>
+                <a href={`#${section.slug}`}>{section.text}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+
+    <article class="prose">
+      <Guide />
+    </article>
+  </main>
+
+  <SiteFooter />
+
+  <script>
+    import '../scripts/guide.ts';
+  </script>
+</Base>

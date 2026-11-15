@@ -1,7 +1,8 @@
 ---
 /* The install command with a tab per system. The tabs are radio inputs, so
  * switching works with no script; the script only picks the visitor's system
- * on load and runs the copy button. */
+ * on load and runs the copy button. Until `released` in copy.yaml is true,
+ * the box marks its commands as not live yet. */
 import { copy } from '../copy';
 
 interface Props {
@@ -10,19 +11,21 @@ interface Props {
 
 const { id } = Astro.props;
 const text = copy.install_box;
+const live = copy.released;
 const commands = {
   unix: 'curl -fsSL https://floti.dev/install.sh | sh',
   windows: 'irm https://floti.dev/install.ps1 | iex',
 };
 ---
 
-<div class="install" data-install>
+<div class={live ? 'install' : 'install not-live'} data-install>
   <fieldset class="install-os">
     <legend class="sr-only">{text.system}</legend>
     <input type="radio" name={`os-${id}`} id={`os-${id}-unix`} value="unix" checked />
     <label for={`os-${id}-unix`}>{text.unix}</label>
     <input type="radio" name={`os-${id}`} id={`os-${id}-windows`} value="windows" />
     <label for={`os-${id}-windows`}>{text.windows}</label>
+    {!live && <span class="install-soon">{text.not_live}</span>}
   </fieldset>
   <div class="install-cmd">
     <code class="install-line" data-os="unix"><span class="p">$</span><span data-cmd>{commands.unix}</span></code>

@@ -1,0 +1,32 @@
+---
+/* The bar along the top of every page: the app icon and wordmark linking
+ * home, the Install and GitHub links, and the Gold/Sky switch. */
+import Logo from './Logo.astro';
+import { copy } from '../copy';
+import { GITHUB, HOME, INSTALL } from '../links';
+
+interface Props {
+  /** The page this is, marked in the links. */
+  current?: 'install';
+}
+
+const { current } = Astro.props;
+const { nav } = copy;
+---
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href={HOME} aria-label={nav.home}>
+      <Logo kind="icon" class="brand-icon" />
+      <Logo kind="word" class="brand-word" />
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href={INSTALL} aria-current={current === 'install' ? 'page' : undefined}>{nav.install}</a>
+      <a class="wide" href={GITHUB}>{nav.github}</a>
+    </nav>
+    <div class="toggle" role="group" aria-label={nav.palette}>
+      <button type="button" data-palette-set="gold" aria-pressed="true">{nav.gold}</button>
+      <button type="button" data-palette-set="sky" aria-pressed="false">{nav.sky}</button>
+    </div>
+  </div>
+</header>

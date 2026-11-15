@@ -214,6 +214,9 @@ code {
     color: var(--text);
   }
 }
+.nav-links a[aria-current='page'] {
+  color: var(--text);
+}
 
 .toggle {
   display: inline-flex;
@@ -411,6 +414,26 @@ h1 {
 .install-os input:focus-visible + label {
   outline: 2px solid var(--lead);
   outline-offset: 2px;
+}
+/* while Floti is not released (released: false in copy.yaml): a mark beside
+ * the tabs, and the command set back */
+.not-live .install-os {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.install-soon {
+  margin-left: auto;
+  padding: 5px 9px;
+  font: 600 11px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+}
+.not-live .install-line {
+  color: var(--muted);
 }
 .install-cmd {
   display: flex;
@@ -789,6 +812,9 @@ html:not(.js) .demo-ctl {
   width: min(660px, 100%);
   margin-top: 14px;
   justify-items: center;
+}
+.launch .install-soon {
+  margin-left: 8px;
 }
 .launch .install-cmd {
   width: 100%;
