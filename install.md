@@ -28,53 +28,28 @@
 # floti setup, update and uninstall, and docs/PACKAGING.md in the floti
 # repository). When the code changes, change this to match.
 title: Install Floti
-description: One command installs Floti on a Mac, a Windows PC or a Linux computer, with no admin rights. This page covers what it installs, where it goes and how to update or remove it.
-lede: One command installs Floti on a Mac, a Windows PC or a Linux computer. It doesn't need admin rights, and updating it takes one command too.
-notice: Floti isn't released yet. The commands below go live with the first stable release, which puts the install scripts on floti.dev. Until then, they won't find anything to download.
+description: Install Floti on macOS, Windows or Linux with one command and no admin rights. Requirements, file locations, updating and uninstalling.
+lede: Run this in a terminal, or in PowerShell on Windows. You don't need admin rights.
+notice: Floti isn't released yet. These commands start working with the first stable release.
 ---
 
-## What you need
+## Requirements
 
-- **Claude Code, installed and signed in,** on each computer your agents run on. Floti starts it in a terminal, the same way you would. Support for other agents is coming.
-- **A computer Floti runs on:** a Mac with Apple Silicon, a Windows PC or a Linux computer, on x64 or Arm. WSL counts as Linux.
-- **For a computer you use remotely, SSH access to it.** `ssh` followed by its name should log you in from a terminal without asking for a password, because Floti uses your own SSH and types nothing into it.
+- macOS on Apple Silicon, Windows, or Linux on x64 or Arm. WSL counts as Linux.
+- Claude Code, installed and signed in, on every computer that runs agents. Support for other agents is coming.
+- For a remote computer, SSH that logs in without a password prompt.
 
-Nothing needs admin rights. If Claude Code is missing, or is a version Floti wasn't tested with, setup says so and gives you the line to run.
+The desktop app is available for macOS on Apple Silicon, Windows on x64 and Linux on x64. Other systems get the command-line tool and the host, and you use them from the app on another computer.
 
-## What each computer gets
+## What gets installed
 
-The same command works everywhere. What it leaves behind depends on the computer.
+- **`floti`**, the command-line tool.
+- **The host**, which runs your sessions in the background so they keep going when the app is closed. It starts at sign-in on macOS and Linux, and when it's needed on Windows. On a Linux server it runs from boot (setup tells you if that needs an admin).
+- **The desktop app**, on computers with a screen. Setup asks first, and you can add it later with `floti add desktop`.
 
-| Computer | What it gets |
-| --- | --- |
-| A desktop: a Mac, PC or Linux computer with a screen | The Floti app, the host and `floti`. Setup asks before it installs the app. |
-| A server, or any computer with no screen | The host and `floti`, with no window. On a Linux server the host keeps running with nobody signed in. |
-| Each WSL distro | A Linux host of its own, apart from the one on Windows. The Floti app on Windows reaches it through `wsl.exe`. |
-| A computer you only use from a terminal | `floti` and its commands, such as `floti doctor` and `floti agent`, and the host they talk to. Add the app later with `floti add desktop`. |
+Setup also adds `floti` to your PATH. On macOS and Linux that's one line, marked `# added by floti`, at the end of your shell's startup file.
 
-The host holds your sessions, so they keep running when the window closes. On a Mac and on Linux it starts at each sign-in. On Windows it starts when the Floti app or a connection needs it.
-
-The app is built for Windows on x64, Macs with Apple Silicon and Linux on x64. Other computers get the host and `floti`, and you use them from the app on another computer.
-
-## Run the command
-
-Open a terminal and run the command at the top of this page: Terminal on a Mac, PowerShell on Windows. For a WSL distro, open that distro's terminal and use the macOS and Linux command. Run it once in each distro you want a host in.
-
-You can also let the Floti app do it. In Settings > Hosts it installs `floti` on a computer you reach over SSH, or on a WSL distro, after it tells you what it will do and you say yes.
-
-## What the command does
-
-1. It picks the `floti` build for your system and CPU. On a system Floti has no build for, it stops there and says so.
-2. It downloads that build from Floti's [release on GitHub](https://github.com/floti-dev/floti/releases) and checks it against the SHA-256 written into the script at release. Only a file that matches is put in place, so a `floti` you already have keeps working if anything fails.
-3. It puts `floti` in your own folder: `~/.local/bin` on a Mac and Linux, `%LOCALAPPDATA%\Programs\Floti\bin` on Windows. On Windows it also adds that folder to your Path.
-4. It runs `floti setup`, which:
-   - checks that Claude Code is installed;
-   - on a Mac and Linux, adds `~/.local/bin` to your PATH if it isn't there: one line, ending `# added by floti`, at the end of the startup file your shell reads (`~/.zshenv` for zsh), and it tells you which file;
-   - makes Floti's data folder and the host's key;
-   - sets the host to start: at each sign-in on a Mac and Linux, when it is needed on Windows. On a Linux server it turns on lingering, so the host runs from boot.
-5. On a computer with a screen, setup asks: `Install the Floti desktop app as well? [Y/n]`. Yes runs `floti add desktop`, which downloads the app from the same release, checks its signature and SHA-256, and installs it in your own folder.
-
-The whole script is one function, called on its last line, so a download cut off halfway runs nothing. To read the script before you run it:
+The install script downloads `floti` from the [GitHub release](https://github.com/floti-dev/floti/releases), checks its SHA-256 and runs `floti setup`. To read the script first:
 
 ```sh
 curl -fsSL https://floti.dev/install.sh
@@ -84,33 +59,36 @@ curl -fsSL https://floti.dev/install.sh
 irm https://floti.dev/install.ps1
 ```
 
-## Where Floti puts things
+## Other computers
 
-Everything goes in your own user folders, and nothing asks for sudo or a Windows admin prompt. There's one exception: on a Linux server where your account isn't allowed to turn on lingering, setup stops and tells you that an administrator can run `sudo loginctl enable-linger` with your user name.
+Run the same command on each computer you want to use, over SSH or in a WSL distro's terminal (use the macOS and Linux command in WSL). You can also add a computer in the app under Settings > Hosts, and the app installs Floti there for you.
+
+## File locations
 
 ### macOS
 
 - `floti`: `~/.local/bin/floti`
-- The app: `~/Applications/Floti.app`
-- Floti's data and logs: `~/Library/Application Support/Floti`
-- Your own files, such as templates, themes and the plugins you write: `~/.config/floti`
-- What starts the host at sign-in: `~/Library/LaunchAgents/dev.floti.host.plist`
+- App: `~/Applications/Floti.app`
+- Data and logs: `~/Library/Application Support/Floti`
+- Config, themes, templates and plugins: `~/.config/floti`
+- Autostart: `~/Library/LaunchAgents/dev.floti.host.plist`
 
 ### Linux
 
 - `floti`: `~/.local/bin/floti`
-- The app: `~/Applications/Floti.AppImage`, with a menu entry in `~/.local/share/applications`
-- Floti's data: `~/.local/share/floti`, and its logs in `~/.local/state/floti`
-- Your own files: `~/.config/floti`
-- What starts the host at sign-in: `~/.config/systemd/user/floti.service`
+- App: `~/Applications/Floti.AppImage`
+- Data: `~/.local/share/floti`
+- Logs: `~/.local/state/floti`
+- Config, themes, templates and plugins: `~/.config/floti`
+- Autostart: `~/.config/systemd/user/floti.service`
 
 ### Windows
 
 - `floti`: `%LOCALAPPDATA%\Programs\Floti\bin\floti.exe`
-- The app: `%LOCALAPPDATA%\Programs\Floti\desktop`, with a Start menu entry
-- Floti's data and logs: `%LOCALAPPDATA%\Floti`
-- Your own files: `%USERPROFILE%\.config\floti`
-- Nothing starts at sign-in.
+- App: `%LOCALAPPDATA%\Programs\Floti\desktop`
+- Data and logs: `%LOCALAPPDATA%\Floti`
+- Config, themes, templates and plugins: `%USERPROFILE%\.config\floti`
+- Autostart: none
 
 ## Update
 
@@ -118,9 +96,9 @@ Everything goes in your own user folders, and nothing asks for sudo or a Windows
 floti update
 ```
 
-It replaces `floti` with the newest stable release, and the host restarts on the new one without ending your sessions. If the app is installed and older, it is updated too, once you quit it. Every file is checked against Floti's signing key, which is built into `floti`, and against its SHA-256 before anything is replaced. If a check fails, nothing changes.
+This updates `floti` and the host to the newest stable release without ending your sessions. If the app is installed, it updates the next time you quit it. Every download is checked against Floti's signing key before anything is replaced.
 
-You probably won't need to run it often. The host checks for a new `floti` once a day and updates it by itself; turn that off in the app under Settings > Updates. The app shows when a new release is out, and its Update button does what `floti update` does.
+The host also checks for a new release once a day and updates `floti` on its own. You can turn that off in Settings > Updates.
 
 ## Uninstall
 
@@ -128,21 +106,15 @@ You probably won't need to run it often. The host checks for a new `floti` once 
 floti uninstall
 ```
 
-It closes the app, stops the host, and removes what installing put there: what starts the host at sign-in, the app, the PATH entry and `floti` itself. Stopping the host ends every session it runs. It says what it removed and what it kept, one line each.
+This removes `floti`, the app, the host's autostart and the PATH entry. It stops the host, which ends any running sessions. Your data and config stay; add `--purge` to remove them too.
 
-Your data, logs and own files stay. To remove those as well:
-
-```sh
-floti uninstall --purge
-```
-
-Neither touches your agent's own settings, `~/.ssh` or any repository. On Linux, lingering stays on, since other services may rely on it; `loginctl disable-linger` turns it off.
+On Linux, lingering stays on. Turn it off with `loginctl disable-linger`.
 
 ## Install by hand
 
-If you'd rather not pipe a script to a shell, download and check `floti` yourself. Every file in a release has a minisign signature beside it, named after the file with `.minisig` added, and a GitHub build attestation.
+Every release file has a minisign signature next to it, named `<file>.minisig`.
 
-1. On the [releases page](https://github.com/floti-dev/floti/releases/latest), note the version and pick your file:
+1. Find your file on the [latest release](https://github.com/floti-dev/floti/releases/latest):
 
    | Computer | File |
    | --- | --- |
@@ -152,7 +124,7 @@ If you'd rather not pipe a script to a shell, download and check `floti` yoursel
    | Windows on x64 | `floti-<version>-windows-x64.exe` |
    | Windows on Arm | `floti-<version>-windows-arm64.exe` |
 
-2. Download it and its signature. On a Mac or Linux, with your version and file in the first two lines:
+2. Download it and its signature:
 
    ```sh
    v=X.Y.Z
@@ -161,15 +133,15 @@ If you'd rather not pipe a script to a shell, download and check `floti` yoursel
    curl -fLO "https://github.com/floti-dev/floti/releases/download/v$v/$f.minisig"
    ```
 
-3. Check the signature with [minisign](https://jedisct1.github.io/minisign/) and Floti's public key, the one `floti update` trusts:
+3. Verify it with [minisign](https://jedisct1.github.io/minisign/):
 
    ```sh
    minisign -Vm "$f" -P RWQ/o61pdxmFyI55RlxfVyDfWyZA9LYcMXYoJgwGOrZH60Ymqo7DurFT
    ```
 
-   It must say the signature is verified, with the trusted comment `floti X.Y.Z floti-X.Y.Z-linux-x64`: your version and file name. Or check GitHub's attestation with the GitHub CLI: `gh attestation verify "$f" --repo floti-dev/floti`. The SHA-256 of every `floti` is also listed in `floti-<version>-SHA256SUMS` in the same release.
+   Or with the GitHub CLI: `gh attestation verify "$f" --repo floti-dev/floti`.
 
-4. Put it in your own folder and run setup, which does the rest of what the script would, PATH and app included:
+4. Install it and run setup:
 
    ```sh
    mkdir -p ~/.local/bin
@@ -178,7 +150,7 @@ If you'd rather not pipe a script to a shell, download and check `floti` yoursel
    ~/.local/bin/floti setup
    ```
 
-On Windows, the same steps in PowerShell:
+On Windows:
 
 ```powershell
 $v = 'X.Y.Z'
@@ -195,26 +167,18 @@ Move-Item $f "$bin\floti.exe"
 
 ## Homebrew and winget
 
-Homebrew and winget install `floti` on its own, without the app. Run `floti setup` after either one.
-
-On a Mac or Linux, trust Floti's tap first, because Homebrew loads no formula from a tap you haven't trusted:
+Both install `floti` without the app. Run `floti setup` afterwards.
 
 ```sh
 brew trust floti-dev/tap && brew install floti-dev/tap/floti
 ```
 
-On Windows:
-
 ```powershell
 winget install FlotiDev.Floti
 ```
 
-Update it with `brew upgrade` or `winget upgrade`. `floti uninstall` removes everything else and leaves `floti` to the package manager that installed it.
+Update with `brew upgrade` or `winget upgrade`. `floti uninstall` leaves `floti` itself for the package manager to remove.
 
-## On the network
+## Privacy
 
-From Floti's packaging notes:
-
-> The host's update check, at most once a day to floti.dev and to the GitHub release it names, is the only request Floti makes on its own initiative; the app itself contacts nothing. Everything else on the network happens because you asked for it: Check now and Update ask the host to check or to update, the browser pane fetches the page you navigate to, a plugin you added reaches the hosts its manifest names, and a host you added on another computer is reached through your own ssh, or the command you gave.
-
-There's no telemetry and no crash reporting. The host only accepts connections from the computer it runs on; your other computers reach it through SSH.
+Floti has no telemetry or crash reporting. The only request it makes on its own is the daily update check, to floti.dev and GitHub. The host only accepts connections from its own computer, and other computers reach it over SSH.
