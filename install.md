@@ -28,8 +28,8 @@
 # floti setup, update and uninstall, and docs/PACKAGING.md in the floti
 # repository). When the code changes, change this to match.
 title: Install Floti
-description: Install Floti on macOS, Windows or Linux with one command and no admin rights. Requirements, file locations, updating and uninstalling.
-lede: Run this in a terminal, or in PowerShell on Windows. You don't need admin rights.
+description: Install Floti on macOS, Windows or Linux with one command. Requirements, file locations, updating and uninstalling.
+lede: Run this in a terminal, or in PowerShell on Windows.
 notice: Floti isn't released yet. These commands start working with the first stable release.
 ---
 
