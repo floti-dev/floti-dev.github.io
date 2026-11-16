@@ -28,20 +28,19 @@
 # floti setup, update and uninstall, and docs/PACKAGING.md in the floti
 # repository). When the code changes, change this to match.
 title: Install Floti
-description: Install Floti on macOS, Windows or Linux with one command. Requirements, file locations, updating and uninstalling.
+description: Install Floti on macOS, Windows or Linux with one command. Remote hosts, file locations, updating and uninstalling.
 lede: Run this in a terminal, or in PowerShell on Windows.
 notice: Floti isn't released yet. These commands start working with the first stable release.
 ---
 
 ## What gets installed
 
-- **`floti`**, the command-line tool.
-- **The host**, which runs your sessions in the background so they keep going when the app is closed. It starts at sign-in on macOS and Linux, and when it's needed on Windows. On a Linux server it runs from boot (setup tells you if that needs an admin).
-- **The desktop app**, on computers with a screen (macOS on Apple Silicon, Windows and Linux on x64). Setup asks first, and you can add it later with `floti add desktop`.
+- **Floti host** runs your sessions in the background, so they keep going when Floti desktop is closed. It comes with the `floti` command. It starts at sign-in on macOS and Linux, and when it's needed on Windows. On a Linux server it runs from boot (setup tells you if that needs an admin).
+- **Floti desktop** is the app, for computers with a screen (macOS on Apple Silicon, Windows and Linux on x64). Setup asks before installing it, and you can add it later with `floti add desktop`.
 
-Setup also adds `floti` to your PATH. On macOS and Linux that's one line, marked `# added by floti`, at the end of your shell's startup file.
+Setup also adds the `floti` command to your PATH. On macOS and Linux that's one line, marked `# added by floti`, at the end of your shell's startup file.
 
-The install script downloads `floti` from the [GitHub release](https://github.com/floti-dev/floti/releases), checks its SHA-256 and runs `floti setup`. To read the script first:
+The install script downloads Floti host from the [GitHub release](https://github.com/floti-dev/floti/releases), checks its SHA-256 and runs `floti setup`. To read the script first:
 
 ```sh
 curl -fsSL https://floti.dev/install.sh
@@ -53,41 +52,41 @@ irm https://floti.dev/install.ps1
 
 ## Set up a remote host
 
-A remote host is another computer, such as a server, a second PC or a WSL distro, whose sessions show up in your Floti window.
+A remote host is another computer, such as a server, a second PC or a WSL distro, whose sessions show up in Floti desktop.
 
-1. Check that `ssh <name>` logs you in from a terminal without a password or host-key prompt. Floti connects with your own SSH and can't answer prompts.
+1. Check that `ssh <name>` logs you in from a terminal without a password or host-key prompt. Floti desktop connects with your own SSH and can't answer prompts.
 2. Install Claude Code on that computer and sign in.
-3. In Floti, open Settings > Hosts and click **Add a host…**. Pick the computer from your SSH config or type its target, such as `you@build-box`. WSL distros on this PC are listed there too.
-4. Floti checks the computer, offers to install `floti` there if it's missing, and connects. The host's sessions appear in your sidebar under its name.
+3. In Floti desktop, open Settings > Hosts and click **Add a host…**. Pick the computer from your SSH config or type its target, such as `you@build-box`. WSL distros on this PC are listed there too.
+4. Floti desktop checks the computer, offers to install Floti host there if it's missing, and connects. The host's sessions appear in your sidebar under its name.
 
-To install by hand instead, run the install command on that computer, then add it in the app.
+To install Floti host by hand instead, run the install command on that computer, then add it in Floti desktop.
 
 ## File locations
 
 ### macOS
 
-- `floti`: `~/.local/bin/floti`
-- App: `~/Applications/Floti.app`
+- Floti host: `~/.local/bin/floti`
+- Floti desktop: `~/Applications/Floti.app`
 - Data and logs: `~/Library/Application Support/Floti`
 - Config, themes, templates and plugins: `~/.config/floti`
-- Autostart: `~/Library/LaunchAgents/dev.floti.host.plist`
+- Host autostart: `~/Library/LaunchAgents/dev.floti.host.plist`
 
 ### Linux
 
-- `floti`: `~/.local/bin/floti`
-- App: `~/Applications/Floti.AppImage`
+- Floti host: `~/.local/bin/floti`
+- Floti desktop: `~/Applications/Floti.AppImage`
 - Data: `~/.local/share/floti`
 - Logs: `~/.local/state/floti`
 - Config, themes, templates and plugins: `~/.config/floti`
-- Autostart: `~/.config/systemd/user/floti.service`
+- Host autostart: `~/.config/systemd/user/floti.service`
 
 ### Windows
 
-- `floti`: `%LOCALAPPDATA%\Programs\Floti\bin\floti.exe`
-- App: `%LOCALAPPDATA%\Programs\Floti\desktop`
+- Floti host: `%LOCALAPPDATA%\Programs\Floti\bin\floti.exe`
+- Floti desktop: `%LOCALAPPDATA%\Programs\Floti\desktop`
 - Data and logs: `%LOCALAPPDATA%\Floti`
 - Config, themes, templates and plugins: `%USERPROFILE%\.config\floti`
-- Autostart: none
+- Host autostart: none
 
 ## Update
 
@@ -95,9 +94,9 @@ To install by hand instead, run the install command on that computer, then add i
 floti update
 ```
 
-This updates `floti` and the host to the newest stable release without ending your sessions. If the app is installed, it updates the next time you quit it. Every download is checked against Floti's signing key before anything is replaced.
+This updates Floti host to the newest stable release without ending your sessions. If Floti desktop is installed, it updates the next time you quit it. Every download is checked against Floti's signing key before anything is replaced.
 
-The host also checks for a new release once a day and updates `floti` on its own. You can turn that off in Settings > Updates.
+Floti host also checks for a new release once a day and updates itself. You can turn that off in Floti desktop under Settings > Updates.
 
 ## Uninstall
 
@@ -105,7 +104,7 @@ The host also checks for a new release once a day and updates `floti` on its own
 floti uninstall
 ```
 
-This removes `floti`, the app, the host's autostart and the PATH entry. It stops the host, which ends any running sessions. Your data and config stay; add `--purge` to remove them too.
+This removes Floti host, Floti desktop, the host's autostart and the PATH entry. It stops Floti host first, which ends any running sessions. Your data and config stay; add `--purge` to remove them too.
 
 On Linux, lingering stays on. Turn it off with `loginctl disable-linger`.
 
@@ -113,7 +112,7 @@ On Linux, lingering stays on. Turn it off with `loginctl disable-linger`.
 
 Every release file has a minisign signature next to it, named `<file>.minisig`.
 
-1. Find your file on the [latest release](https://github.com/floti-dev/floti/releases/latest):
+1. Find the Floti host file for your computer on the [latest release](https://github.com/floti-dev/floti/releases/latest):
 
    | Computer | File |
    | --- | --- |
@@ -166,7 +165,7 @@ Move-Item $f "$bin\floti.exe"
 
 ## Homebrew and winget
 
-Both install `floti` without the app. Run `floti setup` afterwards.
+Both install Floti host without Floti desktop. Run `floti setup` afterwards.
 
 ```sh
 brew trust floti-dev/tap && brew install floti-dev/tap/floti
@@ -176,8 +175,8 @@ brew trust floti-dev/tap && brew install floti-dev/tap/floti
 winget install FlotiDev.Floti
 ```
 
-Update with `brew upgrade` or `winget upgrade`. `floti uninstall` leaves `floti` itself for the package manager to remove.
+Update with `brew upgrade` or `winget upgrade`. `floti uninstall` leaves Floti host itself for the package manager to remove.
 
 ## Privacy
 
-Floti has no telemetry or crash reporting. The only request it makes on its own is the daily update check, to floti.dev and GitHub. The host only accepts connections from its own computer, and other computers reach it over SSH.
+Floti has no telemetry or crash reporting. The only request it makes on its own is the daily update check, to floti.dev and GitHub. Floti host only accepts connections from its own computer, and other computers reach it over SSH.

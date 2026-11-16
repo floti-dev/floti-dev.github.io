@@ -88,8 +88,8 @@ sections:
     label: Persistence
     headline: Sessions outlive the window.
     lede: >-
-      A small host on each machine keeps your sessions running when Floti
-      closes, crashes or updates.
+      Floti host runs on each machine and keeps your sessions running when
+      Floti desktop closes, crashes or updates.
 
   # Install: the last section, with the install command again. The only place
   # the page names an agent.
@@ -133,9 +133,9 @@ demos:
       crash: Crash it
       update: Update it
       open: Open Floti
-    host: Host on this PC
-    closed: Floti is closed, and its sessions are still running.
-    crashed: Floti crashed, but everything it started is still running.
+    host: Floti host on this PC
+    closed: Floti desktop is closed, and its sessions are still running.
+    crashed: Floti desktop crashed, but everything it started is still running.
     updating: Updating Floti
     updated: Floti updated
     away: while you were away
