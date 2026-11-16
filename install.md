@@ -33,19 +33,11 @@ lede: Run this in a terminal, or in PowerShell on Windows.
 notice: Floti isn't released yet. These commands start working with the first stable release.
 ---
 
-## Requirements
-
-- macOS on Apple Silicon, Windows, or Linux on x64 or Arm. WSL counts as Linux.
-- Claude Code, installed and signed in, on every computer that runs agents. Support for other agents is coming.
-- For a remote computer, SSH that logs in without a password prompt.
-
-The desktop app is available for macOS on Apple Silicon, Windows on x64 and Linux on x64. Other systems get the command-line tool and the host, and you use them from the app on another computer.
-
 ## What gets installed
 
 - **`floti`**, the command-line tool.
 - **The host**, which runs your sessions in the background so they keep going when the app is closed. It starts at sign-in on macOS and Linux, and when it's needed on Windows. On a Linux server it runs from boot (setup tells you if that needs an admin).
-- **The desktop app**, on computers with a screen. Setup asks first, and you can add it later with `floti add desktop`.
+- **The desktop app**, on computers with a screen (macOS on Apple Silicon, Windows and Linux on x64). Setup asks first, and you can add it later with `floti add desktop`.
 
 Setup also adds `floti` to your PATH. On macOS and Linux that's one line, marked `# added by floti`, at the end of your shell's startup file.
 
@@ -59,9 +51,16 @@ curl -fsSL https://floti.dev/install.sh
 irm https://floti.dev/install.ps1
 ```
 
-## Other computers
+## Set up a remote host
 
-Run the same command on each computer you want to use, over SSH or in a WSL distro's terminal (use the macOS and Linux command in WSL). You can also add a computer in the app under Settings > Hosts, and the app installs Floti there for you.
+A remote host is another computer, such as a server, a second PC or a WSL distro, whose sessions show up in your Floti window.
+
+1. Check that `ssh <name>` logs you in from a terminal without a password or host-key prompt. Floti connects with your own SSH and can't answer prompts.
+2. Install Claude Code on that computer and sign in.
+3. In Floti, open Settings > Hosts and click **Add a host…**. Pick the computer from your SSH config or type its target, such as `you@build-box`. WSL distros on this PC are listed there too.
+4. Floti checks the computer, offers to install `floti` there if it's missing, and connects. The host's sessions appear in your sidebar under its name.
+
+To install by hand instead, run the install command on that computer, then add it in the app.
 
 ## File locations
 
