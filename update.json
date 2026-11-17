@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "channels": {
+    "stable": {
+      "version": "3.0.0",
+      "url": "https://github.com/floti-dev/floti/releases/download/v3.0.0/",
+      "floti": {
+        "windows-x64": {
+          "file": "floti-3.0.0-windows-x64.exe",
+          "sha256": "3cb17ef000bdaa5191faaf3cd8f1fac3662b037efb736b9aaa9671425897c47b"
+        },
+        "windows-arm64": {
+          "file": "floti-3.0.0-windows-arm64.exe",
+          "sha256": "6d2ff3890f54fbf8ba5a5c66d3351325ffb4e9ba02763bec4964ada291261810"
+        },
+        "macos-arm64": {
+          "file": "floti-3.0.0-macos-arm64",
+          "sha256": "b6e96c222dec274074e4a27530f3fd654c7ff0564efe46f59c952c4c1ff61790"
+        },
+        "linux-x64": {
+          "file": "floti-3.0.0-linux-x64",
+          "sha256": "f16d86f3be5d1cf235af213b4cc804d179c36e17be2751eaf0defc4e92ed58fd"
+        },
+        "linux-arm64": {
+          "file": "floti-3.0.0-linux-arm64",
+          "sha256": "3304449d0e906b75592163e0137d178d970313e72eb8538528521a722bc971ce"
+        }
+      },
+      "desktop": {
+        "windows-x64": {
+          "file": "Floti-3.0.0-setup.exe",
+          "sha256": "40985b242905892d48c18d8cd9364aed5d1a89bbec461eacaeb105348575a804"
+        },
+        "macos-arm64": {
+          "file": "Floti-3.0.0-arm64-mac.zip",
+          "sha256": "e0fd78c8a4282639a887f77267afb1ee2ff7b271cf319e26921cc9a2602caf1e"
+        },
+        "linux-x64": {
+          "file": "Floti-3.0.0-linux-x64.AppImage",
+          "sha256": "f9aa4441b965db363d9b2e8c0c9b9dd67dc6b7b48447f29df15c0fbb2ff0a621"
+        }
+      }
+    }
+  }
+}
