@@ -1,0 +1,864 @@
+/* The Floti window, as the demos draw it: the rules of the app's DESIGN.md
+ * ("Nocturne Islands") in the matching Floti theme. Islands sit on a sunken
+ * canvas with a 1px hairline edge and 6px gutters; the accent appears only as
+ * 2px marks, outlines, its soft tint and text; mono is for machine data; no
+ * text is heavier than 500 except 11px caps labels. Sizes are the app's own,
+ * with nothing under 11px, and each demo's stage scales the whole drawing to
+ * fit (up to about 1.2x on a desktop, so the smallest text reads at 13px). */
+
+.fw {
+  --gap: 6px;
+  --r: 3px;
+  position: relative;
+  display: grid;
+  grid-template-rows: 36px minmax(0, 1fr) 26px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--fl-bg);
+  border: 1px solid var(--fl-border-strong);
+  border-radius: 8px;
+  color: var(--fl-fg);
+  font: 400 13px/1.5 var(--body);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  transition:
+    background-color var(--fade),
+    border-color var(--fade);
+}
+.fw.shadow {
+  box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.6);
+}
+.fw *,
+.fw *::before {
+  transition:
+    background-color var(--fade),
+    border-color var(--fade),
+    color var(--fade),
+    fill var(--fade);
+}
+.fw .mono {
+  font-family: var(--mono);
+}
+
+/* title strip: the accent mark over the rail, the window controls at the right */
+.fw-title {
+  display: flex;
+  align-items: center;
+}
+.fw-title-mark {
+  width: 48px;
+  display: grid;
+  place-items: center;
+}
+.fw-title-mark svg {
+  height: 20px;
+  width: auto;
+}
+.fw .fw-title-mark .ship {
+  fill: var(--fl-accent);
+}
+.fw .fw-title-mark .hi {
+  fill: var(--fl-bg);
+}
+.fw-winctl {
+  margin-left: auto;
+  display: flex;
+  height: 100%;
+}
+.fw-winctl span {
+  width: 46px;
+  display: grid;
+  place-items: center;
+}
+.fw-winctl svg {
+  width: 10px;
+  height: 10px;
+  stroke: var(--fl-fg-muted);
+  stroke-width: 1;
+  fill: none;
+}
+
+.fw-main {
+  display: grid;
+  grid-template-columns: 48px 256px minmax(0, 1fr);
+  gap: var(--gap);
+  padding-right: var(--gap);
+  min-height: 0;
+}
+.fw-main.no-side {
+  grid-template-columns: 48px minmax(0, 1fr);
+}
+
+/* rail */
+.fw-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 2px;
+}
+.fw-rail-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: calc(var(--r) + 1px);
+  color: var(--fl-fg-muted);
+}
+.fw-rail-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fw-rail-btn.on {
+  background: var(--fl-hover);
+  color: var(--fl-fg);
+}
+.fw-rail-btn.on::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--fl-accent);
+}
+.fw-rail-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fl-warn);
+  box-shadow: 0 0 0 2px var(--fl-bg);
+}
+.fw-rail-sep {
+  width: 20px;
+  height: 1px;
+  margin: 5px 0;
+  background: var(--fl-border-strong);
+}
+.fw-rail-foot {
+  margin-top: auto;
+  margin-bottom: 4px;
+}
+
+/* islands */
+.fw-island {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background: var(--fl-surface);
+  border: 1px solid var(--fl-border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.fw-side {
+  display: flex;
+  flex-direction: column;
+}
+.fw-side-head {
+  flex: none;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px 0 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.fw-side-head .t {
+  margin-right: auto;
+}
+.fw-icon-btn {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  color: var(--fl-fg-subtle);
+}
+.fw-icon-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fw-filter {
+  flex: none;
+  margin: 0 8px 6px;
+  height: 26px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  background: var(--fl-surface-sunken);
+  border: 1px solid var(--fl-border);
+  border-radius: calc(var(--r) + 1px);
+  font-size: 12px;
+  color: var(--fl-fg-subtle);
+}
+.fw-tree {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: 2px 0 6px;
+}
+.fw-side-foot {
+  flex: none;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-top: 1px solid var(--fl-border);
+  font-size: 11.5px;
+  color: var(--fl-fg-muted);
+}
+
+.fw-rule {
+  height: 1px;
+  margin: 6px 12px;
+  background: linear-gradient(90deg, transparent, var(--fl-border-strong) 18%, var(--fl-border-strong) 82%, transparent);
+}
+
+/* tree rows */
+.fw-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 12px 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fl-fg);
+}
+.fw-label .caret {
+  width: 10px;
+  height: 10px;
+  stroke: var(--fl-fg-subtle);
+  stroke-width: 1.5;
+  fill: none;
+}
+.fw-label .n {
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--fl-fg-subtle);
+}
+.fw-label .tpl {
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fl-fg-subtle);
+  font-size: 11px;
+}
+.fw-label .r {
+  margin-left: auto;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+  color: var(--fl-accent-text);
+}
+.fw-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 12px 0 28px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.fw-row .ico {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: var(--fl-fg-muted);
+  stroke-width: 1.4;
+}
+.fw-row .name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fw-row .branch {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fl-fg-subtle);
+}
+.fw-row.session {
+  padding-left: 48px;
+}
+.fw-row.session .name {
+  color: var(--fl-fg-muted);
+}
+.fw-row.session.child {
+  padding-left: 60px;
+}
+/* the family guide: a rule down from the parent's dot, an elbow 7px long into
+ * each child, the last child's rule stopping at its elbow */
+.fw-row.parent::before {
+  content: '';
+  position: absolute;
+  left: 50.5px;
+  top: 50%;
+  bottom: 0;
+  border-left: 1px solid var(--fl-border-strong);
+}
+.fw-row.child::before {
+  content: '';
+  position: absolute;
+  left: 50.5px;
+  top: 0;
+  height: 50%;
+  width: 7px;
+  border-left: 1px solid var(--fl-border-strong);
+  border-bottom: 1px solid var(--fl-border-strong);
+}
+.fw-row.child:not(.last)::after {
+  content: '';
+  position: absolute;
+  left: 50.5px;
+  top: 50%;
+  bottom: 0;
+  border-left: 1px solid var(--fl-border-strong);
+}
+/* a grandchild: one step further in, its elbow from its parent's dot, with
+ * the grandparent's rule running on past it when more children follow */
+.fw-row.session.grand {
+  padding-left: 72px;
+}
+.fw-row.grand::before {
+  content: '';
+  position: absolute;
+  left: 62.5px;
+  top: 0;
+  height: 50%;
+  width: 7px;
+  border-left: 1px solid var(--fl-border-strong);
+  border-bottom: 1px solid var(--fl-border-strong);
+}
+.fw-row.grand.through::after {
+  content: '';
+  position: absolute;
+  left: 50.5px;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--fl-border-strong);
+}
+.fw-row .word {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fl-fg-subtle);
+}
+.fw-row .word.need {
+  color: var(--fl-warn);
+}
+.fw-row .word.acc {
+  color: var(--fl-accent-text);
+}
+.fw-row.sel {
+  background: var(--fl-active);
+}
+.fw-row.sel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--fl-accent);
+}
+.fw-row.sel .name,
+.fw-row.need .name {
+  color: var(--fl-fg);
+}
+.fw-row.hot {
+  background: var(--fl-hover);
+}
+
+.dot {
+  flex: none;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fl-success);
+}
+.dot.need {
+  background: var(--fl-warn);
+}
+.dot.err {
+  background: var(--fl-danger);
+}
+.dot.idle {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--fl-fg-subtle);
+}
+.dot.ring {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--fl-success);
+}
+.dot.ring.wait {
+  box-shadow: inset 0 0 0 1.5px var(--fl-fg-subtle);
+}
+
+/* panes */
+.fw-panes {
+  display: grid;
+  gap: var(--gap);
+  min-width: 0;
+  min-height: 0;
+}
+.fw-pane {
+  display: flex;
+  flex-direction: column;
+}
+.fw-strip {
+  flex: none;
+  position: relative;
+  height: 36px;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--fl-border);
+  background: var(--fl-surface-sunken);
+}
+.fw-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 200px;
+  padding: 0 14px 0 12px;
+  font-size: 12.5px;
+  color: var(--fl-fg-muted);
+  border-right: 1px solid var(--fl-border);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.fw-tab .label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fw-tab.on {
+  background: var(--fl-surface);
+  color: var(--fl-fg);
+  margin-bottom: -1px;
+}
+.fw-tab.on::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--fl-accent);
+}
+.fw-tab .need-word {
+  font-size: 11px;
+  color: var(--fl-warn);
+}
+.fw-tab .tag,
+.fw-tag {
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+  color: var(--fl-accent-text);
+  background: var(--fl-accent-soft);
+}
+.fw-tab svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.fw-strip-plus {
+  width: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--fl-fg-subtle);
+}
+.fw-strip-plus svg,
+.fw-strip-ctl svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.fw-strip-ctl {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 6px;
+  color: var(--fl-fg-subtle);
+}
+.fw-strip-ctl span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+.fw-crumb {
+  flex: none;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--fl-border);
+  font-size: 11.5px;
+  color: var(--fl-fg-muted);
+  white-space: nowrap;
+}
+.fw-crumb .mono {
+  font-size: 11px;
+  color: var(--fl-fg-subtle);
+}
+.fw-crumb .sep {
+  color: var(--fl-fg-subtle);
+}
+.fw-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* the terminal: its own ground in every theme */
+.fw-term {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--term);
+  padding: 9px 12px;
+  font: 400 11.5px/1.62 var(--mono);
+  color: var(--term-fg);
+  white-space: pre;
+}
+.fw-term .ln {
+  display: block;
+  min-height: 1.62em;
+}
+.t-dim { color: var(--term-dim); }
+.t-ok { color: var(--term-green); }
+.t-y { color: var(--term-yellow); }
+.t-b { color: var(--term-blue); }
+.t-r { color: var(--term-red); }
+.t-in { color: var(--term-fg); }
+.t-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  background: var(--term-fg);
+  opacity: 0.8;
+}
+
+/* a parent's tab holding its children (DESIGN.md §5b) */
+.fw-family {
+  display: grid;
+  grid-template-columns: 55% minmax(0, 1fr);
+  height: 100%;
+}
+.fw-kids {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--fl-border-strong);
+  background: var(--fl-surface);
+  min-width: 0;
+}
+.fw-kid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.fw-kid + .fw-kid {
+  border-top: 1px solid var(--fl-border-strong);
+}
+.fw-kid-head {
+  flex: none;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--fl-border);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.fw-kid-head .n {
+  font-weight: 500;
+}
+.fw-kid-head .state {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fl-fg-muted);
+}
+.fw-kid .fw-term {
+  flex: 1;
+  height: auto;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+/* status bar: plain caption text on the canvas */
+.fw-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  font-size: 11px;
+  color: var(--fl-fg-subtle);
+  white-space: nowrap;
+}
+.fw-status .grp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fw-status .bar {
+  width: 1px;
+  height: 10px;
+  background: var(--fl-border-strong);
+}
+.fw-status .need {
+  color: var(--fl-warn);
+}
+.fw-status .chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid var(--fl-border-strong);
+  border-radius: 4px;
+}
+.fw-status .right {
+  margin-left: auto;
+}
+
+/* a rendered Markdown note */
+.fw-doc {
+  height: 100%;
+  overflow: hidden;
+  padding: 22px 28px;
+  background: var(--fl-surface);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fl-fg);
+}
+.fw-doc h4 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.fw-doc h5 {
+  margin: 16px 0 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.fw-doc p {
+  margin: 0 0 10px;
+  color: var(--fl-fg-muted);
+}
+.fw-doc ul {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  color: var(--fl-fg-muted);
+}
+.fw-doc code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  padding: 1px 5px;
+  border-radius: var(--r);
+  background: var(--fl-surface-raised);
+  color: var(--fl-fg);
+}
+.fw-doc pre {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--r);
+  background: var(--fl-surface-raised);
+  font: 400 11.5px/1.6 var(--mono);
+  color: var(--fl-fg);
+}
+
+/* the pointer the demos move */
+.cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  width: 18px;
+  height: 22px;
+  pointer-events: none;
+}
+.cursor path {
+  fill: #f5f5f0;
+  stroke: #15160f;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+.click-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 29;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  border: 2px solid var(--fl-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* demo helpers: an element the timeline reveals; at rest it is shown */
+.gone {
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* ---------- the phone layout (PHONE_QUERY in demos/kit.ts)
+ * Below 900px a demo is not the drawing scaled down: the window is laid out
+ * again at the size it is shown, with only the part of it that tells the
+ * demo's story. The rail, the sidebar and the title strip go (a demo that
+ * needs one brings it back), terminals wrap their lines and keep their
+ * newest line in view, and no text is set under 12px. */
+@media (max-width: 899.98px) {
+  .fw {
+    grid-template-rows: minmax(0, 1fr) 28px;
+    padding-top: var(--gap);
+  }
+  /* a lighter shadow: cheaper to paint as the hero fades in and out */
+  .fw.shadow {
+    box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+  }
+  .fw-title,
+  .fw-rail,
+  .fw-side {
+    display: none;
+  }
+  .fw-main,
+  .fw-main.no-side {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: var(--gap);
+  }
+
+  .fw-side-head {
+    font-size: 13px;
+  }
+  .fw-filter,
+  .fw-side-foot {
+    font-size: 12px;
+  }
+  .fw-label,
+  .fw-label .tpl,
+  .fw-label .r,
+  .fw-row .branch,
+  .fw-row .word {
+    font-size: 12px;
+  }
+
+  .fw-tab {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 210px;
+    padding: 0 12px 0 11px;
+    font-size: 13px;
+  }
+  .fw-tab .need-word,
+  .fw-tab .tag,
+  .fw-tag {
+    flex: none;
+    font-size: 12px;
+  }
+  .fw-tab svg {
+    flex: none;
+  }
+  .fw-strip-plus {
+    flex: none;
+  }
+  .fw-strip-ctl {
+    display: none;
+  }
+  .fw-crumb,
+  .fw-crumb .mono {
+    font-size: 12px;
+  }
+  .fw-crumb {
+    overflow: hidden;
+  }
+
+  /* a terminal wraps like a real one, and when its lines outgrow it the
+   * oldest go off the top: it sits on the foot of its box and is at least
+   * as tall as the box */
+  .fw-body {
+    overflow: hidden;
+  }
+  .fw-term {
+    font-size: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .fw-body > .fw-term {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    min-height: 100%;
+  }
+  .fw-kid-head,
+  .fw-kid-head .state,
+  .fw-kid .fw-term {
+    font-size: 12px;
+  }
+
+  .fw-status {
+    gap: 8px;
+    padding: 0 10px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .fw-status .chip {
+    font-size: 12px;
+  }
+  /* status-bar items that only fit a desktop window */
+  .fw-status .wide {
+    display: none;
+  }
+
+  .fw-doc {
+    padding: 16px 16px;
+  }
+  .fw-doc h4 {
+    font-size: 18px;
+  }
+  .fw-doc code,
+  .fw-doc pre {
+    font-size: 12px;
+  }
+  .fw-doc pre {
+    white-space: pre-wrap;
+  }
+}

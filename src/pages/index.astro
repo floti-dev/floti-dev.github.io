@@ -1,0 +1,75 @@
+---
+/* The floti.dev home page. Composition first, then the fleet; plugins, the
+ * browser and persistence next; the install command last.
+ * Every word outside the demos' drawings comes from copy.yaml. */
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Logo from '../components/Logo.astro';
+import InstallBox from '../components/InstallBox.astro';
+import Parallax from '../components/Parallax.astro';
+import Feature from '../components/Feature.astro';
+import HeroDemo from '../components/demos/HeroDemo.astro';
+import ComposeDemo from '../components/demos/ComposeDemo.astro';
+import FleetDemo from '../components/demos/FleetDemo.astro';
+import PluginsDemo from '../components/demos/PluginsDemo.astro';
+import BrowserDemo from '../components/demos/BrowserDemo.astro';
+import PersistDemo from '../components/demos/PersistDemo.astro';
+import { copy } from '../copy';
+import { GITHUB, INSTALL } from '../links';
+
+const { hero, sections } = copy;
+---
+
+<Base title={copy.page.title} description={copy.page.description}>
+  <Parallax />
+
+  <SiteHeader />
+
+  <main>
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-text">
+        <Logo kind="word" class="hero-word" label="floti" />
+        <h1 id="hero-title">{hero.headline}</h1>
+        <InstallBox id="hero" />
+      </div>
+      <div class="hero-stage">
+        <div class="hero-ship" aria-hidden="true">
+          <div class="hero-ship-rock"><Logo kind="silhouette" /></div>
+        </div>
+        <HeroDemo />
+      </div>
+    </section>
+
+    <Feature id="composition" text={sections.composition} lead><ComposeDemo /></Feature>
+
+    <!-- the fleet: the showpiece, in a band of the deeper ground -->
+    <div class="band">
+      <Feature id="fleet" text={sections.fleet} lead layout="center"><FleetDemo /></Feature>
+    </div>
+
+    <Feature id="plugins" text={sections.plugins} layout="split" demo="right"><PluginsDemo /></Feature>
+    <Feature id="browser" text={sections.browser}><BrowserDemo /></Feature>
+    <Feature id="persistence" text={sections.persistence} layout="stage"><PersistDemo /></Feature>
+
+    <section class="feature launch wrap" aria-labelledby="install">
+      <div class="feature-text">
+        <Logo kind="word" class="launch-word" />
+        <p class="eyebrow lead">{sections.install.label}</p>
+        <h2 class="h2" id="install">{sections.install.headline}</h2>
+        <p class="lede">{sections.install.lede}</p>
+        <InstallBox id="launch" />
+        <p class="launch-links">
+          <a href={INSTALL}>{sections.install.guide_link}</a>
+          <a href={GITHUB}>{sections.install.github_link}</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+
+  <script>
+    import '../scripts/main.ts';
+  </script>
+</Base>

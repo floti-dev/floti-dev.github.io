@@ -1,0 +1,28 @@
+---
+/* The bar along the top of every page: the lockup linking home, and the
+ * Install, Wiki and GitHub links. */
+import Logo from './Logo.astro';
+import { copy } from '../copy';
+import { GITHUB, HOME, INSTALL, WIKI } from '../links';
+
+interface Props {
+  /** The page this is, marked in the links. */
+  current?: 'install';
+}
+
+const { current } = Astro.props;
+const { nav } = copy;
+---
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href={HOME} aria-label={nav.home}>
+      <Logo kind="lockup" class="brand-lockup" />
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href={INSTALL} aria-current={current === 'install' ? 'page' : undefined}>{nav.install}</a>
+      <a href={WIKI}>{nav.wiki}</a>
+      <a href={GITHUB}>{nav.github}</a>
+    </nav>
+  </div>
+</header>

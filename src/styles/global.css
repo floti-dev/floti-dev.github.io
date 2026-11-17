@@ -1,0 +1,952 @@
+/* The page: one dark reading column on the brand's ground, headlines in JetBrains
+ * Mono ExtraBold Italic after the wordmark, running text in IBM Plex Sans.
+ * The highlight colour (--hi) is kept to the logo's f, </> and underscore,
+ * the install prompt and one mark per demo; links and marks use --lead. */
+
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-800-italic.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import './tokens.css';
+@import './app.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--ground);
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--ground);
+  color: var(--text);
+  font: 400 17px/1.6 var(--body);
+}
+
+a {
+  color: var(--lead);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--lead);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- logo (inline SVG, coloured from the page's tokens) */
+
+.logo-svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  overflow: visible;
+}
+.logo-svg .ship {
+  fill: var(--ship);
+}
+.logo-svg .word {
+  fill: var(--word);
+}
+.logo-svg .hi {
+  fill: var(--hi);
+}
+/* the lockup's ship, light on the dark page as on the logo's dark-ground artwork */
+.logo-svg .light {
+  fill: var(--light);
+}
+
+/* ---------- background parallax: the ship silhouettes and faint code */
+
+.px {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.px-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.px-ship {
+  position: absolute;
+  display: block;
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+}
+.px-ship .ship {
+  fill: var(--silhouette);
+}
+.px-ship.flip {
+  transform: scaleX(-1);
+}
+.px-code {
+  position: absolute;
+  margin: 0;
+  font: 400 13px/1.9 var(--mono);
+  color: var(--code-ghost);
+  white-space: pre;
+}
+.px-far .px-code {
+  font-size: 11px;
+}
+.px-near .px-code {
+  font-size: 15px;
+}
+
+/* positions: each item is placed by class, because the page's CSP allows no
+ * inline style attributes */
+.px-s1 { top: 7%; left: 0; width: min(560px, 60vw); }
+.px-s2 { top: 31%; right: 0; width: min(420px, 50vw); }
+.px-s3 { top: 52%; left: 0; width: min(360px, 44vw); }
+.px-s4 { top: 72%; right: 0; width: min(520px, 58vw); }
+.px-s5 { top: 18%; right: 0; width: min(260px, 34vw); }
+.px-s6 { top: 44%; left: 0; width: min(240px, 30vw); }
+.px-s7 { top: 63%; right: 0; width: min(220px, 30vw); }
+.px-s8 { top: 86%; left: 0; width: min(300px, 36vw); }
+/* more of the fleet around the persistence stage */
+.px-s9 { top: 77%; left: 0; width: min(460px, 46vw); }
+.px-s10 { top: 80%; right: 0; width: min(380px, 40vw); }
+.px-s11 { top: 83%; left: 6%; width: min(220px, 26vw); }
+.px-s12 { top: 79%; right: 12%; width: min(200px, 22vw); }
+.px-c1 { top: 4%; right: 4%; }
+.px-c2 { top: 23%; left: 3%; }
+.px-c3 { top: 39%; right: 3%; }
+.px-c4 { top: 57%; left: 4%; }
+.px-c5 { top: 69%; right: 5%; }
+.px-c6 { top: 81%; left: 3%; }
+.px-c7 { top: 13%; left: 6%; }
+.px-c8 { top: 48%; right: 7%; }
+.px-c9 { top: 92%; right: 4%; }
+
+/* ---------- nav */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 84%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--edge);
+}
+.nav-in {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 10px var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* the lockup, at the height the icon and wordmark had */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  text-decoration: none;
+}
+.brand-lockup {
+  height: 40px;
+}
+.nav-links {
+  display: flex;
+  gap: 18px;
+  margin-left: auto;
+  font: 500 14px/1 var(--body);
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 2px;
+}
+/* Hover styles apply only where a pointer hovers (here and below): on a
+ * touch screen they would stick after a tap. */
+@media (hover: hover) {
+  .nav-links a:hover {
+    color: var(--text);
+  }
+}
+.nav-links a[aria-current='page'] {
+  color: var(--text);
+}
+
+/* ---------- page column and sections */
+
+main {
+  position: relative;
+  z-index: 1;
+  /* the demos size themselves on main's width (100cqi) to run past the column */
+  container-type: inline-size;
+}
+.wrap {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.hero {
+  position: relative;
+  padding-top: clamp(40px, 6vw, 72px);
+}
+.hero-text {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  max-width: 760px;
+}
+.hero-word {
+  height: clamp(50px, 8vw, 88px);
+  margin-bottom: 4px;
+}
+.hero-word .hi {
+  animation: blink 1.1s steps(1) infinite;
+}
+.hero-text .install {
+  margin-top: 14px;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+h1,
+.h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--light);
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.04;
+}
+.h2 {
+  font-size: clamp(28px, 4.4vw, 48px);
+  line-height: 1.08;
+}
+/* each sentence of a headline starts its own line */
+.h2 .hl {
+  display: block;
+}
+.lede {
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(18px, 2vw, 21px);
+  line-height: 1.55;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+.hero-stage {
+  position: relative;
+  margin-top: clamp(40px, 5vw, 60px);
+}
+.hero-ship {
+  position: absolute;
+  z-index: 0;
+  left: max(-16vw, -230px);
+  bottom: 4%;
+  width: min(540px, 62vw);
+  pointer-events: none;
+}
+.hero-ship-rock {
+  transform-origin: 50% 100%;
+}
+.hero-ship .ship {
+  fill: var(--silhouette);
+}
+.hero-ship svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+}
+.hero-stage .demo {
+  position: relative;
+  margin: 0;
+  z-index: 1;
+}
+
+.feature {
+  padding-top: clamp(96px, 14vw, 168px);
+}
+.feature-text {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  max-width: 680px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.eyebrow {
+  margin: 0;
+  font: 600 12px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.eyebrow.lead {
+  color: var(--lead);
+}
+
+/* ---------- install box */
+
+.install {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  max-width: 600px;
+}
+.install-os {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.install-os input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.install-os label {
+  font: 500 13px/1 var(--body);
+  color: var(--muted);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .install-os label:hover {
+    color: var(--text);
+  }
+}
+.install-os input:checked + label {
+  color: var(--text);
+  background: var(--raised);
+  box-shadow: inset 0 -2px 0 var(--lead);
+}
+.install-os input:focus-visible + label {
+  outline: 2px solid var(--lead);
+  outline-offset: 2px;
+}
+/* while Floti is not released (src/release.ts): a mark beside
+ * the tabs, and the command set back */
+.not-live .install-os {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.install-soon {
+  margin-left: auto;
+  padding: 5px 9px;
+  font: 600 11px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+}
+.not-live .install-line {
+  color: var(--muted);
+}
+.install-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--deep);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  padding: 6px 6px 6px 16px;
+}
+.install-line {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  font: 400 clamp(12.5px, 1.6vw, 15px) / 2.4 var(--mono);
+  color: var(--text);
+  scrollbar-width: thin;
+}
+.install-line .p {
+  color: var(--hi);
+  margin-right: 0.6em;
+  user-select: none;
+}
+.install:has(input[value='windows']:checked) .install-line[data-os='unix'],
+.install:not(:has(input[value='windows']:checked)) .install-line[data-os='windows'] {
+  display: none;
+}
+.copy {
+  flex: none;
+  font: 500 13px/1 var(--body);
+  color: var(--text);
+  background: var(--raised);
+  border: 1px solid var(--edge-strong);
+  border-radius: 7px;
+  padding: 10px 14px;
+  min-width: 74px;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .copy:hover {
+    border-color: var(--lead);
+  }
+}
+.copy[data-copied] {
+  color: var(--lead-text);
+}
+html:not(.js) .copy {
+  display: none;
+}
+.install-note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ---------- demo frame */
+
+.demo {
+  position: relative;
+  margin: 0;
+  background: color-mix(in srgb, var(--deep) 78%, transparent);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  padding: clamp(10px, 1.6vw, 22px);
+}
+.demo.bare {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.stage {
+  --w: 960;
+  --h: 540;
+  --s: 1;
+  /* how far the runtime may scale a drawing up; the wide column's own limit
+   * keeps most demos below it */
+  --s-max: 1.34;
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--w) * var(--s-max) * 1px);
+  margin: 0 auto;
+  aspect-ratio: var(--w) / var(--h);
+}
+.stage-in {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--w) * 1px);
+  height: calc(var(--h) * 1px);
+  transform-origin: 0 0;
+  transform: scale(var(--s));
+}
+/* Until the script measures a stage, it stays at its drawing's size (the
+ * runtime then widens it and scales up), and a step scale keeps it inside the
+ * column. */
+.stage:not([data-fit]) {
+  max-width: calc(var(--w) * 1px);
+}
+@media (max-width: 1100px) { .stage:not([data-fit]) { --s: 0.8; } }
+
+/* each demo's drawing size, and the height of its phone layout (auto: as
+ * tall as its content) */
+.st-hero { --w: 1040; --h: 600; --ph: 560px; }
+.st-compose { --w: 960; --h: 470; --ph: auto; }
+.st-fleet { --w: 1100; --h: 580; --ph: 700px; }
+.st-plugins { --w: 700; --h: 560; --ph: 660px; }
+.st-browser { --w: 1040; --h: 560; --ph: 684px; }
+.st-persist { --w: 1040; --h: 560; --ph: 650px; }
+
+/* The phone layout (PHONE_QUERY in demos/kit.ts): the stage is not the
+ * drawing scaled down; its elements are laid out again at the width they are
+ * shown, each demo's own styles saying how. */
+@media (max-width: 899.98px) {
+  .stage,
+  .stage:not([data-fit]) {
+    max-width: 720px;
+    aspect-ratio: auto;
+  }
+  .stage-in {
+    position: relative;
+    width: 100%;
+    height: var(--ph);
+    transform: none;
+  }
+}
+
+.demo-ctl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: clamp(8px, 1.4vw, 14px);
+}
+.demo-own {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 13px/1 var(--body);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+  padding: 7px 13px 7px 10px;
+  min-height: 32px;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .replay:hover {
+    color: var(--text);
+    border-color: var(--lead);
+  }
+}
+.replay svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.replay .i-play {
+  fill: currentColor;
+  stroke: none;
+}
+.replay:not([data-mode='play']) .i-play,
+.replay:not([data-mode='replay']) .i-replay,
+.replay:not([data-mode='pause']) .i-pause {
+  display: none;
+}
+html:not(.js) .demo-ctl {
+  display: none;
+}
+
+/* ---------- install section and footer */
+
+/* ---------- the page's rhythm after composition
+ * Each layout is set on its section by Feature (layout=...). Below 1100px the
+ * splits fall back to the stack. */
+
+/* Every demo runs wider than the reading column, centred on it, up to the
+ * wide column (the splits widen their whole row instead, below). */
+.hero-stage,
+.feature:not(.v-split) .feature-demo {
+  --wide: min(var(--wide-max), 100cqi - 2 * var(--wide-gutter));
+  width: max(100%, var(--wide));
+  margin-inline: min(0px, (100% - var(--wide)) / 2);
+}
+
+/* the fleet's band: the deeper ground, edge to edge, the page's showpiece */
+.band {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(96px, 14vw, 168px);
+  padding-block: clamp(88px, 9vw, 136px);
+  background: var(--deep);
+  border-block: 1px solid var(--edge);
+}
+.band > .feature:first-child {
+  padding-top: 0;
+}
+
+/* center: the showpiece, its text centred over the demo */
+.v-center .feature-text {
+  margin-inline: auto;
+  max-width: 1000px;
+  justify-items: center;
+  text-align: center;
+}
+.v-center .lede {
+  max-width: 760px;
+}
+.v-center .feature-text .h2 {
+  font-size: clamp(32px, 4.2vw, 56px);
+}
+
+/* split: demo and text side by side across the wide column, vertically
+ * centred, the demo taking seven parts in ten */
+.v-split .demo:not(.bare) {
+  padding: clamp(10px, 1.4vw, 18px);
+}
+@media (min-width: 1100px) {
+  .v-split .feature-in {
+    display: grid;
+    max-width: calc(var(--wide-max) + 2 * var(--wide-gutter));
+    padding-inline: var(--wide-gutter);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+    align-items: center;
+    gap: clamp(36px, 4vw, 56px);
+  }
+  .v-split.demo-right .feature-in {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+  }
+  .v-split.demo-left .feature-demo {
+    order: -1;
+  }
+  .v-split .feature-text {
+    margin-bottom: 0;
+  }
+  .v-split .h2 {
+    font-size: clamp(32px, 3.2vw, 44px);
+  }
+  .v-split .lede {
+    font-size: 18px;
+  }
+}
+
+/* stage: persistence, centred, its own controls large; the background stays
+ * open so the parallax fleet shows through */
+.v-stage {
+  position: relative;
+  margin-top: clamp(40px, 6vw, 80px);
+  padding-block: clamp(110px, 12vw, 170px) clamp(40px, 6vw, 80px);
+  background: radial-gradient(ellipse 62% 54% at 50% 58%, color-mix(in srgb, var(--deep) 72%, transparent), transparent 78%);
+}
+.v-stage .feature-text {
+  margin-inline: auto;
+  max-width: 720px;
+  justify-items: center;
+  text-align: center;
+}
+.v-stage .demo-ctl {
+  position: relative;
+  justify-content: center;
+  margin-top: clamp(16px, 2vw, 26px);
+}
+.v-stage .demo-own {
+  justify-content: center;
+  gap: 12px;
+}
+.v-stage .demo-own .act {
+  font-size: 15px;
+  padding: 12px 22px;
+  min-height: 46px;
+}
+.v-stage .demo-own .act svg {
+  width: 15px;
+  height: 15px;
+}
+.v-stage .replay {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* on a phone the controls are full-width thumb-size buttons, three across
+ * while Floti is open and Open alone while it is closed, with Replay under
+ * them */
+@media (max-width: 899.98px) {
+  .v-stage .demo-ctl {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .v-stage .demo-own {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .v-stage .demo-own .act {
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 8px;
+    font-size: 15px;
+  }
+  .v-stage .demo-own .act svg {
+    display: none;
+  }
+  .v-stage .demo-own .when-closed {
+    grid-column: 1 / -1;
+  }
+  .v-stage .replay {
+    position: static;
+    align-self: center;
+    transform: none;
+  }
+}
+
+/* install: the closing block, centred under the wordmark */
+.launch {
+  padding-bottom: clamp(96px, 13vw, 160px);
+}
+.launch .feature-text {
+  margin-inline: auto;
+  max-width: 760px;
+  justify-items: center;
+  text-align: center;
+}
+.launch-word {
+  height: clamp(64px, 9vw, 124px);
+  margin-bottom: clamp(8px, 1.4vw, 20px);
+}
+.launch .install {
+  width: min(660px, 100%);
+  margin-top: 14px;
+  justify-items: center;
+}
+.launch .install-soon {
+  margin-left: 8px;
+}
+.launch .install-cmd {
+  width: 100%;
+  padding: 8px 8px 8px 20px;
+}
+.launch .install-line {
+  font-size: clamp(13px, 1.4vw, 16px);
+  text-align: left;
+}
+.launch-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  margin: 10px 0 0;
+  font-size: 15px;
+}
+
+.foot {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--edge);
+}
+/* One row on one centre line: the icon, the line 14px after it, the licence
+ * at the far end. Both texts set 14px on a 22px line, so they share a
+ * baseline. On a phone the icon spans two rows and the line and the licence
+ * stack beside it, on one left edge. */
+.foot-in {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 32px var(--gutter);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--muted);
+}
+.foot-icon {
+  height: 30px;
+}
+/* the ship in the footer's own ink: at this size one colour reads more clearly
+ * than the round mark's disc and ring */
+.foot-icon .ship {
+  fill: var(--muted);
+}
+.foot p {
+  margin: 0;
+}
+.foot-license {
+  justify-self: end;
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .foot-license:hover {
+    color: var(--text);
+  }
+}
+@media (max-width: 640px) {
+  .foot-in {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding-block: 24px 20px;
+  }
+  /* centred on the two lines of text, not on the licence's taller target */
+  .foot-icon {
+    grid-row: 1 / span 2;
+    height: 40px;
+    margin-bottom: 10px;
+  }
+  .foot-license {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+  /* demos take the full width of a phone */
+  .demo:not(.bare) {
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 8px 6px 10px;
+    border-radius: 0;
+    border-inline: 0;
+  }
+  .demo-ctl {
+    padding-inline: calc(var(--gutter) - 6px);
+  }
+  .demo.bare {
+    margin-inline: calc(-1 * var(--gutter) + 6px);
+  }
+  .demo.bare .demo-ctl {
+    padding-inline: calc(var(--gutter) - 6px);
+  }
+  .nav-in {
+    gap: 12px;
+  }
+}
+
+/* ---------- phones and tablets: the page below the split breakpoint */
+@media (max-width: 899.98px) {
+  .nav-in {
+    padding-block: 6px;
+  }
+  .brand {
+    height: 44px;
+  }
+  .lede {
+    font-size: 18px;
+  }
+  .v-center .feature-text .h2 {
+    font-size: clamp(28px, 6.4vw, 44px);
+  }
+  .hero-ship {
+    width: min(420px, 78vw);
+  }
+}
+@media (max-width: 420px) {
+  h1 {
+    font-size: 32px;
+  }
+  .h2,
+  .v-center .feature-text .h2 {
+    font-size: 27px;
+  }
+  .lede {
+    font-size: 17px;
+  }
+}
+
+/* ---------- touch: every control is at least 44px to a finger and nothing
+ * depends on hover. Below the breakpoint the controls are drawn that size;
+ * on a larger touch screen the desktop look stays and the target around
+ * each small control grows instead. */
+@media (max-width: 899.98px) {
+  .nav-links a,
+  .launch-links a,
+  .foot-license {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .nav-links a {
+    padding: 0 8px;
+  }
+  .install-os label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+  }
+  .install-cmd {
+    padding: 4px 4px 4px 14px;
+  }
+  .copy {
+    min-height: 44px;
+    min-width: 76px;
+  }
+  .replay {
+    min-height: 44px;
+    padding: 10px 16px 10px 13px;
+    font-size: 14px;
+  }
+}
+/* the lockup and three header links need 356px at the usual spacing; below
+ * that the links close up, keeping their 44px targets */
+@media (max-width: 359.98px) {
+  .nav-links {
+    gap: 0;
+  }
+  .nav-links a {
+    padding: 0 6px;
+  }
+}
+@media (pointer: coarse) and (min-width: 900px) {
+  .nav-links a,
+  .install-os label,
+  .copy,
+  .replay,
+  .launch-links a,
+  .foot-license {
+    position: relative;
+  }
+  .nav-links a::after,
+  .install-os label::after,
+  .copy::after,
+  .replay::after,
+  .launch-links a::after,
+  .foot-license::after {
+    content: '';
+    position: absolute;
+    inset: -7px -4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+  .hero-word .hi {
+    animation: none;
+  }
+}
+
+.px-far {
+  opacity: 0.5;
+}
+.px-mid {
+  opacity: 0.75;
+}
+/* a phone keeps the far and near layers only */
+@media (max-width: 899.98px) {
+  .px-mid {
+    display: none;
+  }
+}

@@ -1,0 +1,17 @@
+---
+/* The line along the bottom of every page: the ship in one colour, the line
+ * about the name, and the licence. */
+import Logo from './Logo.astro';
+import { copy } from '../copy';
+import { LICENSE } from '../links';
+
+const { footer } = copy;
+---
+
+<footer class="foot">
+  <div class="foot-in">
+    <Logo kind="silhouette" class="foot-icon" />
+    <p>{footer.line}</p>
+    <a class="foot-license" href={LICENSE}>{footer.license}</a>
+  </div>
+</footer>

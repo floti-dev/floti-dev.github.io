@@ -1,0 +1,700 @@
+---
+/* Agents that run agents, and every machine in one Floti window. The sidebar
+ * lists three machines (this PC, build-box and the laptop), each with its
+ * round-trip time. One lead session on this PC starts three helpers from its
+ * terminal, on this PC: a helper always runs on its parent's machine. Each
+ * opens as a pane grown out of the lead, tied to it by a tether in the
+ * highlight colour, and its row appears under the lead in the sidebar. Tester
+ * starts a helper of its own, so the family is two deep. Tester stops to ask
+ * a question the visitor can answer. Reports travel back along the tethers,
+ * finished panes fold into stopped chips, and the lead merges the fix.
+ * Meanwhile the other machines' sessions go on in the same sidebar: build-box's
+ * nightly build starts a helper of its own there, which finishes, and the
+ * laptop's meal planner ends its turn.
+ *
+ * At rest (the final frame): the lead's terminal with all three reports and
+ * the merge, the helpers folded into chips under faded tethers, and every
+ * machine's sessions in the sidebar.
+ *
+ * On a phone the lead's terminal sits on top and its helpers stack under it
+ * as cards, their tethers running down its left side; the other machines'
+ * sessions (build-box and the laptop) follow as a compact list, side by
+ * side, and the Answer button under the demo is a thumb-size target.
+ */
+import Demo from '../Demo.astro';
+import FlotiWindow from '../FlotiWindow.astro';
+import Icon from '../Icon.astro';
+import Logo from '../Logo.astro';
+import { copy } from '../../copy';
+
+const words = copy.demos.fleet;
+const text = {
+  working: words.states.working,
+  needs_you: words.states.needs_you,
+  done: words.states.done,
+  turn_ended: words.states.turn_ended,
+  stopped: words.states.stopped,
+  answered_by_you: words.answered_by_you,
+  answered_by_demo: words.answered_by_demo,
+};
+
+type Line = { k?: string; html: string };
+interface Helper {
+  key: string;
+  name: string;
+  depth: 1 | 2;
+  end: 'done' | 'turn_ended';
+  timer: string;
+  lines: Line[];
+}
+
+const helpers: Helper[] = [
+  {
+    key: 'scout',
+    name: 'scout',
+    depth: 1,
+    end: 'done',
+    timer: '1:12',
+    lines: [
+      { html: '<span class="t-y">›</span> Find every caller of upload().' },
+      { html: '<span class="t-dim">  Searching src/ for upload(</span>' },
+      { html: '  src/sync/push.ts:41' },
+      { html: '  src/api/files.ts:88' },
+      { html: '  src/jobs/import.ts:17, 52' },
+      { html: '  4 callers; push.ts ignores the result.' },
+    ],
+  },
+  {
+    key: 'tester',
+    name: 'tester',
+    depth: 1,
+    end: 'done',
+    timer: '3:05',
+    lines: [
+      { html: '<span class="t-y">›</span> Run the upload tests until green.' },
+      { html: '<span class="t-dim">  npm test -- upload</span>' },
+      { html: '  <span class="t-ok">✓ 11 passed</span>  <span class="t-r">✗ 1 failed</span>' },
+      { k: 'tester-start', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">fixture-gen</span>' },
+      { k: 'tester-report', html: '<span class="t-ok">←</span> fixture-gen · done · 6 fixtures' },
+      { html: '  retry.test.ts times out at 5000 ms.' },
+      { k: 'tester-ask', html: '<span class="t-y">? Raise its timeout to 10 s? (y/n)</span>' },
+      { k: 'tester-answer', html: `<span class="t-y">›</span> y  <span class="t-dim" data-k="answer-note">(${words.answered_by_you})</span>` },
+      { html: '  <span class="t-ok">✓ 12 passed</span>' },
+    ],
+  },
+  {
+    key: 'fixture',
+    name: 'fixture-gen',
+    depth: 2,
+    end: 'done',
+    timer: '0:48',
+    lines: [
+      { html: '<span class="t-y">›</span> Make 503 fixtures for the tests.' },
+      { html: '<span class="t-dim">  Reading test/upload.test.ts</span>' },
+      { html: '  Wrote test/fixtures/503-*.json (6)' },
+    ],
+  },
+  {
+    key: 'docs',
+    name: 'docs',
+    depth: 1,
+    end: 'turn_ended',
+    timer: '1:40',
+    lines: [
+      { html: '<span class="t-y">›</span> Write the retry change up in NOTES.md.' },
+      { html: '<span class="t-dim">  Reading src/upload/retry.ts</span>' },
+      { html: '  Drafting docs/NOTES.md' },
+      { html: '  Wrote docs/NOTES.md, 18 lines.' },
+    ],
+  },
+];
+
+const byKey = Object.fromEntries(helpers.map((h) => [h.key, h]));
+
+/* The sidebar: each machine with its round trip, its projects and sessions.
+ * A helper's row (kind 'helper') grows in when the helper starts. The other
+ * machines' sessions (kind 'live') change on their own while the demo plays;
+ * the drawing shows their final state. */
+type Row =
+  | { kind: 'repo'; name: string; branch: string }
+  | { kind: 'session'; name: string; word: string; cls?: string }
+  | { kind: 'helper'; key: string; cls: string }
+  | { kind: 'live'; key: string; name: string; word: string; cls?: string };
+const machines: Array<{ name: string; ms: string; remote: boolean; rows: Row[] }> = [
+  {
+    name: 'This PC',
+    ms: '1 ms',
+    remote: false,
+    rows: [
+      { kind: 'repo', name: 'harbor-api', branch: 'main' },
+      { kind: 'session', name: 'fix upload retry', word: '8m', cls: 'sel parent' },
+      ...helpers.map(
+        (h, i): Row => ({
+          kind: 'helper',
+          key: h.key,
+          cls: `${h.depth === 2 ? 'grand through' : 'child'}${i === helpers.length - 1 ? ' last' : ''}`,
+        }),
+      ),
+    ],
+  },
+  {
+    name: 'build-box',
+    ms: '24 ms',
+    remote: true,
+    rows: [
+      { kind: 'repo', name: 'harbor-api', branch: 'main' },
+      { kind: 'session', name: 'nightly build', word: '12m', cls: 'parent' },
+      { kind: 'live', key: 'perf', name: 'perf-check', word: text.done, cls: 'child last' },
+    ],
+  },
+  {
+    name: 'laptop',
+    ms: '41 ms',
+    remote: true,
+    rows: [
+      { kind: 'repo', name: 'recipes', branch: 'main' },
+      { kind: 'live', key: 'meal', name: 'meal planner', word: text.turn_ended },
+    ],
+  },
+];
+
+const lead: Line[] = [
+  // the session's earlier turn, already on screen
+  { html: '<span class="t-dim">› Why do some uploads never finish?</span>' },
+  { html: '<span class="t-dim">  Reading src/upload/client.ts</span>' },
+  { html: '<span class="t-dim">  Reading src/upload/retry.ts</span>' },
+  { html: '<span class="t-dim">  A 503 from the storage proxy ends the upload;</span>' },
+  { html: '<span class="t-dim">  nothing retries it and the error is dropped.</span>' },
+  { k: 'lead-prompt', html: '<span class="t-y">›</span> Uploads fail on a 503 and never retry. Fix it.' },
+  { k: 'lead-think', html: '  The client gives up after the first 503.' },
+  { k: 'lead-start-scout', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">scout</span>' },
+  { k: 'lead-start-tester', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">tester</span>' },
+  { k: 'lead-start-docs', html: '<span class="t-dim">$</span> floti agent start <span class="t-b">docs</span>' },
+  { k: 'lead-work', html: '  Adding backoff: src/upload/retry.ts <span class="t-ok">+18</span> <span class="t-r">−4</span>' },
+  { k: 'lead-rep-scout', html: '<span class="t-ok">←</span> scout · done · 4 callers, one ignores the result' },
+  { k: 'lead-rep-docs', html: '<span class="t-ok">←</span> docs · turn ended · NOTES.md updated' },
+  { k: 'lead-rep-tester', html: '<span class="t-ok">←</span> tester · done · 12 passed, timeout now 10 s' },
+  { k: 'lead-final', html: '  All three reported. Merging the fix.' },
+  { k: 'lead-close', html: '  Edit src/sync/push.ts: check the result <span class="t-ok">+3</span> <span class="t-r">−1</span>' },
+  { k: 'lead-close', html: '  <span class="t-ok">✓ 142 passed</span>' },
+  { k: 'lead-close', html: '  Committed: retry uploads on a 503' },
+  { k: 'lead-close', html: '  Pushed to fix/upload-retry.' },
+];
+---
+
+<Demo name="fleet" interactive bare caption={copy.demos.descriptions.fleet} text={text}>
+  <FlotiWindow shadow>
+    <Fragment slot="side">
+      <div class="fw-side-head">
+        <span class="t">Sessions</span>
+        <span class="fw-icon-btn"><Icon name="plus" /></span>
+        <span class="fw-icon-btn"><Icon name="refresh" /></span>
+      </div>
+      <div class="fw-filter">Filter projects and sessions</div>
+      <div class="fw-tree">
+        {
+          machines.map((m, i) => (
+            <Fragment>
+              {i > 0 && <div class="fw-rule" />}
+              <div class:list={['mach', { local: !m.remote }]}>
+              <div class="hrow">
+                <span class="dot ring" />
+                <span class:list={['hn', { mono: m.remote }]}>{m.name}</span>
+                <span class="lat mono">{m.ms}</span>
+              </div>
+              {m.rows.map((r) =>
+                r.kind === 'repo' ? (
+                  <div class="fw-row">
+                    <Icon name="repo" class="ico" />
+                    <span class="name">{r.name}</span>
+                    <span class="branch">{r.branch}</span>
+                  </div>
+                ) : r.kind === 'session' ? (
+                  <div class:list={['fw-row session', r.cls]}>
+                    <span class="dot" />
+                    <span class="name">{r.name}</span>
+                    <span class="word acc">{r.word}</span>
+                  </div>
+                ) : r.kind === 'live' ? (
+                  <div class:list={['fw-row session', r.cls]} data-k={`row-${r.key}`}>
+                    <span class="dot idle" data-k={`rowdot-${r.key}`} />
+                    <span class="name">{r.name}</span>
+                    <span class="word" data-k={`word-${r.key}`}>
+                      {r.word}
+                    </span>
+                  </div>
+                ) : (
+                  <div class:list={['fw-row session grow', r.cls]} data-k={`row-${r.key}`}>
+                    <span class="dot idle" data-k={`rowdot-${r.key}`} />
+                    <span class="name">{byKey[r.key].name}</span>
+                    <span class="word" data-k={`word-${r.key}`}>
+                      {text[byKey[r.key].end]}
+                    </span>
+                  </div>
+                ),
+              )}
+              </div>
+            </Fragment>
+          ))
+        }
+      </div>
+      <div class="fw-side-foot"><span class="dot"></span>5 sessions in this family · 3 machines</div>
+    </Fragment>
+
+    <div class="fam" data-k="fam">
+      <svg class="tethers" aria-hidden="true">
+        {helpers.map((h) => <path class="tether faded" pathLength="1" data-k={`tether-${h.key}`} />)}
+      </svg>
+
+      <div class="fw-island fw-pane lead" data-k="lead">
+        <div class="fw-strip">
+          <span class="fw-tab on"><span class="dot"></span><span class="label">fix upload retry</span></span>
+          <span class="fw-strip-plus"><Icon name="plus" /></span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-term stream">
+            {lead.map((l) => <span class="ln" data-k={l.k} set:html={l.html} />)}
+          </div>
+        </div>
+      </div>
+
+      <div class="col" data-k="col">
+        {
+          helpers.map((h) => (
+            <div class:list={['hp folded', `d${h.depth}`]} data-k={`hp-${h.key}`}>
+              <div class="hp-head">
+                <span class="hp-ship">
+                  <Logo kind="mark" />
+                </span>
+                <span class="hp-name">{h.name}</span>
+                <span class:list={['chip', h.end === 'done' ? 'end' : 'end']} data-k={`chip-${h.key}`}>
+                  {text.stopped} · {text[h.end]}
+                </span>
+                {
+                  h.key === 'tester' && (
+                    <span class="hint">
+                      <span class="by-mouse">{words.hint}</span>
+                      <span class="by-touch">{words.hint_touch}</span>
+                    </span>
+                  )
+                }
+                <span class="timer" data-k={`timer-${h.key}`}>
+                  {h.timer}
+                </span>
+              </div>
+              <div class="hp-body" data-k={`body-${h.key}`}>
+                <div class="fw-term stream">
+                  {h.lines.map((l) => (
+                    <span class="ln" data-k={l.k ?? `ln-${h.key}`} set:html={l.html} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {
+        helpers.map((h) => (
+          <span class="report" data-k={`report-${h.key}`}>
+            {text[h.end]}
+          </span>
+        ))
+      }
+    </div>
+
+    <Fragment slot="status">
+      <span>Floti 3.1.0</span>
+      <span class="bar"></span>
+      <span class="grp"><span class="dot"></span><span data-k="st-work">2 working</span></span>
+      <span class="grp need st-need" data-k="st-need"><span class="dot need"></span>{words.needs_you_count}</span>
+      <span class="bar wide"></span>
+      <span class="grp wide"><span class="mono">build-box</span> 24 ms</span>
+      <span class="grp wide"><span class="mono">laptop</span> 41 ms</span>
+    </Fragment>
+  </FlotiWindow>
+
+  <button slot="controls" type="button" class="answer" data-k="answer">{words.answer}: y</button>
+</Demo>
+
+<style>
+  /* a machine in the sidebar: its name and the time a keystroke takes to
+   * come back */
+  .hrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 26px;
+    padding: 0 12px;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .hn.mono {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .lat {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--fl-fg-subtle);
+  }
+
+  /* the family: the lead, the helpers' column, and the tethers between */
+  .fam {
+    position: relative;
+    display: flex;
+    gap: 28px;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+  }
+  .lead {
+    flex: none;
+    width: 364px;
+    z-index: 1;
+  }
+  .col {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tethers {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .tether {
+    fill: none;
+    stroke: var(--hi);
+    stroke-width: 1.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition: stroke 400ms ease;
+  }
+  .tether.faded {
+    stroke: var(--fl-border-strong);
+  }
+
+  /* a terminal whose newest line sits at the bottom, older lines scrolling off */
+  .stream {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .lead .stream {
+    justify-content: flex-start;
+    font-size: 11px;
+  }
+  .stream :global(.ln) {
+    flex: none;
+  }
+
+  /* a helper's pane */
+  .hp {
+    flex: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border-strong);
+    border-radius: 3px;
+  }
+  .hp.d2 {
+    margin-left: 28px;
+    width: calc(100% - 28px);
+  }
+  .hp.ask {
+    border-color: var(--fl-warn);
+  }
+  .hp.focus {
+    border-color: var(--fl-accent);
+    box-shadow: 0 0 0 2px var(--fl-accent-soft);
+  }
+  .hp-head {
+    flex: none;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 8px 0 9px;
+    border-bottom: 1px solid var(--fl-border);
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+  .hp-ship {
+    flex: none;
+    width: 12px;
+    height: 15px;
+  }
+  .hp-ship :global(svg) {
+    height: 15px;
+  }
+  .hp-ship :global(.ship) {
+    fill: var(--fl-fg-muted);
+  }
+  .hp-ship :global(.hi) {
+    fill: var(--fl-surface);
+  }
+  .hp-name {
+    font-weight: 500;
+  }
+  .chip {
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--fl-border-strong);
+    color: var(--fl-fg-muted);
+  }
+  .chip.work {
+    color: var(--fl-fg);
+  }
+  .chip.need {
+    color: var(--fl-warn);
+    border-color: color-mix(in srgb, var(--fl-warn) 55%, transparent);
+    cursor: pointer;
+  }
+  .chip.end {
+    color: var(--fl-fg-subtle);
+  }
+  .timer {
+    margin-left: auto;
+    padding-left: 6px;
+    font: 400 11px/1 var(--mono);
+    color: var(--fl-fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .hint {
+    display: none;
+    font-size: 11px;
+    color: var(--fl-warn);
+  }
+  .hp-body {
+    flex: none;
+    height: 92px;
+    overflow: hidden;
+  }
+  .hp-body .fw-term {
+    height: 100%;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .hp.d2 .hp-body {
+    height: 74px;
+  }
+  .hp.folded {
+    width: auto;
+    border-color: var(--fl-border);
+    border-radius: 999px;
+  }
+  .hp.folded .hp-head {
+    height: 26px;
+    border-bottom: 0;
+    padding: 0 12px 0 10px;
+  }
+  /* folded, the body takes no width either: its lines would widen the chip */
+  .hp.folded .hp-body {
+    display: none;
+  }
+  .hp.folded .timer {
+    margin-left: 6px;
+  }
+
+  /* a report on its way back along a tether */
+  .report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font: 500 11px/1 var(--body);
+    white-space: nowrap;
+    background: var(--fl-surface-raised);
+    border: 1px solid var(--hi);
+    color: var(--fl-fg);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* a line that has just arrived in the lead's terminal */
+  .lead :global(.ln.landed) {
+    animation: landed 1.6s ease-out;
+  }
+  @keyframes landed {
+    from {
+      background: var(--fl-accent-soft-hover);
+    }
+    to {
+      background: transparent;
+    }
+  }
+
+  /* while tester waits for an answer */
+  .st-need {
+    display: none;
+  }
+  :global([data-waiting]) .st-need {
+    display: flex;
+    cursor: pointer;
+  }
+  :global([data-waiting]) .hint {
+    display: inline;
+  }
+  :global([data-waiting]) .chip.need {
+    animation: ask 1.1s ease-in-out infinite;
+  }
+  :global([data-waiting]) :global(.fw-rail-badge) {
+    visibility: visible;
+    opacity: 1;
+  }
+  @keyframes ask {
+    50% {
+      background: color-mix(in srgb, var(--fl-warn) 22%, transparent);
+    }
+  }
+  .answer {
+    display: none;
+    align-items: center;
+    font: 500 13px/1 var(--body);
+    color: var(--fl-warn);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--fl-warn) 60%, transparent);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  :global([data-waiting]) .answer {
+    display: inline-flex;
+  }
+
+  /* the hint names the way a visitor answers: a click, or a tap */
+  .by-touch {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .by-mouse {
+      display: none;
+    }
+    .by-touch {
+      display: inline;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-waiting]) .chip.need,
+    .lead :global(.ln.landed) {
+      animation: none;
+    }
+  }
+
+  /* the phone layout: the lead on top, its helpers stacked under it, and the
+   * other machines as a compact list below */
+  @media (max-width: 899.98px) {
+    :global(.st-fleet .fw-main) {
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    :global(.st-fleet .fw-side) {
+      display: flex;
+      order: 2;
+    }
+    :global(.st-fleet .fw-side-head),
+    :global(.st-fleet .fw-filter),
+    :global(.st-fleet .fw-side-foot),
+    .fw-rule,
+    .mach.local,
+    .mach > .fw-row:not(.session) {
+      display: none;
+    }
+    .fw-tree {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 4px;
+      height: 88px;
+      padding: 4px 0;
+    }
+    .mach + .mach {
+      border-left: 1px solid var(--fl-border);
+    }
+    .hrow {
+      padding: 0 8px 0 10px;
+      font-size: 13px;
+    }
+    .hn.mono,
+    .lat {
+      font-size: 12px;
+    }
+    .mach .fw-row.session {
+      padding: 0 8px 0 24px;
+    }
+    .mach .fw-row.session.child {
+      padding-left: 36px;
+    }
+    .mach .fw-row.parent::before,
+    .mach .fw-row.child::before,
+    .mach .fw-row.child:not(.last)::after {
+      left: 26.5px;
+    }
+
+    .fam {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .lead {
+      width: 100%;
+      height: 196px;
+    }
+    .lead .stream {
+      font-size: 12px;
+    }
+    .col {
+      flex: 1;
+      min-height: 0;
+      padding-left: 38px;
+    }
+    .hp.d2 {
+      margin-left: 38px;
+      width: calc(100% - 38px);
+    }
+    .hp-head {
+      height: 30px;
+      font-size: 13px;
+    }
+    .chip,
+    .timer,
+    .hint,
+    .report {
+      font-size: 12px;
+    }
+    .hp-body {
+      height: 78px;
+    }
+    .hp-body .fw-term {
+      font-size: 12px;
+    }
+    .hp.d2 .hp-body {
+      height: 62px;
+    }
+    .hp.folded .hp-head {
+      height: 28px;
+    }
+    .answer {
+      min-height: 48px;
+      padding: 0 20px;
+      font-size: 15px;
+    }
+  }
+</style>

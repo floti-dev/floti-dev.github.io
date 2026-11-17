@@ -1,0 +1,74 @@
+---
+import '../styles/global.css';
+import { copy } from '../copy';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+
+// What a shared link shows: the page's title and description, and
+// public/og.png (scripts/og-image.mjs), which shows the lockup and the hero's
+// tagline, so the tagline is its alt. Link previews need absolute URLs.
+if (!Astro.site) throw new Error('astro.config.mjs must set site: og:url and og:image are absolute URLs.');
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const image = {
+  url: new URL('/og.png', Astro.site).href,
+  width: 1200,
+  height: 630,
+  alt: copy.hero.headline,
+};
+
+// The site's own files and nothing else: no inline script or style, nothing
+// from another origin.
+const csp = [
+  "default-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="no-referrer" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={image.url} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(image.width)} />
+    <meta property="og:image:height" content={String(image.height)} />
+    <meta property="og:image:alt" content={image.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image.url} />
+    <meta name="twitter:image:alt" content={image.alt} />
+    <meta name="color-scheme" content="dark" />
+    <!-- the demos' numbers (a test card, timers) are not phone numbers to iOS -->
+    <meta name="format-detection" content="telephone=no" />
+    <!-- the round mark: a PNG for browsers without SVG icons, the SVG, and
+         the touch icon -->
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script is:inline src="/head.js"></script>
+  </head>
+  <body>
+    <!-- each page brings its own script -->
+    <slot />
+  </body>
+</html>

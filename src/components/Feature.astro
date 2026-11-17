@@ -1,0 +1,46 @@
+---
+/* A section of the page: its small label, headline and paragraph from
+ * copy.yaml, and its demo, in one of the page's layouts (global.css):
+ * - stack: text above, demo below (composition, the browser)
+ * - center: text centred, demo below (the fleet)
+ * - split: demo and text side by side across the wide column, the demo taking
+ *   most of it; `demo` says which side the demo takes
+ * - stage: text centred, the demo on its own with large controls under it
+ * Every demo runs wider than the reading column, up to the wide column
+ * (--wide-max in tokens.css). The text always comes first in the markup,
+ * whichever side or order it shows in. */
+interface Props {
+  id: string;
+  text: { label: string; headline: string; lede: string };
+  /** The label in the lead colour: the sections the page leads with. */
+  lead?: boolean;
+  layout?: 'stack' | 'center' | 'split' | 'stage';
+  demo?: 'left' | 'right';
+}
+
+const { id, text, lead = false, layout = 'stack', demo = 'right' } = Astro.props;
+// a headline of two sentences sets each on its own line (global.css .hl)
+const sentences = text.headline.split(/(?<=[.!?])\s+/);
+---
+
+<section class:list={['feature', `v-${layout}`, { [`demo-${demo}`]: layout === 'split' }]} aria-labelledby={id}>
+  <div class="wrap feature-in">
+    <div class="feature-text">
+      <p class:list={['eyebrow', { lead }]}>{text.label}</p>
+      <h2 class="h2" id={id}>
+        {
+          sentences.map((sentence, i) => (
+            <Fragment>
+              {i > 0 && ' '}
+              <span class="hl">{sentence}</span>
+            </Fragment>
+          ))
+        }
+      </h2>
+      <p class="lede">{text.lede}</p>
+    </div>
+    <div class="feature-demo">
+      <slot />
+    </div>
+  </div>
+</section>

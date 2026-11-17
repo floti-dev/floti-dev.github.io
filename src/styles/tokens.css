@@ -1,0 +1,78 @@
+/* Colour tokens: the brand's Sky palette.
+ *
+ * The page tokens are the palette's own values; the --fl-* tokens are the
+ * matching Floti theme (Floti Sky.json), one custom property per theme role,
+ * so the app window in the demos wears the same theme the app would. */
+
+:root {
+  color-scheme: dark;
+
+  /* Page */
+  --ground: #182327;
+  --deep: #111a1d;
+  --raised: #1f2c31;
+  --ship: #2f444c;
+  --light: #ced2d1;
+  --word: #8fd3e0;
+  --text: #f3f4f1;
+  --muted: #a3b1b4;
+  --subtle: #80908f;
+  --hi: #e2603a;
+  --lead: #8fd3e0;
+  --lead-text: #c2ebf2;
+  --edge: rgb(206 210 209 / 0.1);
+  --edge-strong: rgb(206 210 209 / 0.18);
+  --silhouette: rgb(0 0 0 / 0.36);
+  --code-ghost: rgb(143 211 224 / 0.07);
+
+  /* Floti Sky */
+  --fl-bg: #111a1d;
+  --fl-surface: #182327;
+  --fl-surface-raised: #1f2c31;
+  --fl-surface-sunken: #0c1315;
+  --fl-hover: #213037;
+  --fl-active: #2a3b42;
+  --fl-border: rgb(206 210 209 / 0.08);
+  --fl-border-strong: rgb(206 210 209 / 0.16);
+  --fl-fg: #f3f4f1;
+  --fl-fg-muted: #a3b1b4;
+  --fl-fg-subtle: #80908f;
+  --fl-accent: #8fd3e0;
+  --fl-accent-fg: #182327;
+  --fl-accent-soft: rgb(143 211 224 / 0.14);
+  --fl-accent-soft-hover: rgb(143 211 224 / 0.26);
+  --fl-accent-text: #c2ebf2;
+  --fl-success: #8fc79a;
+  --fl-warn: #e6b662;
+  --fl-danger: #ef7d76;
+  --fl-hue-blue: #7fb0f0;
+  --fl-hue-teal: #5fc4b8;
+  --fl-hue-green: #88c483;
+  --fl-hue-amber: #e2bb68;
+  --fl-hue-orange: #f09a66;
+  --fl-hue-red: #ec8584;
+  --fl-hue-pink: #e594c8;
+  --fl-hue-violet: #b99deb;
+
+  /* The terminal keeps its own ground in every theme (DESIGN.md §6). */
+  --term: #11121a;
+  --term-fg: #d4d6e0;
+  --term-dim: #7f8396;
+  --term-green: #8fcf8a;
+  --term-yellow: #e5c07b;
+  --term-blue: #82aaff;
+  --term-red: #f07178;
+
+  /* Type */
+  --display: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --body: 'IBM Plex Sans', system-ui, 'Segoe UI', sans-serif;
+
+  --page-max: 1120px;
+  /* the demos' column, wider than the text where the viewport allows */
+  --wide-max: 1320px;
+  --wide-gutter: clamp(16px, 2.5vw, 48px);
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  /* the demo window's colour changes fade rather than snap */
+  --fade: 400ms ease;
+}

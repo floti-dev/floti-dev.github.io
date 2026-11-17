@@ -1,0 +1,574 @@
+---
+/* Composition: projects first. A workspace picks three projects; each joins
+ * the session carrying its own instructions and skills, the profile's shared
+ * layers go on top, and the session opens in a launch folder that links the
+ * three real repositories. The agent then makes one change across two of
+ * them. No agent is named: the tab says "agent". At rest: the session open,
+ * the change made.
+ *
+ * On a phone the three columns stack: the workspace's name, then its
+ * projects and the profile's layers piling up, then the session card they
+ * drop into, with the note about the agent's own settings last. The
+ * project picker's ticks are left out there; each project's layer arriving
+ * on the stack carries that beat. */
+import Demo from '../Demo.astro';
+import Icon from '../Icon.astro';
+import { copy } from '../../copy';
+
+const projects = [
+  { key: 'harbor', name: 'harbor-api', branch: 'main', hue: 'blue', skill: 'db-migrate' },
+  { key: 'tidewater', name: 'tidewater-web', branch: 'feature/checkout', hue: 'teal', skill: 'storybook' },
+  { key: 'lantern', name: 'lantern-docs', branch: 'main', hue: 'violet', skill: 'style-guide' },
+] as const;
+
+const profile = [
+  ['Shared instructions', ['house-rules.md']],
+  ['Skills', ['review', 'release-notes']],
+  ['Tools', ['browser', 'agents']],
+] as const;
+---
+
+<Demo name="compose" caption={copy.demos.descriptions.composition}>
+  <div class="cmp">
+    <div class="col">
+      <div class="cap">Workspace</div>
+      <div class="card">
+        <div class="ws-head"><span class="wn">checkout-work</span><span class="file mono">workspace.yaml</span></div>
+        <div class="sub">Projects</div>
+        {
+          projects.map((p) => (
+            <div class="pick on" data-k={`pick-${p.key}`}>
+              <span class="box" data-k={`box-${p.key}`}>
+                <Icon name="check" />
+              </span>
+              <span class:list={['hue', p.hue]} />
+              <span class="pn">{p.name}</span>
+              <span class="br mono">{p.branch}</span>
+            </div>
+          ))
+        }
+        <div class="pick off">
+          <span class="box empty"></span>
+          <span class="hue amber"></span>
+          <span class="pn">keel</span>
+          <span class="br mono">release/2.4</span>
+        </div>
+        <div class="sub">Profile</div>
+        <div class="prof on" data-k="prof">
+          <span class="pn">backend</span>
+          <span class="pd">House rules, review skills, browser</span>
+        </div>
+      </div>
+      <p class="note"><Icon name="lock" class="lock" />Floti doesn't edit the agent's own settings.</p>
+    </div>
+
+    <div class="col">
+      <div class="cap">Composed at launch</div>
+      <div class="stack" data-k="stack">
+        {
+          projects.map((p) => (
+            <div class="slab pslab" data-k={`pslab-${p.key}`}>
+              <div class="sh">
+                <span class:list={['hue', p.hue]} />
+                <span class="sn">{p.name}</span>
+                <span class="kind">project</span>
+              </div>
+              <div class="items">
+                <span class="item mono">INSTRUCTIONS.md</span>
+                <span class="item mono">skill · {p.skill}</span>
+              </div>
+            </div>
+          ))
+        }
+        <div class="join" data-k="join"><span>profile</span><span class="mono">backend</span></div>
+        {
+          profile.map(([label, items]) => (
+            <div class="slab fslab" data-k="fslab">
+              <span class="sl">{label}</span>
+              <span class="items">
+                {items.map((item) => (
+                  <span class="item mono">{item}</span>
+                ))}
+              </span>
+            </div>
+          ))
+        }
+        <div class="pill gone" data-k="pill"><span class="dot"></span>agent <span class="mono">checkout-work</span></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="cap">Session</div>
+      <div class="pane">
+        <div class="strip">
+          <span class="tab on" data-k="tab"><span class="dot"></span>agent<span class="tg">checkout-work</span></span>
+        </div>
+        <div class="crumb">launch folder <span class="mono">checkout-work/</span><span class="sep">·</span>3 projects</div>
+        <div class="body">
+          <div class="term empty gone" data-k="term-empty">No session yet.</div>
+          <div class="term" data-k="term"><span class="ln" data-k="tl"><span class="t-dim">Launch folder</span> checkout-work/</span><span class="ln" data-k="tl">  harbor-api/     <span class="t-dim">→ ~/code/harbor-api</span></span><span class="ln" data-k="tl">  tidewater-web/  <span class="t-dim">→ ~/code/tidewater-web</span></span><span class="ln" data-k="tl">  lantern-docs/   <span class="t-dim">→ ~/code/lantern-docs</span></span><span class="ln" data-k="tl"><span class="t-dim">instructions</span>  3 projects + house-rules.md</span><span class="ln" data-k="tl"><span class="t-dim">skills</span>        5, from projects and profile</span><span class="ln" data-k="tl"><span class="t-dim">tools</span>         browser, agents</span><span class="ln" data-k="t-prompt"><span class="t-y">›</span> Let buyers add a delivery note at checkout.</span><span class="ln" data-k="t-api">  <span class="t-ok">Edit</span> <span class="t-b">harbor-api</span>/src/orders.ts        <span class="t-ok">+6</span></span><span class="ln" data-k="t-web">  <span class="t-ok">Edit</span> <span class="t-b">tidewater-web</span>/src/Checkout.tsx <span class="t-ok">+14</span> <span class="t-r">−2</span></span><span class="ln" data-k="t-done">  The API now saves the note the form sends.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Demo>
+
+<style>
+  .cmp {
+    display: grid;
+    grid-template-columns: 228px 336px minmax(0, 1fr);
+    gap: 26px;
+    height: 100%;
+    padding: 6px 4px;
+    font: 400 13px/1.5 var(--body);
+    color: var(--fl-fg);
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .cap {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg-subtle);
+  }
+  .mono {
+    font-family: var(--mono);
+  }
+
+  /* the workspace */
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 12px;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 4px;
+  }
+  .ws-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .wn {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .file {
+    font-size: 10.5px;
+    color: var(--fl-fg-subtle);
+  }
+  .sub {
+    margin: 10px 0 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg-subtle);
+  }
+  .pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    padding: 0 6px;
+    margin: 0 -6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .pick.flash {
+    background: var(--fl-hover);
+  }
+  .pick.off .pn,
+  .pick.idle .pn {
+    color: var(--fl-fg-muted);
+  }
+  .box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid var(--fl-border-strong);
+  }
+  .box :global(svg) {
+    width: 11px;
+    height: 11px;
+    fill: none;
+    stroke: var(--fl-accent-fg);
+    stroke-width: 2.4;
+    opacity: 0;
+  }
+  /* the one solid accent fill DESIGN.md allows: a ticked checkbox */
+  .pick.on .box {
+    background: var(--fl-accent);
+    border-color: var(--fl-accent);
+  }
+  .pick.on .box :global(svg) {
+    opacity: 1;
+  }
+  .hue {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .hue.blue {
+    background: var(--fl-hue-blue);
+  }
+  .hue.teal {
+    background: var(--fl-hue-teal);
+  }
+  .hue.violet {
+    background: var(--fl-hue-violet);
+  }
+  .hue.amber {
+    background: var(--fl-hue-amber);
+  }
+  .pn {
+    font-size: 13px;
+  }
+  .br {
+    margin-left: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10.5px;
+    color: var(--fl-fg-subtle);
+  }
+  .prof {
+    position: relative;
+    display: grid;
+    gap: 1px;
+    padding: 8px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--fl-border);
+  }
+  .prof .pd {
+    font-size: 11.5px;
+    color: var(--fl-fg-muted);
+  }
+  .prof.on {
+    background: var(--fl-active);
+    border-color: var(--fl-border-strong);
+  }
+  .prof.on::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--fl-accent);
+  }
+  .note {
+    margin: auto 0 4px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--fl-fg-muted);
+  }
+  .note :global(.lock) {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    margin-top: 1px;
+    fill: none;
+    stroke: var(--fl-fg-muted);
+    stroke-width: 1.5;
+  }
+
+  /* the composed stack */
+  .stack {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .slab {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border-strong);
+    border-radius: 4px;
+  }
+  .pslab {
+    display: grid;
+    gap: 6px;
+    padding: 9px 12px 10px;
+  }
+  .sh {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sn {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .kind {
+    margin-left: auto;
+    font-size: 10.5px;
+    color: var(--fl-fg-subtle);
+  }
+  .fslab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--fl-surface-raised);
+  }
+  .sl {
+    flex: none;
+    width: 128px;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .item {
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 7px;
+    border-radius: 3px;
+    background: var(--fl-surface-raised);
+    color: var(--fl-fg-muted);
+  }
+  .fslab .item {
+    background: var(--fl-surface);
+  }
+  .join {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 22px;
+    margin-top: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg-subtle);
+  }
+  .join .mono {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--fl-accent-text);
+  }
+  .join::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--fl-border-strong), transparent);
+  }
+  .pill {
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    white-space: nowrap;
+    background: var(--fl-surface-raised);
+    border: 1px solid var(--fl-accent);
+    border-radius: 999px;
+    font-size: 13px;
+  }
+  .pill .mono {
+    font-size: 11px;
+    color: var(--fl-fg-muted);
+  }
+
+  /* the session */
+  .pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .strip {
+    flex: none;
+    height: 36px;
+    display: flex;
+    background: var(--fl-surface-sunken);
+    border-bottom: 1px solid var(--fl-border);
+  }
+  .tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 12.5px;
+    color: var(--fl-fg-muted);
+    border-right: 1px solid var(--fl-border);
+  }
+  .tab.on {
+    background: var(--fl-surface);
+    color: var(--fl-fg);
+    margin-bottom: -1px;
+  }
+  .tab.on::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    background: var(--fl-accent);
+  }
+  .tg {
+    font-size: 10px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 999px;
+    color: var(--fl-accent-text);
+    background: var(--fl-accent-soft);
+  }
+  .crumb {
+    flex: none;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--fl-border);
+    font-size: 11.5px;
+    color: var(--fl-fg-muted);
+    white-space: nowrap;
+  }
+  .crumb .mono {
+    font-size: 11px;
+    color: var(--fl-fg-subtle);
+  }
+  .crumb .sep {
+    color: var(--fl-fg-subtle);
+  }
+  .body {
+    position: relative;
+    flex: 1;
+    background: var(--term);
+  }
+  .term {
+    position: absolute;
+    inset: 0;
+    padding: 10px 12px;
+    font: 400 11px/1.7 var(--mono);
+    color: var(--term-fg);
+    white-space: pre;
+  }
+  .term .ln {
+    display: block;
+  }
+  .term.empty {
+    display: grid;
+    place-items: center;
+    font-family: var(--body);
+    font-size: 12px;
+    color: var(--term-dim);
+  }
+
+  /* the phone layout: one column, workspace to session */
+  @media (max-width: 899.98px) {
+    .cmp {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: auto;
+      padding: 4px 2px 6px;
+    }
+    .col:first-child {
+      display: contents;
+    }
+    /* the workspace file names it */
+    .col:first-child .cap {
+      display: none;
+    }
+    .col + .col {
+      margin-top: 10px;
+    }
+    .cap {
+      font-size: 12px;
+    }
+    .card {
+      padding: 10px 12px;
+    }
+    .ws-head {
+      margin-bottom: 0;
+    }
+    .card .sub,
+    .card .pick,
+    .card .prof {
+      display: none;
+    }
+    .file,
+    .br,
+    .kind,
+    .item,
+    .join,
+    .join .mono,
+    .prof .pd,
+    .tg,
+    .crumb,
+    .crumb .mono,
+    .pill .mono {
+      font-size: 12px;
+    }
+    .note {
+      order: 9;
+      margin: 10px 0 0;
+      font-size: 13px;
+    }
+    .sl {
+      width: 132px;
+      font-size: 13px;
+    }
+    .pill {
+      bottom: 10px;
+    }
+    /* the pill waits at left: 50% until the timeline centres it, and at
+     * 320px its right half would widen the page; here it flies down to the
+     * session, so clipping the stack's sides cuts nothing off */
+    .stack {
+      overflow-x: clip;
+    }
+    .pane {
+      flex: none;
+    }
+    .body {
+      flex: none;
+      height: 244px;
+      overflow: hidden;
+    }
+    .term {
+      top: auto;
+      min-height: 100%;
+      font-size: 12px;
+      line-height: 1.62;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+</style>

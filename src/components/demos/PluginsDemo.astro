@@ -1,0 +1,222 @@
+---
+/* Plugins. A task board plugin adds its page to the rail and the sidebar; the
+ * session calls the plugin's tools to pick up a task, and the card moves to
+ * In progress by itself. At rest: HB-14 in progress.
+ *
+ * On a phone the rail lies along the top, where the plugin's page joins it,
+ * the task board fills the width under it (To do and In progress, where the
+ * card moves; Done is left out), and a short excerpt of the session's
+ * terminal sits below, its newest lines in view. */
+import Demo from '../Demo.astro';
+import { copy } from '../../copy';
+import FlotiWindow from '../FlotiWindow.astro';
+import Icon from '../Icon.astro';
+---
+
+<Demo name="plugins" caption={copy.demos.descriptions.plugins}>
+  <FlotiWindow on="tasks" plugin>
+    <Fragment slot="side">
+      <div class="side-panel gone" data-k="side-sessions">
+        <div class="fw-side-head"><span class="t">Sessions</span><span class="fw-icon-btn"><Icon name="plus" /></span></div>
+        <div class="fw-filter">Filter projects and sessions</div>
+        <div class="fw-tree">
+          <div class="fw-label"><Icon name="caret" class="caret" />Work <span class="n">3</span></div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">harbor-api</span><span class="branch">main</span></div>
+          <div class="fw-row session sel"><span class="dot"></span><span class="name">fix upload retry</span><span class="word acc">1m</span></div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">tidewater-web</span><span class="branch">feature/checkout</span></div>
+          <div class="fw-row"><Icon name="repo" class="ico" /><span class="name">lantern-docs</span><span class="branch">main</span></div>
+        </div>
+      </div>
+      <div class="side-panel" data-k="side-tasks">
+        <div class="fw-side-head"><span class="t">Tasks</span><span class="plug mono">plugin</span><span class="fw-icon-btn"><Icon name="plus" /></span></div>
+        <div class="fw-filter">Filter tasks</div>
+        <div class="board" data-k="board">
+          <div class="grp-label">To do <span class="swap n"><span class="gone" data-k="todo-3">3</span><span data-k="todo-2">2</span></span></div>
+          <div class="slot" data-k="slot"></div>
+          <div class="card"><span class="id mono">HB-15</span><span class="tt">Retry on 429 as well</span></div>
+          <div class="card"><span class="id mono">HB-16</span><span class="tt">Log each retry with its attempt</span></div>
+          <div class="grp-label">In progress <span class="swap n"><span class="gone" data-k="prog-0">0</span><span data-k="prog-1">1</span></span></div>
+          <div class="prog">
+            <div class="empty gone" data-k="empty">Nothing in progress.</div>
+            <div class="card moving" data-k="card">
+              <span class="id mono">HB-14</span><span class="tt">Retry uploads on a 503</span>
+              <span class="who swap"><span class="gone" data-k="who-none">Unassigned</span><span data-k="who-fix"><span class="dot"></span>fix upload retry</span></span>
+            </div>
+          </div>
+          <div class="grp-label done-label">Done <span class="n">1</span></div>
+          <div class="card done"><span class="id mono">HB-12</span><span class="tt">Show upload progress</span></div>
+        </div>
+      </div>
+    </Fragment>
+
+    <div class="fw-island fw-pane term-pane">
+      <div class="fw-strip">
+        <span class="fw-tab on"><span class="dot"></span><span class="label">fix upload retry</span></span>
+        <span class="fw-strip-plus"><Icon name="plus" /></span>
+      </div>
+      <div class="fw-crumb">harbor-api <span class="mono">main</span></div>
+      <div class="fw-body">
+        <div class="fw-term"><span class="ln" data-k="p-prompt"><span class="t-y">›</span> Pick up the next upload task and start on it.</span><span class="ln" data-k="p1"><span class="t-ok">●</span> <span class="t-b">tasks.list</span>  <span class="t-dim">status: "todo"</span></span><span class="ln t-dim" data-k="p1">    HB-14  Retry uploads on a 503</span><span class="ln t-dim" data-k="p1">    HB-15  Retry on 429 as well</span><span class="ln t-dim" data-k="p1">    HB-16  Log each retry with its attempt</span><span class="ln" data-k="p2">  HB-14 comes first: the others build on it.</span><span class="ln" data-k="p2"><span class="t-ok">●</span> <span class="t-b">tasks.update</span> <span class="t-dim">HB-14, status: "in_progress"</span></span><span class="ln t-dim" data-k="p2">    HB-14: in progress, assigned to you.</span><span class="ln" data-k="p3">  Reading src/upload/retry.ts</span><span class="ln" data-k="p3"><span class="t-cursor"></span></span></div>
+      </div>
+    </div>
+
+    <Fragment slot="status">
+      <span>Floti 3.1.0</span>
+      <span class="bar"></span>
+      <span class="grp"><span class="dot"></span>1 working</span>
+      <span class="right swap"><span class="gone" data-k="st-0">Tasks · 3 to do</span><span data-k="st-1">Tasks · 1 in progress</span></span>
+    </Fragment>
+  </FlotiWindow>
+</Demo>
+
+<style>
+  .side-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .plug {
+    margin-right: auto;
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 400;
+    padding: 2px 7px;
+    border: 1px solid var(--fl-border-strong);
+    border-radius: 999px;
+    color: var(--fl-fg-subtle);
+  }
+  .side-panel .fw-side-head :global(.t) {
+    margin-right: 0;
+  }
+  .board {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 8px 8px;
+  }
+  .grp-label {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--fl-fg);
+  }
+  .grp-label .n {
+    font-weight: 400;
+    color: var(--fl-fg-subtle);
+  }
+  .swap {
+    display: inline-grid;
+  }
+  .swap > * {
+    grid-area: 1 / 1;
+  }
+  .card {
+    position: relative;
+    display: grid;
+    gap: 3px;
+    padding: 8px 10px 9px;
+    background: var(--fl-surface-raised);
+    border: 1px solid var(--fl-border);
+    border-radius: 3px;
+  }
+  .card .id {
+    font-size: 11px;
+    color: var(--fl-fg-subtle);
+  }
+  .card .tt {
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+  .card.done .tt {
+    color: var(--fl-fg-muted);
+  }
+  .card .who {
+    font-size: 11px;
+    color: var(--fl-fg-muted);
+  }
+  .card .who span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card.moving {
+    z-index: 2;
+    border-color: var(--fl-border-strong);
+  }
+  .slot {
+    height: 0;
+    margin-bottom: -6px;
+  }
+  .prog {
+    position: relative;
+  }
+  .empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: var(--fl-fg-subtle);
+    border: 1px dashed var(--fl-border-strong);
+    border-radius: 3px;
+  }
+
+  /* the phone layout: the rail along the top, the board, then the terminal */
+  @media (max-width: 899.98px) {
+    :global(.st-plugins .fw-main) {
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+    :global(.st-plugins .fw-rail) {
+      display: flex;
+      flex-direction: row;
+      gap: 2px;
+      padding: 0;
+    }
+    :global(.st-plugins .fw-rail-sep) {
+      width: 1px;
+      height: 20px;
+      margin: 0 6px;
+    }
+    :global(.st-plugins .fw-rail-foot) {
+      margin: 0 0 0 auto;
+    }
+    :global(.st-plugins .fw-rail-btn.on::before) {
+      left: 10px;
+      right: 10px;
+      top: auto;
+      bottom: -3px;
+      width: auto;
+      height: 2px;
+    }
+    /* tall enough for the board's first frame, when To do still holds the card */
+    :global(.st-plugins .fw-side) {
+      display: flex;
+      height: 362px;
+    }
+    :global(.st-plugins .fw-filter),
+    .done-label,
+    .card.done,
+    .term-pane .fw-crumb {
+      display: none;
+    }
+    .plug,
+    .grp-label,
+    .card .id,
+    .card .who {
+      font-size: 12px;
+    }
+    .card .tt {
+      font-size: 13px;
+    }
+    .board {
+      padding: 0 8px 10px;
+    }
+  }
+</style>

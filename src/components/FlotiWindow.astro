@@ -1,0 +1,84 @@
+---
+/* The Floti window's frame: title strip with the accent mark, the rail of
+ * destinations on the canvas, the sidebar island, the panes and the status
+ * bar (DESIGN.md §3 and §5b). Each demo fills the sidebar, panes and status
+ * bar through slots and finds what it moves by data-k. */
+import Icon, { type IconName } from './Icon.astro';
+import Logo from './Logo.astro';
+
+type Rail = 'sessions' | 'profiles' | 'files' | 'browser' | 'tasks';
+
+interface Props {
+  on?: Rail;
+  /** The rail's warn badge on Sessions: someone needs you. */
+  badge?: boolean;
+  /** A plugin's page on the rail (the Tasks plugin). */
+  plugin?: boolean;
+  side?: boolean;
+  shadow?: boolean;
+  class?: string;
+}
+
+const { on = 'sessions', badge = false, plugin = false, side = true, shadow = false, class: className } = Astro.props;
+
+const top: Array<[Rail, IconName, string]> = [
+  ['sessions', 'terminal', 'Sessions'],
+  ['profiles', 'layers', 'Profiles'],
+];
+const mid: Array<[Rail, IconName, string]> = [
+  ['files', 'file', 'Files'],
+  ['browser', 'globe', 'Browser'],
+];
+---
+
+<div class:list={['fw', { shadow }, className]}>
+  <div class="fw-title">
+    <span class="fw-title-mark"><Logo kind="mark" /></span>
+    <span class="fw-winctl">
+      <span><Icon name="min" /></span>
+      <span><Icon name="square" /></span>
+      <span><Icon name="close" /></span>
+    </span>
+  </div>
+  <div class:list={['fw-main', { 'no-side': !side }]}>
+    <nav class="fw-rail">
+      {
+        top.map(([key, icon]) => (
+          <span class:list={['fw-rail-btn', { on: on === key }]} data-k={`rail-${key}`}>
+            <Icon name={icon} />
+            {key === 'sessions' && <span class:list={['fw-rail-badge', { gone: !badge }]} data-k="rail-badge" />}
+          </span>
+        ))
+      }
+      <span class="fw-rail-sep"></span>
+      {
+        mid.map(([key, icon]) => (
+          <span class:list={['fw-rail-btn', { on: on === key }]} data-k={`rail-${key}`}>
+            <Icon name={icon} />
+          </span>
+        ))
+      }
+      {
+        plugin && (
+          <span class:list={['fw-rail-btn', { on: on === 'tasks' }]} data-k="rail-tasks">
+            <Icon name="tasks" />
+          </span>
+        )
+      }
+      <span class="fw-rail-btn fw-rail-foot"><Icon name="gear" /></span>
+    </nav>
+    {
+      side && (
+        <aside class="fw-island fw-side" data-k="side">
+          <slot name="side" />
+        </aside>
+      )
+    }
+    <div class="fw-panes" data-k="panes">
+      <slot />
+    </div>
+  </div>
+  <div class="fw-status" data-k="status">
+    <slot name="status" />
+  </div>
+</div>
