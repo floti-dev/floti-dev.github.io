@@ -1,6 +1,6 @@
 ---
-/* The bar along the top of every page: the app icon and wordmark linking
- * home, the Install and GitHub links, and the Gold/Sky switch. */
+/* The bar along the top of every page: the lockup linking home, the Install
+ * and GitHub links, and the Gold/Sky switch. */
 import Logo from './Logo.astro';
 import { copy } from '../copy';
 import { GITHUB, HOME, INSTALL } from '../links';
@@ -17,8 +17,7 @@ const { nav } = copy;
 <header class="nav">
   <div class="nav-in">
     <a class="brand" href={HOME} aria-label={nav.home}>
-      <Logo kind="icon" class="brand-icon" />
-      <Logo kind="word" class="brand-word" />
+      <Logo kind="lockup" class="brand-lockup" />
     </a>
     <nav class="nav-links" aria-label="Site">
       <a href={INSTALL} aria-current={current === 'install' ? 'page' : undefined}>{nav.install}</a>

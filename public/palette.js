@@ -3,7 +3,7 @@
  * before switching to the other. Without a saved choice the page keeps the
  * palette its html element names (Gold on the home page, Sky on the install
  * guide). The tab's icon follows the palette too: of the
- * head's two icon links, only the matching one is left on. */
+ * head's two palette icon links, only the matching one is left on. */
 (function () {
   var root = document.documentElement;
   root.classList.add('js');

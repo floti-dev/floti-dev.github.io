@@ -42,9 +42,12 @@ to true when the release puts the install scripts on floti.dev.
   the nav switches them and remembers the choice. The home page starts in
   Gold and the install guide in Sky until the visitor picks one. `src/styles/tokens.css`
   holds both, and the matching Floti themes for the app window in the demos.
-- The logo, wordmark and ship silhouette in `src/assets/brand/` are traced
-  from the vector paths of the approved brand artwork and coloured from the
-  palette tokens.
+- The lockup, wordmark, ship and one-colour ship in `src/assets/brand/` are
+  the approved logo's vector files, cropped to the art and coloured from the
+  palette tokens. The nav shows the lockup, the hero and the install section
+  the wordmark, and the footer the one-colour ship.
+  The tab icons in `public/` are the round mark: an SVG in each palette,
+  and a 32px PNG and the 180px touch icon in the logo's own colours.
 - Each section's demo is drawn in HTML, CSS and SVG and animated with GSAP:
   it plays once when it comes into view, pauses off screen, and keeps its
   final frame under reduced motion. Only the demos ship JavaScript.

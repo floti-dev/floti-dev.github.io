@@ -1,23 +1,24 @@
 ---
-/* The brand artwork, traced from the vector paths of the approved logo into
- * src/assets/brand. Inlined so the page's tokens colour each part: .ship the
- * body, .word the letters, .hi the f, </>, eye and underscore, and .ground the
- * app icon's rounded square. */
+/* The brand artwork in src/assets/brand, taken from the vector files of the
+ * approved logo. Inlined so the page's tokens colour each part: .ship the
+ * body, .light the lockup's ship on the dark page, .word the letters, .hi the
+ * f, </>, eye and underscore. */
 import mark from '../assets/brand/ship-mark.svg?raw';
-import icon from '../assets/brand/app-icon.svg?raw';
+import lockup from '../assets/brand/lockup.svg?raw';
 import word from '../assets/brand/wordmark.svg?raw';
 import silhouette from '../assets/brand/ship-silhouette.svg?raw';
 
 interface Props {
-  /** mark: the bare ship; icon: the ship on its rounded square (the app icon). */
-  kind: 'mark' | 'icon' | 'word' | 'silhouette';
+  /** mark: the bare ship; lockup: the ship beside the wordmark; word: the
+   * wordmark alone; silhouette: the ship in one colour. */
+  kind: 'mark' | 'lockup' | 'word' | 'silhouette';
   class?: string;
   /** An accessible name; without one the drawing is decorative. */
   label?: string;
 }
 
 const { kind, class: className, label } = Astro.props;
-const source = { mark, icon, word, silhouette }[kind];
+const source = { mark, lockup, word, silhouette }[kind];
 
 // Swap the file's own role and name for the ones this use needs.
 const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
