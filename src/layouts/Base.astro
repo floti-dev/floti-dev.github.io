@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { copy } from '../copy';
 
 interface Props {
   title: string;
@@ -7,6 +8,18 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+// What a shared link shows: the page's title and description, and
+// public/og.png (scripts/og-image.mjs), which shows the lockup and the hero's
+// tagline, so the tagline is its alt. Link previews need absolute URLs.
+if (!Astro.site) throw new Error('astro.config.mjs must set site: og:url and og:image are absolute URLs.');
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const image = {
+  url: new URL('/og.png', Astro.site).href,
+  width: 1200,
+  height: 630,
+  alt: copy.hero.headline,
+};
 
 // The site's own files and nothing else: no inline script or style, nothing
 // from another origin.
@@ -30,6 +43,20 @@ const csp = [
     <meta name="referrer" content="no-referrer" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={image.url} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(image.width)} />
+    <meta property="og:image:height" content={String(image.height)} />
+    <meta property="og:image:alt" content={image.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image.url} />
+    <meta name="twitter:image:alt" content={image.alt} />
     <meta name="color-scheme" content="dark" />
     <!-- the demos' numbers (a test card, timers) are not phone numbers to iOS -->
     <meta name="format-detection" content="telephone=no" />

@@ -53,6 +53,14 @@ line before its `## ` heading names it (`src/markdown/switches.mjs`).
   the wordmark, and the footer the one-colour ship.
   The tab icons in `public/` are the round mark: an SVG, a 32px PNG and the
   180px touch icon.
+- `public/og.png` is the 1200x630 picture a shared link shows: the lockup
+  over the hero's tagline on the Sky ground. Every page's `og:` and
+  `twitter:` meta point to it (`src/layouts/Base.astro`). It is
+  `scripts/og-image.html` screenshotted with Playwright, which is not a
+  dependency of the site; after changing the lockup or `hero.headline`,
+  render it again with any Playwright install and commit the PNG:
+  `node scripts/og-image.mjs ../helm/node_modules/playwright` (or set
+  `PLAYWRIGHT` to the folder; without either it imports `playwright`).
 - Each section's demo is drawn in HTML, CSS and SVG and animated with GSAP:
   it plays once when it comes into view, pauses off screen, and keeps its
   final frame under reduced motion. Only the demos ship JavaScript.
