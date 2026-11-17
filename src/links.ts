@@ -3,4 +3,5 @@
 export const HOME = '/';
 export const INSTALL = '/install/';
 export const GITHUB = 'https://github.com/floti-dev';
+export const WIKI = 'https://github.com/floti-dev/floti/wiki';
 export const LICENSE = 'https://github.com/floti-dev/floti/blob/main/LICENSE';

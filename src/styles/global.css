@@ -896,6 +896,16 @@ html:not(.js) .demo-ctl {
     font-size: 14px;
   }
 }
+/* the lockup and three header links need 356px at the usual spacing; below
+ * that the links close up, keeping their 44px targets */
+@media (max-width: 359.98px) {
+  .nav-links {
+    gap: 0;
+  }
+  .nav-links a {
+    padding: 0 6px;
+  }
+}
 @media (pointer: coarse) and (min-width: 900px) {
   .nav-links a,
   .install-os label,

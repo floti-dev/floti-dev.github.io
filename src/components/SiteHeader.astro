@@ -1,9 +1,9 @@
 ---
 /* The bar along the top of every page: the lockup linking home, and the
- * Install and GitHub links. */
+ * Install, Wiki and GitHub links. */
 import Logo from './Logo.astro';
 import { copy } from '../copy';
-import { GITHUB, HOME, INSTALL } from '../links';
+import { GITHUB, HOME, INSTALL, WIKI } from '../links';
 
 interface Props {
   /** The page this is, marked in the links. */
@@ -21,6 +21,7 @@ const { nav } = copy;
     </a>
     <nav class="nav-links" aria-label="Site">
       <a href={INSTALL} aria-current={current === 'install' ? 'page' : undefined}>{nav.install}</a>
+      <a href={WIKI}>{nav.wiki}</a>
       <a href={GITHUB}>{nav.github}</a>
     </nav>
   </div>
