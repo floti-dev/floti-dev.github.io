@@ -35,11 +35,6 @@ stable release: while it is false the install guide says Floti is not
 released yet and every install box marks its commands as not live yet. Set it
 to true when the release puts the install scripts on floti.dev.
 
-`package_managers: false` beside it leaves the install guide's Homebrew and
-winget section out of the build until the Homebrew tap and the winget package
-exist. Any section of `install.md` can hang on such a switch: a comment on the
-line before its `## ` heading names it (`src/markdown/switches.mjs`).
-
 - Nothing on the site comes from another origin: no script, font, image,
   stylesheet or tracker. Fonts are self-hosted from `@fontsource`. Each page's
   Content-Security-Policy allows the site's own files and nothing inline, so

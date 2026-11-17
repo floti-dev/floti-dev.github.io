@@ -13,7 +13,6 @@ const YESNO = 'yesno';
 
 const SHAPE = {
   released: YESNO,
-  package_managers: YESNO,
   page: { title: TEXT, description: TEXT },
   nav: { home: TEXT, install: TEXT, github: TEXT },
   hero: { headline: TEXT },

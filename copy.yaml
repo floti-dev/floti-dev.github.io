@@ -10,12 +10,6 @@
 # not live yet. Set it to true at the release; nothing else needs changing.
 released: false
 
-# Whether Floti's Homebrew formula and winget package exist: false until the
-# owner creates the Homebrew tap and the release job's Homebrew and winget
-# secrets. While it is false, the install guide leaves out its Homebrew and
-# winget section. Set it to true once both packages are published.
-package_managers: false
-
 # The browser tab's title, and the summary search engines and link previews show.
 page:
   title: Floti

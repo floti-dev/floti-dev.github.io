@@ -23,9 +23,6 @@
 # - A table is rows of | cells |, with | --- | --- | as its second row. On a
 #   phone each row shows as a card.
 # - Lines starting > are a quotation.
-# - A comment such as <!-- shown while package_managers is true in copy.yaml -->
-#   on the line before a "## " heading builds that section only while that
-#   switch in copy.yaml is true.
 #
 # Every claim here is checked against Floti's code (the install scripts,
 # floti setup, update and uninstall, and docs/PACKAGING.md in the floti
@@ -165,21 +162,6 @@ New-Item -ItemType Directory -Force $bin | Out-Null
 Move-Item $f "$bin\floti.exe"
 & "$bin\floti.exe" setup
 ```
-
-<!-- shown while package_managers is true in copy.yaml -->
-## Homebrew and winget
-
-Both install Floti host without Floti desktop. Run `floti setup` afterwards.
-
-```sh
-brew trust floti-dev/tap && brew install floti-dev/tap/floti
-```
-
-```powershell
-winget install FlotiDev.Floti
-```
-
-Update with `brew upgrade` or `winget upgrade`. `floti uninstall` leaves Floti host itself for the package manager to remove.
 
 ## Privacy
 
