@@ -1,0 +1,62 @@
+# Builds floti.dev and deploys it to GitHub Pages, on every push to main and
+# by hand. The repository's Pages source must be "GitHub Actions".
+#
+# The site is the Astro build in dist/, plus the files Floti's release job
+# (release.yml's `floti-dev` job, in the floti repository) commits to the root
+# of this repository on each stable release: install.sh, install.ps1,
+# update.json and update.json.minisig. scripts/copy-release-files.mjs copies
+# whichever of them are there into dist/; before the first stable release
+# there are none. That job pushes with a deploy key, so its commit starts this
+# workflow and the new files go live with it.
+
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time. A run already deploying finishes; a newer push
+# waits for it instead of cancelling it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Copy the release files into the site
+        run: node scripts/copy-release-files.mjs
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

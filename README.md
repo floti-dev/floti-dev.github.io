@@ -5,8 +5,10 @@ The website for Floti, served at [floti.dev](https://floti.dev) by GitHub Pages.
 
 The home page and the install guide (`/install/`) are built with
 [Astro](https://astro.build) into static files; the not-found page is plain
-HTML in `public/` and is copied into the build unchanged. GitHub Pages has to serve the built `dist/`
-folder (a Pages workflow), not the repository as it is.
+HTML in `public/` and is copied into the build unchanged. GitHub Pages serves
+the built `dist/` folder, not the repository as it is: the Pages workflow
+(`.github/workflows/pages.yml`) builds and deploys it on every push to `main`,
+and the repository's Pages source is set to GitHub Actions.
 
 ```sh
 npm install
@@ -52,5 +54,11 @@ to true when the release puts the install scripts on floti.dev.
 - The not-found page still uses the app's own colours (`public/site.css`,
   named after the roles in the app's design system).
 - Every page works at phone width.
-- Install scripts the release workflow publishes belong in `public/`, so the
-  build carries them.
+- Floti's release job (`release.yml`'s `floti-dev` job, in the floti
+  repository) commits `install.sh`, `install.ps1`, `update.json` and
+  `update.json.minisig` to the root of this repository on each stable
+  release. They are not in `public/`: the Pages workflow copies whichever of
+  them are there into `dist/` after the build
+  (`scripts/copy-release-files.mjs`), so floti.dev serves them at
+  `/install.sh` and so on, and their commit starts the workflow that puts
+  them live.
