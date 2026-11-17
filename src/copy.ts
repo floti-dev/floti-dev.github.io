@@ -11,7 +11,7 @@ const LIST = 'list';
 
 const SHAPE = {
   page: { title: TEXT, description: TEXT },
-  nav: { home: TEXT, install: TEXT, github: TEXT },
+  nav: { home: TEXT, install: TEXT, wiki: TEXT, github: TEXT },
   hero: { headline: TEXT },
   install_box: {
     system: TEXT,

@@ -13,6 +13,7 @@ page:
 nav:
   home: Floti, home # read out by screen readers for the logo link
   install: Install
+  wiki: Wiki
   github: GitHub
 
 # The top of the page, above the looping Floti window: the tagline under the
