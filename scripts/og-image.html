@@ -1,0 +1,80 @@
+<!doctype html>
+<!-- The picture a shared floti.dev link shows (public/og.png), 1200 by 630:
+     the lockup over the hero's tagline on the Sky ground. scripts/og-image.mjs
+     opens this page, puts in the lockup (src/assets/brand/lockup.svg) and the
+     tagline (copy.yaml's hero.headline), and takes the screenshot. Colours are
+     the site's tokens, type the site's own font files. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../src/styles/tokens.css" />
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        font-style: italic;
+        font-weight: 800;
+        src: url('../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-800-italic.woff2') format('woff2');
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 44px;
+        width: 100%;
+        height: 100%;
+        padding: 0 112px;
+      }
+
+      /* coloured as the nav's lockup (global.css .logo-svg) */
+      .lockup svg {
+        display: block;
+        height: 168px;
+        width: auto;
+      }
+      .lockup .word {
+        fill: var(--word);
+      }
+      .lockup .light {
+        fill: var(--light);
+      }
+      .lockup .hi {
+        fill: var(--hi);
+      }
+
+      /* the hero's h1 (global.css), at the size the hero shows it on a wide screen */
+      h1 {
+        margin: 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-style: italic;
+        font-weight: 800;
+        font-size: 56px;
+        line-height: 1.04;
+        letter-spacing: -0.025em;
+        color: var(--light);
+        text-wrap: balance;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="lockup" id="lockup"></div>
+      <h1 id="headline"></h1>
+    </div>
+  </body>
+</html>
