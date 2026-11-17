@@ -7,8 +7,9 @@
 #
 # - The four entries below go at the top of the page. title is the big
 #   headline (and the browser tab's title), lede the paragraph under it,
-#   notice the box saying Floti is not released yet (shown only while
-#   released is false in copy.yaml), and description the summary search
+#   notice the box saying Floti is not released yet (shown only until
+#   Floti's first stable release puts update.json at the root of the
+#   repository; see src/release.ts), and description the summary search
 #   engines and link previews show. Each one is required.
 # - The install command box comes after the notice. It is not in this file:
 #   its labels are under install_box in copy.yaml.
@@ -23,9 +24,6 @@
 # - A table is rows of | cells |, with | --- | --- | as its second row. On a
 #   phone each row shows as a card.
 # - Lines starting > are a quotation.
-# - A comment such as <!-- shown while package_managers is true in copy.yaml -->
-#   on the line before a "## " heading builds that section only while that
-#   switch in copy.yaml is true.
 #
 # Every claim here is checked against Floti's code (the install scripts,
 # floti setup, update and uninstall, and docs/PACKAGING.md in the floti
@@ -165,21 +163,6 @@ New-Item -ItemType Directory -Force $bin | Out-Null
 Move-Item $f "$bin\floti.exe"
 & "$bin\floti.exe" setup
 ```
-
-<!-- shown while package_managers is true in copy.yaml -->
-## Homebrew and winget
-
-Both install Floti host without Floti desktop. Run `floti setup` afterwards.
-
-```sh
-brew trust floti-dev/tap && brew install floti-dev/tap/floti
-```
-
-```powershell
-winget install FlotiDev.Floti
-```
-
-Update with `brew upgrade` or `winget upgrade`. `floti uninstall` leaves Floti host itself for the package manager to remove.
 
 ## Privacy
 

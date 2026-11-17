@@ -8,6 +8,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import InstallBox from '../components/InstallBox.astro';
 import { copy } from '../copy';
 import { Guide, sections, top } from '../guide';
+import { released } from '../release';
 import '../styles/guide.css';
 ---
 
@@ -20,7 +21,7 @@ import '../styles/guide.css';
       <h1>{top.title}</h1>
       <p class="lede">{top.lede}</p>
       {
-        !copy.released && (
+        !released && (
           <p class="guide-notice" role="note">
             {top.notice}
           </p>

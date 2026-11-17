@@ -1,13 +1,14 @@
 // @ts-check
-import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig } from 'astro/config';
-import { parse } from 'yaml';
-import { switchesPlugin } from './src/markdown/switches.mjs';
+import { describeReleaseState, releaseState } from './scripts/release-state.mjs';
 
-// copy.yaml's switches (released, package_managers) decide which sections of
-// install.md are built; src/copy.ts checks the same file.
-const switches = parse(readFileSync(new URL('./copy.yaml', import.meta.url), 'utf8'));
+// Whether Floti counts as released, decided once from the repository root
+// (update.json there, or FLOTI_RELEASED) and handed to the pages through
+// Vite's define; src/release.ts is the one module that reads it.
+const release = releaseState(fileURLToPath(new URL('.', import.meta.url)));
+console.log(describeReleaseState(release));
 
 // A static site for GitHub Pages. Stylesheets and scripts are always files
 // (never inlined) and nothing is turned into a data: URL, because the pages'
@@ -22,13 +23,16 @@ export default defineConfig({
     inlineStylesheets: 'never',
   },
   vite: {
+    define: {
+      __FLOTI_RELEASED__: JSON.stringify(release.released),
+    },
     build: {
       assetsInlineLimit: 0,
     },
   },
   markdown: {
     syntaxHighlight: false,
-    processor: satteri({ mdastPlugins: [switchesPlugin(switches)] }),
+    processor: satteri(),
   },
   devToolbar: { enabled: false },
 });

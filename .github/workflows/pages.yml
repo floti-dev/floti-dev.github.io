@@ -1,5 +1,6 @@
-# Builds floti.dev and deploys it to GitHub Pages, on every push to main and
-# by hand. The repository's Pages source must be "GitHub Actions".
+# Builds floti.dev, deploys it to GitHub Pages and checks it went live, on
+# every push to main and by hand. A pull request to main is built and tested
+# and goes no further. The repository's Pages source must be "GitHub Actions".
 #
 # The site is the Astro build in dist/, plus the files Floti's release job
 # (release.yml's `floti-dev` job, in the floti repository) commits to the root
@@ -8,28 +9,42 @@
 # whichever of them are there into dist/; before the first stable release
 # there are none. That job pushes with a deploy key, so its commit starts this
 # workflow and the new files go live with it.
+#
+# The build counts Floti as released once update.json is at the root
+# (scripts/release-state.mjs). Run by hand, the `released` input can force it
+# either way; auto leaves it to update.json.
 
 name: Pages
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      released:
+        description: Whether the site counts Floti as released. auto means exactly when update.json is at the repository root.
+        type: choice
+        options: [auto, 'true', 'false']
+        default: auto
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# One deployment at a time. A run already deploying finishes; a newer push
-# waits for it instead of cancelling it.
+# One deployment at a time: a run already deploying finishes, and a newer
+# push waits for it instead of cancelling it. Each pull request has a group of
+# its own, where a newer commit cancels the run for the one before.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read # configure-pages reads the repository's Pages settings
     steps:
       - uses: actions/checkout@v7
 
@@ -40,23 +55,59 @@ jobs:
 
       - run: npm ci
 
+      - run: npm test
+
       - run: npm run build
+        env:
+          # empty on a push, and for auto: update.json decides
+          FLOTI_RELEASED: ${{ inputs.released != 'auto' && inputs.released || '' }}
 
       - name: Copy the release files into the site
         run: node scripts/copy-release-files.mjs
 
-      - uses: actions/configure-pages@v6
+      # Nothing below runs for a pull request: the github-pages environment
+      # admits main alone, and a pull request's build is a check, not a site.
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v5
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  # Requests the pages and each release file in this commit from the live
+  # site until they answer as they should, for up to 10 minutes (Pages' CDN
+  # caches for about that long), and fails the run naming what did not.
+  check:
+    if: github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Check the site is live
+        run: node scripts/check-site.mjs "$PAGE_URL"
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
