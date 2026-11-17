@@ -7,8 +7,15 @@ The home page and the install guide (`/install/`) are built with
 [Astro](https://astro.build) into static files; the not-found page is plain
 HTML in `public/` and is copied into the build unchanged. GitHub Pages serves
 the built `dist/` folder, not the repository as it is: the Pages workflow
-(`.github/workflows/pages.yml`) builds and deploys it on every push to `main`,
-and the repository's Pages source is set to GitHub Actions.
+(`.github/workflows/pages.yml`) runs `npm test`, builds and deploys it on
+every push to `main` and when run by hand, and the repository's Pages source
+is set to GitHub Actions. A pull request to `main` is tested and built but not
+deployed. After each deploy the workflow's check job
+(`scripts/check-site.mjs`) requests the home page, the install guide, `/404`,
+a made-up path and each release file from the live site, with a query that
+gets past Pages' cache, until each answers as it should or 10 minutes pass,
+and fails the run naming what did not. `npm test` runs the tests of the
+scripts in `scripts/`.
 
 ```sh
 npm install
@@ -30,10 +37,14 @@ headline, the paragraph under it and the not-released notice at its top. The
 comment there says how to edit it. Its short labels sit in `copy.yaml` beside
 the home page's.
 
-`released: false` at the top of `copy.yaml` is the switch for the first
-stable release: while it is false the install guide says Floti is not
-released yet and every install box marks its commands as not live yet. Set it
-to true when the release puts the install scripts on floti.dev.
+Whether Floti is released is not set by hand: the build counts it as
+released exactly when `update.json` is at the root of the repository, which
+Floti's first stable release puts there (`scripts/release-state.mjs`; the
+build log says which way it went and why). Until then the install guide says
+Floti is not released yet and every install box marks its commands as not
+live yet. `FLOTI_RELEASED=true` or `FLOTI_RELEASED=false` forces it either
+way for a build, as does the `released` choice when the Pages workflow is run
+by hand.
 
 - Nothing on the site comes from another origin: no script, font, image,
   stylesheet or tracker. Fonts are self-hosted from `@fontsource`. Each page's
@@ -61,4 +72,5 @@ to true when the release puts the install scripts on floti.dev.
   them are there into `dist/` after the build
   (`scripts/copy-release-files.mjs`), so floti.dev serves them at
   `/install.sh` and so on, and their commit starts the workflow that puts
-  them live.
+  them live. The same commit brings `update.json`, so that build is the first
+  to count Floti as released. Never commit these files by hand.

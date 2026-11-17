@@ -7,8 +7,9 @@
 #
 # - The four entries below go at the top of the page. title is the big
 #   headline (and the browser tab's title), lede the paragraph under it,
-#   notice the box saying Floti is not released yet (shown only while
-#   released is false in copy.yaml), and description the summary search
+#   notice the box saying Floti is not released yet (shown only until
+#   Floti's first stable release puts update.json at the root of the
+#   repository; see src/release.ts), and description the summary search
 #   engines and link previews show. Each one is required.
 # - The install command box comes after the notice. It is not in this file:
 #   its labels are under install_box in copy.yaml.

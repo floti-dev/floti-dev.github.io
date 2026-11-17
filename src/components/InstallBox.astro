@@ -1,9 +1,10 @@
 ---
 /* The install command with a tab per system. The tabs are radio inputs, so
  * switching works with no script; the script only picks the visitor's system
- * on load and runs the copy button. Until `released` in copy.yaml is true,
+ * on load and runs the copy button. Until Floti is released (src/release.ts),
  * the box marks its commands as not live yet. */
 import { copy } from '../copy';
+import { released } from '../release';
 
 interface Props {
   id: string;
@@ -11,7 +12,7 @@ interface Props {
 
 const { id } = Astro.props;
 const text = copy.install_box;
-const live = copy.released;
+const live = released;
 const commands = {
   unix: 'curl -fsSL https://floti.dev/install.sh | sh',
   windows: 'irm https://floti.dev/install.ps1 | iex',

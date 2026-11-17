@@ -2,17 +2,14 @@
  *
  * SHAPE lists every entry the page uses. Each is checked at build time: a
  * missing or empty entry stops the build with a message naming it, and an
- * entry the page does not use is reported, since it is most likely a typo.
- * `released` is the one switch that is not wording: true or false. */
+ * entry the page does not use is reported, since it is most likely a typo. */
 import { parse } from 'yaml';
 import source from '../copy.yaml?raw';
 
 const TEXT = 'text';
 const LIST = 'list';
-const YESNO = 'yesno';
 
 const SHAPE = {
-  released: YESNO,
   page: { title: TEXT, description: TEXT },
   nav: { home: TEXT, install: TEXT, github: TEXT },
   hero: { headline: TEXT },
@@ -68,14 +65,12 @@ const SHAPE = {
   footer: { line: TEXT, license: TEXT },
 } as const;
 
-type Shape = { readonly [key: string]: typeof TEXT | typeof LIST | typeof YESNO | Shape };
+type Shape = { readonly [key: string]: typeof TEXT | typeof LIST | Shape };
 type Read<S> = S extends typeof TEXT
   ? string
   : S extends typeof LIST
     ? string[]
-    : S extends typeof YESNO
-      ? boolean
-      : { [K in keyof S]: Read<S[K]> };
+    : { [K in keyof S]: Read<S[K]> };
 export type Copy = Read<typeof SHAPE>;
 
 class CopyError extends Error {
@@ -102,11 +97,6 @@ function read(shape: Shape, value: unknown, path: string): Record<string, unknow
     if (kind === TEXT) {
       if (typeof entry !== 'string' || entry.trim() === '') missing(here);
       out[key] = entry.trim();
-    } else if (kind === YESNO) {
-      if (typeof entry !== 'boolean') {
-        throw new CopyError(`"${here}" must be true or false.`);
-      }
-      out[key] = entry;
     } else if (kind === LIST) {
       if (!Array.isArray(entry) || entry.length === 0) missing(here);
       out[key] = entry.map((item, i) => {

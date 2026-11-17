@@ -365,7 +365,7 @@ h1 {
   outline: 2px solid var(--lead);
   outline-offset: 2px;
 }
-/* while Floti is not released (released: false in copy.yaml): a mark beside
+/* while Floti is not released (src/release.ts): a mark beside
  * the tabs, and the command set back */
 .not-live .install-os {
   flex-wrap: wrap;

@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "preview:bundle": "astro build && node scripts/preview-bundle.mjs"
+    "preview:bundle": "astro build && node scripts/preview-bundle.mjs",
+    "test": "node --test \"scripts/*.test.mjs\""
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.4.10",

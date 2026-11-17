@@ -4,12 +4,6 @@
 # is required: the build stops and names the entry if one is missing or empty.
 # Text inside a demo's drawing (terminal lines, file names) lives in the demo.
 
-# Whether Floti is released: false until the first stable release puts the
-# install scripts on floti.dev. While it is false, the install page shows the
-# notice at the top of install.md and every install box marks its commands as
-# not live yet. Set it to true at the release; nothing else needs changing.
-released: false
-
 # The browser tab's title, and the summary search engines and link previews show.
 page:
   title: Floti
@@ -37,7 +31,7 @@ install_box:
   selected: Selected # shown when the browser will not copy, and selects the command instead
   copied_status: Install command copied.
   selected_status: Install command selected. Copy it with your keyboard.
-  not_live: Not live yet # beside the tabs while released is false
+  not_live: Not live yet # beside the tabs until Floti is released
 
 # The install guide's short labels. Its headline, paragraphs and sections are
 # in install.md at the root of the repository.
