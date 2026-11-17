@@ -548,6 +548,12 @@ const profile = [
     .pill {
       bottom: 10px;
     }
+    /* the pill waits at left: 50% until the timeline centres it, and at
+     * 320px its right half would widen the page; here it flies down to the
+     * session, so clipping the stack's sides cuts nothing off */
+    .stack {
+      overflow-x: clip;
+    }
     .pane {
       flex: none;
     }
