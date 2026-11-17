@@ -93,11 +93,14 @@ jobs:
 
   # Requests the pages and each release file in this commit from the live
   # site until they answer as they should, for up to 10 minutes (Pages' CDN
-  # caches for about that long), and fails the run naming what did not.
+  # caches for about that long), and fails the run naming what did not. The
+  # pages must match, byte for byte, the site this run uploaded, so a pass
+  # means this deploy is what floti.dev serves, released or not.
   check:
     if: github.event_name != 'pull_request'
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -107,7 +110,19 @@ jobs:
         with:
           node-version: 24
 
+      # upload-pages-artifact stores the site as artifact.tar in an artifact
+      # named github-pages
+      - uses: actions/download-artifact@v8
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/pages-artifact
+
+      - name: Unpack the site this run deployed
+        run: |
+          mkdir "$RUNNER_TEMP/site"
+          tar -xf "$RUNNER_TEMP/pages-artifact/artifact.tar" -C "$RUNNER_TEMP/site"
+
       - name: Check the site is live
-        run: node scripts/check-site.mjs "$PAGE_URL"
+        run: node scripts/check-site.mjs "$PAGE_URL" "$RUNNER_TEMP/site"
         env:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}

@@ -14,7 +14,8 @@ deployed. After each deploy the workflow's check job
 (`scripts/check-site.mjs`) requests the home page, the install guide, `/404`,
 a made-up path and each release file from the live site, with a query that
 gets past Pages' cache, until each answers as it should or 10 minutes pass,
-and fails the run naming what did not. `npm test` runs the tests of the
+and fails the run naming what did not. The pages must match, byte for byte,
+the site that run uploaded, so a green run means that deploy is live. `npm test` runs the tests of the
 scripts in `scripts/`.
 
 ```sh
