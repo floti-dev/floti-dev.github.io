@@ -30,7 +30,6 @@
   border: 1px solid var(--edge);
   border-left: 3px solid var(--lead);
   border-radius: 8px;
-  transition: background-color var(--swap);
 }
 .guide-top .install {
   margin-top: 6px;
@@ -173,7 +172,6 @@
   overflow-wrap: anywhere;
   /* JetBrains Mono would draw <version>- as an arrow */
   font-variant-ligatures: none;
-  transition: background-color var(--swap);
 }
 
 /* blocks of commands, on the install box's ground, with the shell named in
@@ -187,7 +185,6 @@
   border: 1px solid var(--edge);
   border-radius: 10px;
   scrollbar-width: thin;
-  transition: background-color var(--swap);
 }
 .prose pre code {
   display: block;

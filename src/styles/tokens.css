@@ -1,85 +1,13 @@
-/* Colour tokens for both brand palettes.
+/* Colour tokens: the brand's Sky palette.
  *
- * The page tokens are the brand palettes' own values; the
- * --fl-* tokens are the matching Floti theme (Floti Gold.json, Floti Sky.json),
- * one custom property per theme role, so the app window in the demos wears the
- * same theme the app would. Gold is the default; html[data-palette="sky"]
- * switches every token at once. */
+ * The page tokens are the palette's own values; the --fl-* tokens are the
+ * matching Floti theme (Floti Sky.json), one custom property per theme role,
+ * so the app window in the demos wears the same theme the app would. */
 
 :root {
   color-scheme: dark;
 
-  /* Page, Gold */
-  --ground: #242622;
-  --deep: #1b1c19;
-  --raised: #2c2f2a;
-  --ship: #52554e;
-  --light: #ced2d1;
-  --word: #ced2d1;
-  --text: #edeedc;
-  --muted: #acaea2;
-  --subtle: #8a8d82;
-  --hi: #ddb440;
-  --lead: #ddb440;
-  --lead-text: #ebd28a;
-  --edge: rgb(237 238 220 / 0.1);
-  --edge-strong: rgb(237 238 220 / 0.18);
-  --silhouette: rgb(0 0 0 / 0.34);
-  --code-ghost: rgb(206 210 209 / 0.07);
-
-  /* Floti Gold */
-  --fl-bg: #1b1c19;
-  --fl-surface: #242622;
-  --fl-surface-raised: #2c2f2a;
-  --fl-surface-sunken: #151613;
-  --fl-hover: #2f322c;
-  --fl-active: #383b34;
-  --fl-border: rgb(237 238 220 / 0.08);
-  --fl-border-strong: rgb(237 238 220 / 0.16);
-  --fl-fg: #edeedc;
-  --fl-fg-muted: #acaea2;
-  --fl-fg-subtle: #8a8d82;
-  --fl-accent: #ddb440;
-  --fl-accent-fg: #242622;
-  --fl-accent-soft: rgb(221 180 64 / 0.14);
-  --fl-accent-soft-hover: rgb(221 180 64 / 0.26);
-  --fl-accent-text: #ebd28a;
-  --fl-success: #94c283;
-  --fl-warn: #ec9a5e;
-  --fl-danger: #e8807a;
-  --fl-hue-blue: #82b2ee;
-  --fl-hue-teal: #68c4bb;
-  --fl-hue-green: #8ac27f;
-  --fl-hue-amber: #ddb440;
-  --fl-hue-orange: #efa067;
-  --fl-hue-red: #e88a84;
-  --fl-hue-pink: #e594c0;
-  --fl-hue-violet: #bb9fea;
-
-  /* The terminal keeps its own ground in every theme (DESIGN.md §6). */
-  --term: #11121a;
-  --term-fg: #d4d6e0;
-  --term-dim: #7f8396;
-  --term-green: #8fcf8a;
-  --term-yellow: #e5c07b;
-  --term-blue: #82aaff;
-  --term-red: #f07178;
-
-  /* Type */
-  --display: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  --body: 'IBM Plex Sans', system-ui, 'Segoe UI', sans-serif;
-
-  --page-max: 1120px;
-  /* the demos' column, wider than the text where the viewport allows */
-  --wide-max: 1320px;
-  --wide-gutter: clamp(16px, 2.5vw, 48px);
-  --gutter: max(16px, env(safe-area-inset-left, 0px));
-  --swap: 400ms ease;
-}
-
-:root[data-palette='sky'] {
-  /* Page, Sky */
+  /* Page */
   --ground: #182327;
   --deep: #111a1d;
   --raised: #1f2c31;
@@ -125,4 +53,26 @@
   --fl-hue-red: #ec8584;
   --fl-hue-pink: #e594c8;
   --fl-hue-violet: #b99deb;
+
+  /* The terminal keeps its own ground in every theme (DESIGN.md §6). */
+  --term: #11121a;
+  --term-fg: #d4d6e0;
+  --term-dim: #7f8396;
+  --term-green: #8fcf8a;
+  --term-yellow: #e5c07b;
+  --term-blue: #82aaff;
+  --term-red: #f07178;
+
+  /* Type */
+  --display: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --body: 'IBM Plex Sans', system-ui, 'Segoe UI', sans-serif;
+
+  --page-max: 1120px;
+  /* the demos' column, wider than the text where the viewport allows */
+  --wide-max: 1320px;
+  --wide-gutter: clamp(16px, 2.5vw, 48px);
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  /* the demo window's colour changes fade rather than snap */
+  --fade: 400ms ease;
 }

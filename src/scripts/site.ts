@@ -1,43 +1,4 @@
-/* What every page runs: the Gold/Sky switch and the install boxes. */
-
-const PALETTE_KEY = 'floti-palette';
-type Palette = 'gold' | 'sky';
-
-function isPalette(value: unknown): value is Palette {
-  return value === 'gold' || value === 'sky';
-}
-
-/** Gold or Sky for the whole page, remembered for the visitor. The head
- * script has already applied a saved choice before the first paint. The
- * tab's icon swaps with it: the matching icon link is turned on and moved
- * last, which makes browsers read the icon again. */
-export function initPalette(): void {
-  const root = document.documentElement;
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-palette-set]');
-  const icons = Array.from(document.querySelectorAll<HTMLLinkElement>('link[data-palette-icon]'));
-  const apply = (palette: Palette) => {
-    root.dataset.palette = palette;
-    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.paletteSet === palette)));
-    for (const icon of icons) {
-      const on = icon.dataset.paletteIcon === palette;
-      icon.media = on ? 'all' : 'not all';
-      if (on && icon !== document.head.lastElementChild) document.head.append(icon);
-    }
-  };
-  apply(isPalette(root.dataset.palette) ? root.dataset.palette : 'gold');
-  buttons.forEach((button) =>
-    button.addEventListener('click', () => {
-      const palette = button.dataset.paletteSet;
-      if (!isPalette(palette)) return;
-      apply(palette);
-      try {
-        localStorage.setItem(PALETTE_KEY, palette);
-      } catch {
-        // storage can be blocked; the choice then lasts for this page view
-      }
-    }),
-  );
-}
+/* What every page runs: the install boxes. */
 
 function onWindows(): boolean {
   const nav = navigator as Navigator & { userAgentData?: { platform?: string } };

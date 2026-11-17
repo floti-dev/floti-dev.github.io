@@ -23,8 +23,8 @@
   font-variant-numeric: tabular-nums;
   text-align: left;
   transition:
-    background-color var(--swap),
-    border-color var(--swap);
+    background-color var(--fade),
+    border-color var(--fade);
 }
 .fw.shadow {
   box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.6);
@@ -32,10 +32,10 @@
 .fw *,
 .fw *::before {
   transition:
-    background-color var(--swap),
-    border-color var(--swap),
-    color var(--swap),
-    fill var(--swap);
+    background-color var(--fade),
+    border-color var(--fade),
+    color var(--fade),
+    fill var(--fade);
 }
 .fw .mono {
   font-family: var(--mono);

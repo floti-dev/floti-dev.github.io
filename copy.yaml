@@ -20,9 +20,6 @@ nav:
   home: Floti, home # read out by screen readers for the logo link
   install: Install
   github: GitHub
-  palette: Palette # read out by screen readers for the Gold/Sky switch
-  gold: Gold
-  sky: Sky
 
 # The top of the page, above the looping Floti window: the tagline under the
 # name.

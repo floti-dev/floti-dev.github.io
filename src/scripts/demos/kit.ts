@@ -5,7 +5,7 @@
  * with fromTo() (which applies its from-values at once), and discrete changes
  * are attribute sets placed on the timeline, so replaying from 0 restores the
  * start exactly. Colours are never tweened inline: a class carries every
- * colour, so the palette toggle recolours a demo mid-play. */
+ * colour. */
 import { gsap } from 'gsap';
 
 export type Timeline = gsap.core.Timeline;

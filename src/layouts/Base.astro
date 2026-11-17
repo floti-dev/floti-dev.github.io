@@ -4,11 +4,9 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description: string;
-  /** The palette shown until the visitor picks one with the switch. */
-  palette?: 'gold' | 'sky';
 }
 
-const { title, description, palette = 'gold' } = Astro.props;
+const { title, description } = Astro.props;
 
 // The site's own files and nothing else: no inline script or style, nothing
 // from another origin.
@@ -24,7 +22,7 @@ const csp = [
 ---
 
 <!doctype html>
-<html lang="en" data-palette={palette}>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -35,15 +33,12 @@ const csp = [
     <meta name="color-scheme" content="dark" />
     <!-- the demos' numbers (a test card, timers) are not phone numbers to iOS -->
     <meta name="format-detection" content="telephone=no" />
-    <!-- the round mark: a PNG for browsers without SVG icons and a touch icon,
-         both in the logo's own colours, then the SVG in each palette; the
-         palette script turns on the one that matches (the page's own palette
-         without script) -->
+    <!-- the round mark: a PNG for browsers without SVG icons, the SVG, and
+         the touch icon -->
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="icon" href="/favicon-gold.svg" type="image/svg+xml" data-palette-icon="gold" media={palette === 'gold' ? undefined : 'not all'} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" data-palette-icon="sky" media={palette === 'sky' ? undefined : 'not all'} />
-    <script is:inline src="/palette.js"></script>
+    <script is:inline src="/head.js"></script>
   </head>
   <body>
     <!-- each page brings its own script -->

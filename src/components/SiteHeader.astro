@@ -1,6 +1,6 @@
 ---
-/* The bar along the top of every page: the lockup linking home, the Install
- * and GitHub links, and the Gold/Sky switch. */
+/* The bar along the top of every page: the lockup linking home, and the
+ * Install and GitHub links. */
 import Logo from './Logo.astro';
 import { copy } from '../copy';
 import { GITHUB, HOME, INSTALL } from '../links';
@@ -21,11 +21,7 @@ const { nav } = copy;
     </a>
     <nav class="nav-links" aria-label="Site">
       <a href={INSTALL} aria-current={current === 'install' ? 'page' : undefined}>{nav.install}</a>
-      <a class="wide" href={GITHUB}>{nav.github}</a>
+      <a href={GITHUB}>{nav.github}</a>
     </nav>
-    <div class="toggle" role="group" aria-label={nav.palette}>
-      <button type="button" data-palette-set="gold" aria-pressed="true">{nav.gold}</button>
-      <button type="button" data-palette-set="sky" aria-pressed="false">{nav.sky}</button>
-    </div>
   </div>
 </header>

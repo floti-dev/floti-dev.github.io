@@ -1,10 +1,10 @@
-/* The home page's script: the palette toggle and the install boxes (from
- * site.ts, shared with the install guide), the typed wordmark, the background
+/* The home page's script: the install boxes (from site.ts, shared with the
+ * install guide), the typed wordmark, the background
  * parallax and the demos. */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { fitStages, initDemos } from './demo-runtime';
-import { initInstall, initPalette } from './site';
+import { initInstall } from './site';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -85,7 +85,6 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** The visitor asked their browser to save data: the background stays still. */
 const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
-initPalette();
 initInstall();
 fitStages();
 if (!reduced) typeWordmark();

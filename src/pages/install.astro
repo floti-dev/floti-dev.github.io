@@ -1,8 +1,7 @@
 ---
 /* The install guide, floti.dev/install/: what a new user reads before running
  * anything. The command box first, then the guide's sections. Its prose is
- * install.md at the repository root; its short labels are in copy.yaml.
- * It takes the Sky palette until the visitor picks one. */
+ * install.md at the repository root; its short labels are in copy.yaml. */
 import Base from '../layouts/Base.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -12,7 +11,7 @@ import { Guide, sections, top } from '../guide';
 import '../styles/guide.css';
 ---
 
-<Base title={top.title} description={top.description} palette="sky">
+<Base title={top.title} description={top.description}>
   <SiteHeader current="install" />
 
   <main class="guide wrap">
