@@ -2,7 +2,7 @@
 #
 #   irm https://floti.dev/install.ps1 | iex
 #
-# It installs floti 3.0.0 in your own folder,
+# It installs floti 3.1.0 in your own folder,
 # %LOCALAPPDATA%\Programs\Floti\bin, with no admin rights, puts that folder on
 # your PATH, then runs `floti setup`, which makes the host's key; the Floti
 # host starts when Floti or a connection needs it. It picks the floti for this computer's CPU, downloads it from the
@@ -58,11 +58,11 @@ function Get-Floti {
     }
   }
 
-  $version = '3.0.0'
-  $release = 'https://github.com/floti-dev/floti/releases/download/v3.0.0'
+  $version = '3.1.0'
+  $release = 'https://github.com/floti-dev/floti/releases/download/v3.1.0'
   $sums = @{
-    'windows-x64' = '3cb17ef000bdaa5191faaf3cd8f1fac3662b037efb736b9aaa9671425897c47b'
-    'windows-arm64' = '6d2ff3890f54fbf8ba5a5c66d3351325ffb4e9ba02763bec4964ada291261810'
+    'windows-x64' = 'a143ecca514b7d3f10c3bef20780325a3eefb8947927a775b5c9d2a9ec1f2f83'
+    'windows-arm64' = 'c5e9d70a6b875e59ee04906dedbaeb94256242e2a48f51e6259620b5ed0f034e'
   }
 
   # The computer's own CPU, as the system keeps it: an x64 PowerShell on an
