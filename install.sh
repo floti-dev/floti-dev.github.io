@@ -2,7 +2,7 @@
 #
 #   curl -fsSL https://floti.dev/install.sh | sh
 #
-# It installs floti 3.1.0 in your own folder, ~/.local/bin, with no admin
+# It installs floti 3.1.1 in your own folder, ~/.local/bin, with no admin
 # rights, then runs `floti setup`, which starts the Floti host at each sign-in
 # and, when ~/.local/bin is not on your PATH, adds the one line that puts it
 # there to the startup file your shell reads, and says which file.
@@ -90,8 +90,8 @@ floti_get() {
     echo "$dir/floti"
   }
 
-  version='3.1.0'
-  release='https://github.com/floti-dev/floti/releases/download/v3.1.0'
+  version='3.1.1'
+  release='https://github.com/floti-dev/floti/releases/download/v3.1.1'
 
   system=$(uname -s)
   machine=$(uname -m)
@@ -110,9 +110,9 @@ floti_get() {
     cpu=arm64
   fi
   case "$os-$cpu" in
-    macos-arm64) sha256='53780518cea51723827340d7f20be2d1c703ad00e9970718d8322aa5936648f9' ;;
-    linux-x64) sha256='dd14fa3da3a60be1440757449655a4d6cb83a15ad66e5f98a2c7c35613a37ced' ;;
-    linux-arm64) sha256='3a86b69f29b1508f25086c8509c58900d86d471db18cf655cd5f9f23c08e5397' ;;
+    macos-arm64) sha256='0f65de1bac7d6318a343d662dba4f8c95f13289bf7b260f1c42de475858257f3' ;;
+    linux-x64) sha256='9daf4a9fbf3dfbadc8d84273668d8bd7432add85715b5e17b2895500859fae58' ;;
+    linux-arm64) sha256='39c81de8578f22b288ca533a36c65a84b87a02c7c62954a2ccc8e66f20903ada' ;;
     *)
       echo "floti install: Floti has no build for $system $machine; it runs on macOS on Apple Silicon, Linux on x64 and arm64, and Windows on x64 and arm64." >&2
       return 1
